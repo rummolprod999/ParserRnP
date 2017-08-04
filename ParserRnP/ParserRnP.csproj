@@ -67,6 +67,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TypeArguments.cs" />
     <Compile Include="TypeFileRnp.cs" />
+    <Compile Include="Unfair.cs" />
+    <Compile Include="Unfair44.cs" />
     <Compile Include="Unzipped.cs" />
     <Compile Include="WorkWithFtp.cs" />
   </ItemGroup>

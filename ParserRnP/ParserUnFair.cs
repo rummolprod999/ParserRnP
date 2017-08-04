@@ -106,6 +106,19 @@ namespace ParserRnP
         {
             using (StreamReader sr = new StreamReader(f.ToString(), Encoding.Default))
             {
+                var ftext = sr.ReadToEnd();
+                ftext = ClearText.ClearString(ftext);
+                XmlDocument doc = new XmlDocument();
+                doc.LoadXml(ftext);
+                string jsons = JsonConvert.SerializeXmlNode(doc);
+                JObject json = JObject.Parse(jsons);
+                switch (typefile)
+                {
+                    case TypeFileRnp.unfairSupplier:
+                        Unfair44 a = new Unfair44(f, json);
+                        a.Parsing();
+                        break;
+                }
             }
         }
 
