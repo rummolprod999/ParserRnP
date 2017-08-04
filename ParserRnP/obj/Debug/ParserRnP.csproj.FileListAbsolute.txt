@@ -1,0 +1,14 @@
+/home/alex/RiderProjects/ParserRnP/ParserRnP/bin/Debug/ParserRnP.exe.config
+/home/alex/RiderProjects/ParserRnP/ParserRnP/bin/Debug/ParserRnP.exe
+/home/alex/RiderProjects/ParserRnP/ParserRnP/bin/Debug/ParserRnP.pdb
+/home/alex/RiderProjects/ParserRnP/ParserRnP/bin/Debug/FluentFTP.dll
+/home/alex/RiderProjects/ParserRnP/ParserRnP/bin/Debug/Ftp.dll
+/home/alex/RiderProjects/ParserRnP/ParserRnP/bin/Debug/MySql.Data.dll
+/home/alex/RiderProjects/ParserRnP/ParserRnP/bin/Debug/Newtonsoft.Json.dll
+/home/alex/RiderProjects/ParserRnP/ParserRnP/bin/Debug/FluentFTP.xml
+/home/alex/RiderProjects/ParserRnP/ParserRnP/bin/Debug/Ftp.xml
+/home/alex/RiderProjects/ParserRnP/ParserRnP/bin/Debug/Newtonsoft.Json.xml
+/home/alex/RiderProjects/ParserRnP/ParserRnP/obj/Debug/ParserRnP.csprojResolveAssemblyReference.cache
+/home/alex/RiderProjects/ParserRnP/ParserRnP/obj/Debug/ParserRnP.csproj.CoreCompileInputs.cache
+/home/alex/RiderProjects/ParserRnP/ParserRnP/obj/Debug/ParserRnP.exe
+/home/alex/RiderProjects/ParserRnP/ParserRnP/obj/Debug/ParserRnP.pdb
