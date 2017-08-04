@@ -134,11 +134,11 @@ namespace ParserRnP
         private static void ParserRnp(TypeArguments arg)
         {
             Log.Logger("Время начала парсинга Rnp");
-            /*ParserUnFair rnp = new ParserUnFair(Periodparsing);
-            rnp.Parsing();*/
             ParserUnFair rnp = new ParserUnFair(Periodparsing);
+            rnp.Parsing();
+            /*ParserUnFair rnp = new ParserUnFair(Periodparsing);
             FileInfo f = new FileInfo("/home/alex/Рабочий стол/parser/unfairSupplier_40556-15_40556.xml");
-            rnp.ParsingXML(f, TypeFileRnp.unfairSupplier);
+            rnp.ParsingXML(f, TypeFileRnp.unfairSupplier);*/
             Log.Logger("Время окончания парсинга Rnp");
             Log.Logger("Добавили Unfair44", AddRnp);
         }
