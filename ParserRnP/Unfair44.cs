@@ -53,7 +53,7 @@ namespace ParserRnP
                 }
                 string approveDate = (JsonConvert.SerializeObject(r.SelectToken("approveDate") ?? "") ??
                                       "").Trim('"');
-                if (String.IsNullOrEmpty(publishDate))
+                if (String.IsNullOrEmpty(approveDate))
                 {
                     Log.Logger("Нет approveDate", file_path);
                 }
