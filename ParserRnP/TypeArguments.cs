@@ -2,8 +2,9 @@
 {
     public enum TypeArguments
     {
-        Prev,
-        Curr,
-        Last
+        PrevUn,
+        CurrUn,
+        LastUn,
+        RootUn
     }
 }

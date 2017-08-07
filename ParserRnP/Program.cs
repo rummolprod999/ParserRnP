@@ -33,8 +33,8 @@ namespace ParserRnP
         {
             get
             {
-                if (Periodparsing == TypeArguments.Curr || Periodparsing == TypeArguments.Prev ||
-                    Periodparsing == TypeArguments.Last)
+                if (Periodparsing == TypeArguments.CurrUn || Periodparsing == TypeArguments.PrevUn ||
+                    Periodparsing == TypeArguments.LastUn || Periodparsing == TypeArguments.RootUn)
                     return _tempPathRnp;
                 
 
@@ -45,8 +45,8 @@ namespace ParserRnP
         {
             get
             {
-                if (Periodparsing == TypeArguments.Curr || Periodparsing == TypeArguments.Prev ||
-                    Periodparsing == TypeArguments.Last)
+                if (Periodparsing == TypeArguments.CurrUn || Periodparsing == TypeArguments.PrevUn ||
+                    Periodparsing == TypeArguments.LastUn || Periodparsing == TypeArguments.RootUn)
                     return _logPathRnp;
                 
 
@@ -60,7 +60,7 @@ namespace ParserRnP
             if (args.Length == 0)
             {
                 Console.WriteLine(
-                    "Недостаточно аргументов для запуска, используйте last, prev, curr в качестве аргумента");
+                    "Недостаточно аргументов для запуска, используйте lastUn, prevUn, currUn, rootUn в качестве аргумента");
                 return;
             }
             string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetName()
@@ -69,24 +69,29 @@ namespace ParserRnP
             StrArg = args[0];
             switch (args[0])
             {
-                case "last":
-                    Periodparsing = TypeArguments.Last;
+                case "lastUn":
+                    Periodparsing = TypeArguments.LastUn;
                     Init(Periodparsing);
                     ParserRnp(Periodparsing);
                     break;
-                case "prev":
-                    Periodparsing = TypeArguments.Prev;
+                case "prevUn":
+                    Periodparsing = TypeArguments.PrevUn;
                     Init(Periodparsing);
                     ParserRnp(Periodparsing);
                     break;
-                case "curr":
-                    Periodparsing = TypeArguments.Curr;
+                case "currUn":
+                    Periodparsing = TypeArguments.CurrUn;
+                    Init(Periodparsing);
+                    ParserRnp(Periodparsing);
+                    break;
+                case "rootUn":
+                    Periodparsing = TypeArguments.RootUn;
                     Init(Periodparsing);
                     ParserRnp(Periodparsing);
                     break;
                 default:
                     Console.WriteLine(
-                        "Неправильно указан аргумент, используйте last, prev, curr");
+                        "Неправильно указан аргумент, используйте lastUn, prevUn, currUn, rootUn");
                     break;
             }
         }
@@ -127,7 +132,7 @@ namespace ParserRnP
             {
                 Directory.CreateDirectory(LogPath);
             }
-            if (arg == TypeArguments.Curr || arg == TypeArguments.Last || arg == TypeArguments.Prev)
+            if (arg == TypeArguments.CurrUn || arg == TypeArguments.LastUn || arg == TypeArguments.PrevUn || arg == TypeArguments.RootUn)
                 FileLog = $"{LogPath}{Path.DirectorySeparatorChar}Rnp_{LocalDate:dd_MM_yyyy}.log";
         }
 

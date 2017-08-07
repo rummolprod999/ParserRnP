@@ -47,13 +47,21 @@ namespace ParserRnP
                 }
                 string publishDate = (JsonConvert.SerializeObject(r.SelectToken("publishDate") ?? "") ??
                                       "").Trim('"');
+                if (String.IsNullOrEmpty(publishDate))
+                {
+                    Log.Logger("Нет publishDate", file_path);
+                }
                 string approveDate = (JsonConvert.SerializeObject(r.SelectToken("approveDate") ?? "") ??
                                       "").Trim('"');
+                if (String.IsNullOrEmpty(publishDate))
+                {
+                    Log.Logger("Нет approveDate", file_path);
+                }
                 string state = ((string) r.SelectToken("state") ?? "").Trim();
                 using (MySqlConnection connect = ConnectToDb.GetDBConnection())
                 {
                     connect.Open();
-                    if (!String.IsNullOrEmpty(registryNum))
+                    if (!String.IsNullOrEmpty(registryNum) && !String.IsNullOrEmpty(publishDate))
                     {
                         string select_unf =
                             $"SELECT id FROM {Program.Prefix}unfair WHERE registryNum = @registryNum AND publishDate = @publishDate AND state = @state";
@@ -70,7 +78,7 @@ namespace ParserRnP
                             return;
                         }
                         reader.Close();
-                        string select_unf2 =
+                        /*string select_unf2 =
                             $"SELECT id FROM {Program.Prefix}unfair WHERE registryNum = @registryNum AND publishDate = @publishDate";
                         MySqlCommand cmd2 = new MySqlCommand(select_unf2, connect);
                         cmd2.Prepare();
@@ -91,7 +99,7 @@ namespace ParserRnP
                             Log.Logger("Обновили документ в базе", registryNum);
                             return;
                         }
-                        reader2.Close();
+                        reader2.Close();*/
                     }
 
                     int idOrg = 0;
@@ -172,6 +180,17 @@ namespace ParserRnP
                     string inn_supplier = ((string) r.SelectToken("unfairSupplier.inn") ?? "").Trim();
                     string kpp_supplier = ((string) r.SelectToken("unfairSupplier.kpp") ?? "").Trim();
                     string fullName_supplier = ((string) r.SelectToken("unfairSupplier.fullName") ?? "").Trim();
+                    string placefullName = ((string) r.SelectToken("unfairSupplier.place.kladr.fullName") ?? "")
+                        .Trim();
+                    string subjectRF = ((string) r.SelectToken("unfairSupplier.place.kladr.subjectRF") ?? "")
+                        .Trim();
+                    string area = ((string) r.SelectToken("unfairSupplier.place.kladr.area") ?? "")
+                        .Trim();
+                    string street = ((string) r.SelectToken("unfairSupplier.place.kladr.street") ?? "")
+                        .Trim();
+                    string building = ((string) r.SelectToken("unfairSupplier.place.kladr.building") ?? "")
+                        .Trim();
+                    placefullName = $"{subjectRF}, {area}, {street}, {building}, {placefullName}";
                     if (!String.IsNullOrEmpty(inn_supplier))
                     {
                         string select_supplier =
@@ -190,8 +209,6 @@ namespace ParserRnP
                         else
                         {
                             reader5.Close();
-                            string placefullName = ((string) r.SelectToken("unfairSupplier.place.kladr.fullName") ?? "")
-                                .Trim();
                             string email = ((string) r.SelectToken("unfairSupplier.place.email") ?? "").Trim();
                             string founders_names =
                                 ((string) r.SelectToken("unfairSupplier.founders.names") ?? "").Trim();
@@ -232,7 +249,7 @@ namespace ParserRnP
                     string contract_cancel_cancelDate =
                         ((string) r.SelectToken("contract.cancel.cancelDate") ?? "").Trim();
                     string insert_unfair =
-                        $"INSERT INTO {Program.Prefix}unfair SET publishDate = @publishDate, approveDate = @approveDate, registryNum = @registryNum, state = @state, createReason = @createReason, approveReason  = @approveReason, id_customer = @id_customer, id_supplier = @id_supplier, id_org = @id_org, purchaseNumber = @purchaseNumber, purchaseObjectInfo = @purchaseObjectInfo, lotNumber = @lotNumber, contract_regNum = @contract_regNum, contract_productInfo = @contract_productInfo, contract_OKPD_code = @contract_OKPD_code, contract_OKPD_name = @contract_OKPD_name, contract_currency_code = @contract_currency_code, contract_price = @contract_price, contract_cancel_signDate = @contract_cancel_signDate, contract_cancel_performanceDate = @contract_cancel_performanceDate, contract_cancel_base_name = @contract_cancel_base_name, contract_cancel_cancelDate = @contract_cancel_cancelDate";
+                        $"INSERT INTO {Program.Prefix}unfair SET publishDate = @publishDate, approveDate = @approveDate, registryNum = @registryNum, state = @state, createReason = @createReason, approveReason  = @approveReason, id_customer = @id_customer, id_supplier = @id_supplier, id_org = @id_org, purchaseNumber = @purchaseNumber, purchaseObjectInfo = @purchaseObjectInfo, lotNumber = @lotNumber, contract_regNum = @contract_regNum, contract_productInfo = @contract_productInfo, contract_OKPD_code = @contract_OKPD_code, contract_OKPD_name = @contract_OKPD_name, contract_currency_code = @contract_currency_code, contract_price = @contract_price, contract_cancel_signDate = @contract_cancel_signDate, contract_cancel_performanceDate = @contract_cancel_performanceDate, contract_cancel_base_name = @contract_cancel_base_name, contract_cancel_cancelDate = @contract_cancel_cancelDate, full_name_supplier = @full_name_supplier, placefullName_supplier = @placefullName_supplier";
                     MySqlCommand cmd10 = new MySqlCommand(insert_unfair, connect);
                     cmd10.Prepare();
                     cmd10.Parameters.AddWithValue("@publishDate", publishDate);
@@ -257,6 +274,8 @@ namespace ParserRnP
                     cmd10.Parameters.AddWithValue("@contract_cancel_performanceDate", contract_cancel_performanceDate);
                     cmd10.Parameters.AddWithValue("@contract_cancel_base_name", contract_cancel_base_name);
                     cmd10.Parameters.AddWithValue("@contract_cancel_cancelDate", contract_cancel_cancelDate);
+                    cmd10.Parameters.AddWithValue("@full_name_supplier", fullName_supplier);
+                    cmd10.Parameters.AddWithValue("@placefullName_supplier", placefullName);
                     int res_insert_unf = cmd10.ExecuteNonQuery();
                     AddUnfair44?.Invoke(res_insert_unf);
                 }

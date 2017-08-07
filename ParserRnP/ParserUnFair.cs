@@ -32,15 +32,19 @@ namespace ParserRnP
 
             switch (Program.Periodparsing)
             {
-                case TypeArguments.Last:
-                    PathParse = $"/fcs_fas/unfairSupplier";
+                case TypeArguments.LastUn:
+                    PathParse = $"/fcs_fas/unfairSupplier/";
                     arch = GetListArchLast(PathParse);
                     break;
-                case TypeArguments.Curr:
+                case TypeArguments.RootUn:
+                    PathParse = $"/fcs_fas/";
+                    arch = GetListArchRoot(PathParse);
+                    break;
+                case TypeArguments.CurrUn:
                     PathParse = $"/fcs_fas/unfairSupplier/currMonth/";
                     arch = GetListArchCurr(PathParse);
                     break;
-                case TypeArguments.Prev:
+                case TypeArguments.PrevUn:
                     PathParse = $"/fcs_fas/unfairSupplier/prevMonth/";
                     arch = GetListArchPrev(PathParse);
                     break;
@@ -154,6 +158,14 @@ namespace ParserRnP
         }
 
         public override List<String> GetListArchLast(string PathParse)
+        {
+            List<string> archtemp = new List<string>();
+            /*FtpClient ftp = ClientFtp44();*/
+            archtemp = GetListFtp44(PathParse);
+            return archtemp.Where(a => file_unfair.Any(t => a.ToLower().IndexOf(t, StringComparison.Ordinal) != -1)).ToList();
+        }
+        
+        public List<String> GetListArchRoot(string PathParse)
         {
             List<string> archtemp = new List<string>();
             /*FtpClient ftp = ClientFtp44();*/
