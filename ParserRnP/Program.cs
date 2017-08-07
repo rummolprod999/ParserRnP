@@ -186,9 +186,9 @@ namespace ParserRnP
             Log.Logger("Время начала парсинга Bank");
             ParserBank b = new ParserBank(Periodparsing);
             b.Parsing();
-            /*ParserUnFair rnp = new ParserUnFair(Periodparsing);
-            FileInfo f = new FileInfo("/home/alex/Рабочий стол/parser/unfairSupplier_40556-15_40556.xml");
-            rnp.ParsingXML(f, TypeFileRnp.unfairSupplier);*/
+            /*ParserBank b = new ParserBank(Periodparsing);
+            FileInfo f = new FileInfo("/home/alex/Рабочий стол/parser/fcsGaranteeInfo_02T2720323440915000201_408424.xml");
+            b.ParsingXML(f, TypeFileBank.Bank);*/
             Log.Logger("Время окончания парсинга Bank");
             Log.Logger("Добавили Bank44", AddBankGuarantee);
         }

@@ -136,8 +136,8 @@ namespace ParserRnP
                 switch (typefile)
                 {
                     case TypeFileBank.Bank:
-                        Unfair44 a = new Unfair44(f, json);
-                        a.Parsing();
+                        Bank44 b = new Bank44(f, json);
+                        b.Parsing();
                         break;
                 }
             }
