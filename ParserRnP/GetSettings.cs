@@ -9,6 +9,8 @@ namespace ParserRnP
         public readonly string Database;
         public readonly string TempPathRnp;
         public readonly string LogPathRnp;
+        public readonly string TempPathBank;
+        public readonly string LogPathBank;
         public readonly string Prefix;
         public readonly string UserDB;
         public readonly string PassDB;
@@ -36,6 +38,12 @@ namespace ParserRnP
                         case "logdir_rnp":
                             LogPathRnp = $"{Program.PathProgram}{Path.DirectorySeparatorChar}{xnode.InnerText}";
                             break;
+                        case "tempdir_bank":
+                            TempPathBank = $"{Program.PathProgram}{Path.DirectorySeparatorChar}{xnode.InnerText}";
+                            break;
+                        case "logdir_bank":
+                            LogPathBank = $"{Program.PathProgram}{Path.DirectorySeparatorChar}{xnode.InnerText}";
+                            break;
                         case "prefix":
                             Prefix = xnode.InnerText;
                             break;
@@ -58,7 +66,8 @@ namespace ParserRnP
                 }
             }
 
-            if (String.IsNullOrEmpty(LogPathRnp) || String.IsNullOrEmpty(TempPathRnp) ||
+            if (String.IsNullOrEmpty(LogPathBank) || String.IsNullOrEmpty(TempPathBank) ||
+                String.IsNullOrEmpty(LogPathRnp) || String.IsNullOrEmpty(TempPathRnp) ||
                 String.IsNullOrEmpty(Database) || String.IsNullOrEmpty(UserDB) || String.IsNullOrEmpty(Server) ||
                 String.IsNullOrEmpty(Years))
             {

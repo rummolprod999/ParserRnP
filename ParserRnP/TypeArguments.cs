@@ -5,6 +5,10 @@
         PrevUn,
         CurrUn,
         LastUn,
-        RootUn
+        RootUn,
+        RootBank,
+        LastBank,
+        PrevBank,
+        CurrBank
     }
 }

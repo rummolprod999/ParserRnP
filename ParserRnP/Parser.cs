@@ -114,6 +114,10 @@ namespace ParserRnP
         {
         }
         
+        public virtual void Bolter(FileInfo f, TypeFileBank typefile)
+        {
+        }
+        
         public string GetArch44(string Arch, string PathParse)
         {
             string file = "";
