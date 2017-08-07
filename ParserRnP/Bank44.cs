@@ -70,7 +70,7 @@ namespace ParserRnP
                         {
                             reader.Close();
                             Log.Logger("Такой документ уже есть в базе", regNumber);
-                            return;
+                            //return;
                         }
                         reader.Close();
                     }
