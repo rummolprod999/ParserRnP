@@ -88,7 +88,7 @@ namespace ParserRnP
                 }
             }
         }
-        
+
         public override void Bolter(FileInfo f, TypeFileRnp typefile)
         {
             if (!f.Name.ToLower().EndsWith(".xml", StringComparison.Ordinal))
@@ -162,15 +162,17 @@ namespace ParserRnP
             List<string> archtemp = new List<string>();
             /*FtpClient ftp = ClientFtp44();*/
             archtemp = GetListFtp44(PathParse);
-            return archtemp.Where(a => file_unfair.Any(t => a.ToLower().IndexOf(t, StringComparison.Ordinal) != -1)).ToList();
+            return archtemp.Where(a => file_unfair.Any(t => a.ToLower().IndexOf(t, StringComparison.Ordinal) != -1))
+                .ToList();
         }
-        
+
         public List<String> GetListArchRoot(string PathParse)
         {
             List<string> archtemp = new List<string>();
             /*FtpClient ftp = ClientFtp44();*/
             archtemp = GetListFtp44(PathParse);
-            return archtemp.Where(a => file_unfair.Any(t => a.ToLower().IndexOf(t, StringComparison.Ordinal) != -1)).ToList();
+            return archtemp.Where(a => file_unfair.Any(t => a.ToLower().IndexOf(t, StringComparison.Ordinal) != -1))
+                .ToList();
         }
 
         public override List<String> GetListArchCurr(string PathParse)
