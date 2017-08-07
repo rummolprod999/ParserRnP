@@ -324,7 +324,8 @@ namespace ParserRnP
                         string fileName = ((string) att.SelectToken("fileName") ?? "").Trim();
                         string docDescription = ((string) att.SelectToken("docDescription") ?? "").Trim();
                         string url = ((string) att.SelectToken("url") ?? "").Trim();
-                        string insert_attach = $"INSERT INTO {Program.Prefix}bank_attach SET id_guar = @id_guar, fileName = @fileName, docDescription = @docDescription, url = @url";
+                        string insert_attach =
+                            $"INSERT INTO {Program.Prefix}bank_attach SET id_guar = @id_guar, fileName = @fileName, docDescription = @docDescription, url = @url";
                         MySqlCommand cmd11 = new MySqlCommand(insert_attach, connect);
                         cmd11.Prepare();
                         cmd11.Parameters.AddWithValue("@id_guar", id_g);
@@ -333,7 +334,6 @@ namespace ParserRnP
                         cmd11.Parameters.AddWithValue("@url", url);
                         cmd11.ExecuteNonQuery();
                     }
-
                 }
 
 

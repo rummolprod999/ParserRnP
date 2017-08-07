@@ -16,7 +16,7 @@ namespace ParserRnP
     {
         private string[] file_bank = new[]
         {
-            "bank_"
+            "bank_", "fcsgaranteeinfo_"
         };
         public ParserBank(TypeArguments arg) : base(arg)
         {
