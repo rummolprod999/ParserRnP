@@ -63,6 +63,7 @@ namespace ParserRnP
         }
         public static int AddRnp = 0;
         public static int AddBankGuarantee = 0;
+        public static int UpdateBankGuarantee = 0;
         
         public static void Main(string[] args)
         {
@@ -191,6 +192,7 @@ namespace ParserRnP
             b.ParsingXML(f, TypeFileBank.Bank);*/
             Log.Logger("Время окончания парсинга Bank");
             Log.Logger("Добавили Bank44", AddBankGuarantee);
+            Log.Logger("Обновили Bank44", UpdateBankGuarantee);
         }
     }
 }

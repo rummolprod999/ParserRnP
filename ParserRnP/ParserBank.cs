@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Xml;
+using FluentFTP;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -18,6 +19,7 @@ namespace ParserRnP
         {
             "bank_", "fcsgaranteeinfo_"
         };
+
         public ParserBank(TypeArguments arg) : base(arg)
         {
         }
@@ -26,11 +28,12 @@ namespace ParserRnP
         {
             List<String> arch = new List<string>();
             List<String> bank_list = new List<string>();
-            string PathParse = $"/fcs_banks/";;
+            string PathParse = $"/fcs_banks/";
+            ;
 
             switch (Program.Periodparsing)
             {
-                case TypeArguments.LastBank:;
+                case TypeArguments.LastBank:
                     bank_list = GetListBank(PathParse);
                     foreach (var l in bank_list)
                     {
@@ -77,7 +80,7 @@ namespace ParserRnP
                 //Console.WriteLine(v);
             }
         }
-        
+
         public override void GetListFileArch(string Arch, string PathParse)
         {
             string filea = "";
@@ -105,7 +108,7 @@ namespace ParserRnP
                 }
             }
         }
-        
+
         public override void Bolter(FileInfo f, TypeFileBank typefile)
         {
             if (!f.Name.ToLower().EndsWith(".xml", StringComparison.Ordinal))
@@ -122,7 +125,7 @@ namespace ParserRnP
                 Log.Logger("Ошибка при парсинге xml", e, f);
             }
         }
-        
+
         public void ParsingXML(FileInfo f, TypeFileBank typefile)
         {
             using (StreamReader sr = new StreamReader(f.ToString(), Encoding.Default))
@@ -142,13 +145,13 @@ namespace ParserRnP
                 }
             }
         }
-        
+
         public override List<String> GetListArchCurr(string PathParse)
         {
             List<String> arch = new List<string>();
             List<string> archtemp = new List<string>();
             /*FtpClient ftp = ClientFtp44();*/
-            archtemp = GetListFtp44(PathParse);
+            archtemp = GetListFtp44New(PathParse);
             foreach (var a in archtemp.Where(a =>
                 file_bank.Any(t => a.ToLower().IndexOf(t, StringComparison.Ordinal) != -1)))
             {
@@ -178,23 +181,23 @@ namespace ParserRnP
 
             return arch;
         }
-        
+
         public List<String> GetListArchRoot(string PathParse)
         {
             List<string> archtemp = new List<string>();
             /*FtpClient ftp = ClientFtp44();*/
-            archtemp = GetListFtp44(PathParse);
+            archtemp = GetListFtp44New(PathParse);
             archtemp = archtemp.Where(a => a.EndsWith(".zip"))
                 .ToList();
             return archtemp.Where(a => file_bank.Any(t => a.ToLower().IndexOf(t, StringComparison.Ordinal) != -1))
                 .ToList();
         }
-        
+
         public override List<String> GetListArchLast(string PathParse)
         {
             List<string> archtemp = new List<string>();
             /*FtpClient ftp = ClientFtp44();*/
-            archtemp = GetListFtp44(PathParse);
+            archtemp = GetListFtp44New(PathParse);
             archtemp = archtemp.Where(a => a.EndsWith(".zip"))
                 .ToList();
             return archtemp.Where(a => file_bank.Any(t => a.ToLower().IndexOf(t, StringComparison.Ordinal) != -1))
@@ -209,7 +212,7 @@ namespace ParserRnP
                 .ToList();
             return listtemp;
         }
-        
+
         private List<string> GetListFtp44(string PathParse)
         {
             List<string> archtemp = new List<string>();
@@ -225,6 +228,41 @@ namespace ParserRnP
                     {
                         Log.Logger("Удалось получить список архивов после попытки", count);
                     }
+                    break;
+                }
+                catch (Exception e)
+                {
+                    if (count > 3)
+                    {
+                        Log.Logger($"Не смогли найти директорию после попытки {count}", PathParse, e);
+                        break;
+                    }
+                    count++;
+                    Thread.Sleep(2000);
+                }
+            }
+            return archtemp;
+        }
+
+        private List<string> GetListFtp44New(string PathParse)
+        {
+            List<string> archtemp = new List<string>();
+
+            int count = 1;
+            while (true)
+            {
+                try
+                {
+                    FtpClient ftp = ClientFtp44();
+
+                    FtpListItem[] l = ftp.GetListing(PathParse);
+                    if (count > 1)
+                    {
+                        Log.Logger("Удалось получить список архивов после попытки", count);
+                    }
+
+                    archtemp = l.Where(i => i.Size > 22).Select(i => i.Name).ToList();
+
                     break;
                 }
                 catch (Exception e)

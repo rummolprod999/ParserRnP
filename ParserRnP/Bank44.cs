@@ -19,6 +19,7 @@ namespace ParserRnP
     public class Bank44 : Bank
     {
         public event Action<int> AddBank44;
+        public event Action<int> UpdateBank44;
 
         public Bank44(FileInfo f, JObject json)
             : base(f, json)
@@ -29,6 +30,14 @@ namespace ParserRnP
                     Program.AddBankGuarantee++;
                 else
                     Log.Logger("Не удалось добавить Bank44", file_path);
+            };
+            
+            UpdateBank44 += delegate(int d)
+            {
+                if (d > 0)
+                    Program.UpdateBankGuarantee++;
+                else
+                    Log.Logger("Не удалось обновить Bank44", file_path);
             };
         }
 
@@ -57,6 +66,8 @@ namespace ParserRnP
                 using (MySqlConnection connect = ConnectToDb.GetDBConnection())
                 {
                     connect.Open();
+                    int upd = 0;
+                    int id_guar = 0;
                     if (!String.IsNullOrEmpty(regNumber) && !String.IsNullOrEmpty(docPublishDate))
                     {
                         string select_bank_g =
@@ -68,8 +79,11 @@ namespace ParserRnP
                         MySqlDataReader reader = cmd.ExecuteReader();
                         if (reader.HasRows)
                         {
+                            reader.Read();
+                            id_guar = reader.GetInt32("id");
                             reader.Close();
-                            Log.Logger("Такой документ уже есть в базе", regNumber);
+                            upd = 1;
+                            //Log.Logger("Такой документ уже есть в базе", regNumber);
                             //return;
                         }
                         reader.Close();
@@ -162,7 +176,7 @@ namespace ParserRnP
                     }
                     else
                     {
-                        Log.Logger("Нет placer_reg_num", file_path);
+                        //Log.Logger("Нет placer_reg_num", file_path);
                     }
 
                     int id_supplier = 0;
@@ -276,8 +290,20 @@ namespace ParserRnP
                     string purchaseNumber =
                         ((string) b.SelectToken("guarantee.contractExecutionEnsure.purchase.purchaseNumber") ?? "")
                         .Trim();
+                    if (String.IsNullOrEmpty(purchaseNumber))
+                    {
+                        purchaseNumber =
+                            ((string) b.SelectToken("guarantee.purchaseRequestEnsure.purchaseNumber") ?? "")
+                            .Trim();
+                    }
                     string lotNumber =
                         ((string) b.SelectToken("guarantee.contractExecutionEnsure.purchase.lotNumber") ?? "").Trim();
+                    if (String.IsNullOrEmpty(lotNumber))
+                    {
+                        lotNumber =
+                            ((string) b.SelectToken("guarantee.purchaseRequestEnsure.lotNumber") ?? "")
+                            .Trim();
+                    }
                     string guaranteeDate =
                     (JsonConvert.SerializeObject(b.SelectToken("guarantee.guaranteeDate") ?? "") ??
                      "").Trim('"');
@@ -291,7 +317,44 @@ namespace ParserRnP
                     string href = ((string) b.SelectToken("href") ?? "").Trim();
                     string print_form = ((string) b.SelectToken("printForm.url") ?? "").Trim();
                     int id_g = 0;
-                    string insert_g =
+                    if (upd == 1)
+                    {
+                        string delete_att = $"DELETE FROM {Program.Prefix}bank_attach WHERE id_guar = @id_guar";
+                        MySqlCommand cmd0 = new MySqlCommand(delete_att, connect);
+                        cmd0.Prepare();
+                        cmd0.Parameters.AddWithValue("@id_guar", id_guar);
+                        cmd0.ExecuteNonQuery();
+                        string update_g =
+                            $"UPDATE {Program.Prefix}bank_guarantee SET id_guarantee = @id_guarantee, regNumber = @regNumber, docNumber = @docNumber, versionNumber = @versionNumber, docPublishDate = @docPublishDate, purchaseNumber = @purchaseNumber, lotNumber = @lotNumber, guaranteeDate = @guaranteeDate, guaranteeAmount = @guaranteeAmount, currencyCode = @currencyCode, expireDate = @expireDate, entryForceDate = @entryForceDate, href = @href, print_form = @print_form, xml = @xml, id_bank = @id_bank, id_placer = @id_placer, id_customer = @id_customer, id_supplier = @id_supplier WHERE id = @id";
+                        MySqlCommand cmd10 = new MySqlCommand(update_g, connect);
+                        cmd10.Prepare();
+                        cmd10.Parameters.AddWithValue("@id_guarantee", id_guarantee);
+                        cmd10.Parameters.AddWithValue("@regNumber", regNumber);
+                        cmd10.Parameters.AddWithValue("@docNumber", docNumber);
+                        cmd10.Parameters.AddWithValue("@versionNumber", versionNumber);
+                        cmd10.Parameters.AddWithValue("@docPublishDate", docPublishDate);
+                        cmd10.Parameters.AddWithValue("@purchaseNumber", purchaseNumber);
+                        cmd10.Parameters.AddWithValue("@lotNumber", lotNumber);
+                        cmd10.Parameters.AddWithValue("@guaranteeDate", guaranteeDate);
+                        cmd10.Parameters.AddWithValue("@guaranteeAmount", guaranteeAmount);
+                        cmd10.Parameters.AddWithValue("@currencyCode", currencyCode);
+                        cmd10.Parameters.AddWithValue("@expireDate", expireDate);
+                        cmd10.Parameters.AddWithValue("@entryForceDate", entryForceDate);
+                        cmd10.Parameters.AddWithValue("@href", href);
+                        cmd10.Parameters.AddWithValue("@print_form", print_form);
+                        cmd10.Parameters.AddWithValue("@xml", xml);
+                        cmd10.Parameters.AddWithValue("@id_bank", id_bank);
+                        cmd10.Parameters.AddWithValue("@id_placer", id_placer);
+                        cmd10.Parameters.AddWithValue("@id_customer", id_customer);
+                        cmd10.Parameters.AddWithValue("@id_supplier", id_supplier);
+                        cmd10.Parameters.AddWithValue("@id", id_guar);
+                        int res_update_g = cmd10.ExecuteNonQuery();
+                        id_g = id_guar;
+                        UpdateBank44?.Invoke(res_update_g);
+                    }
+                    else
+                    {
+                        string insert_g =
                         $"INSERT INTO {Program.Prefix}bank_guarantee SET id_guarantee = @id_guarantee, regNumber = @regNumber, docNumber = @docNumber, versionNumber = @versionNumber, docPublishDate = @docPublishDate, purchaseNumber = @purchaseNumber, lotNumber = @lotNumber, guaranteeDate = @guaranteeDate, guaranteeAmount = @guaranteeAmount, currencyCode = @currencyCode, expireDate = @expireDate, entryForceDate = @entryForceDate, href = @href, print_form = @print_form, xml = @xml, id_bank = @id_bank, id_placer = @id_placer, id_customer = @id_customer, id_supplier = @id_supplier";
                     MySqlCommand cmd10 = new MySqlCommand(insert_g, connect);
                     cmd10.Prepare();
@@ -317,6 +380,8 @@ namespace ParserRnP
                     int res_insert_g = cmd10.ExecuteNonQuery();
                     id_g = (int) cmd10.LastInsertedId;
                     AddBank44?.Invoke(res_insert_g);
+                    }
+                    
                     List<JToken> attach =
                         GetElements(b, "agreementDocuments.attachment");
                     foreach (var att in attach)
