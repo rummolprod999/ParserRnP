@@ -13,6 +13,8 @@ namespace ParserRnP
         private static string _logPathRnp;
         private static string _tempPathBank;
         private static string _logPathBank;
+        private static string _tempPathComplaint;
+        private static string _logPathComplaint;
         private static string _prefix;
         private static string _user;
         private static string _pass;
@@ -42,6 +44,10 @@ namespace ParserRnP
                          Periodparsing == TypeArguments.LastBank || Periodparsing == TypeArguments.RootBank)
                     return _tempPathBank;
                 
+                else if (Periodparsing == TypeArguments.CurrComplaint || Periodparsing == TypeArguments.PrevComplaint ||
+                         Periodparsing == TypeArguments.LastComplaint)
+                    return _tempPathComplaint;
+                
 
                 return "";
             }
@@ -56,6 +62,9 @@ namespace ParserRnP
                 else if (Periodparsing == TypeArguments.CurrBank || Periodparsing == TypeArguments.PrevBank ||
                          Periodparsing == TypeArguments.LastBank || Periodparsing == TypeArguments.RootBank)
                     return _logPathBank;
+                else if (Periodparsing == TypeArguments.CurrComplaint || Periodparsing == TypeArguments.PrevComplaint ||
+                         Periodparsing == TypeArguments.LastComplaint)
+                    return _logPathComplaint;
                 
 
                 return "";
@@ -64,13 +73,16 @@ namespace ParserRnP
         public static int AddRnp = 0;
         public static int AddBankGuarantee = 0;
         public static int UpdateBankGuarantee = 0;
+        public static int AddComplaint = 0;
+        public static int AddComplaintCancel = 0;
+        public static int AddComplaintSuspend = 0;
         
         public static void Main(string[] args)
         {
             if (args.Length == 0)
             {
                 Console.WriteLine(
-                    "Недостаточно аргументов для запуска, используйте lastUn, prevUn, currUn, rootUn, lastBank, prevBank, currBank, rootBank в качестве аргумента");
+                    "Недостаточно аргументов для запуска, используйте lastUn, prevUn, currUn, rootUn, lastBank, prevBank, currBank, rootBank, lastComplaint, prevComplaint, currComplaint в качестве аргумента");
                 return;
             }
             string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetName()
@@ -119,9 +131,24 @@ namespace ParserRnP
                     Init(Periodparsing);
                     ParserBank(Periodparsing);
                     break;
+                case "lastComplaint":
+                    Periodparsing = TypeArguments.LastComplaint;
+                    Init(Periodparsing);
+                    ParserComplint(Periodparsing);
+                    break;
+                case "prevComplaint":
+                    Periodparsing = TypeArguments.PrevComplaint;
+                    Init(Periodparsing);
+                    ParserComplint(Periodparsing);
+                    break;
+                case "currComplaint":
+                    Periodparsing = TypeArguments.CurrComplaint;
+                    Init(Periodparsing);
+                    ParserComplint(Periodparsing);
+                    break;
                 default:
                     Console.WriteLine(
-                        "Неправильно указан аргумент, используйте lastUn, prevUn, currUn, rootUn, lastBank, prevBank, currBank, rootBank");
+                        "Неправильно указан аргумент, используйте lastUn, prevUn, currUn, rootUn, lastBank, prevBank, currBank, rootBank, lastComplaint, prevComplaint, currComplaint");
                     break;
             }
         }
@@ -132,11 +159,13 @@ namespace ParserRnP
             _database = set.Database;
             _logPathRnp = set.LogPathRnp;
             _logPathBank = set.LogPathBank;
+            _logPathComplaint = set.LogPathComplaint;
             _prefix = set.Prefix;
             _user = set.UserDB;
             _pass = set.PassDB;
             _tempPathRnp = set.TempPathRnp;
             _tempPathBank = set.TempPathBank;
+            _tempPathComplaint = set.TempPathComplaint;
             _server = set.Server;
             _port = set.Port;
             string tmp = set.Years;
@@ -168,6 +197,9 @@ namespace ParserRnP
                 FileLog = $"{LogPath}{Path.DirectorySeparatorChar}Rnp_{LocalDate:dd_MM_yyyy}.log";
             else if (arg == TypeArguments.CurrBank || arg == TypeArguments.LastBank || arg == TypeArguments.PrevBank || arg == TypeArguments.RootBank)
                 FileLog = $"{LogPath}{Path.DirectorySeparatorChar}BankGuarantee_{LocalDate:dd_MM_yyyy}.log";
+            
+            else if (arg == TypeArguments.CurrComplaint || arg == TypeArguments.LastComplaint || arg == TypeArguments.PrevComplaint)
+                FileLog = $"{LogPath}{Path.DirectorySeparatorChar}Complaint_{LocalDate:dd_MM_yyyy}.log";
         }
 
         private static void ParserRnp(TypeArguments arg)
@@ -193,6 +225,22 @@ namespace ParserRnP
             Log.Logger("Время окончания парсинга Bank");
             Log.Logger("Добавили Bank44", AddBankGuarantee);
             Log.Logger("Обновили Bank44", UpdateBankGuarantee);
+        }
+        
+        private static void ParserComplint(TypeArguments arg)
+        {
+            Log.Logger("Время начала парсинга Complaint");
+            /*ParserComplaint c = new ParserComplaint(Periodparsing);
+            c.Parsing();*/
+            ParserComplaint b = new ParserComplaint(Periodparsing);
+            FileInfo f = new FileInfo("/home/alex/Рабочий стол/parser/complaint_20170019274004049_1743623.xml");
+            b.ParsingXML(f, TypeFileComplaint.Complaint);
+            
+            Log.Logger("Время окончания парсинга Complaint");
+            Log.Logger("Добавили Complaint", AddComplaint);
+            Log.Logger("Добавили ComplaintCancel", AddComplaintCancel);
+            Log.Logger("Добавили ComplaintSuspend", AddComplaintSuspend);
+            
         }
     }
 }

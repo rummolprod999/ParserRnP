@@ -9,6 +9,10 @@
         RootBank,
         LastBank,
         PrevBank,
-        CurrBank
+        CurrBank,
+        LastComplaint,
+        PrevComplaint,
+        CurrComplaint
+        
     }
 }

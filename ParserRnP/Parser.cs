@@ -114,6 +114,10 @@ namespace ParserRnP
         {
         }
         
+        public virtual void Bolter(FileInfo f, TypeFileComplaint typefile)
+        {
+        }
+        
         public virtual void Bolter(FileInfo f, TypeFileBank typefile)
         {
         }

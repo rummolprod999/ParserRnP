@@ -58,6 +58,10 @@
     <Compile Include="Bank.cs" />
     <Compile Include="Bank44.cs" />
     <Compile Include="ClearText.cs" />
+    <Compile Include="Complaint.cs" />
+    <Compile Include="Complaint44.cs" />
+    <Compile Include="ComplaintCancel.cs" />
+    <Compile Include="ComplaintSuspend.cs" />
     <Compile Include="ConnectToDb.cs" />
     <Compile Include="GetSettings.cs" />
     <Compile Include="IParser.cs" />
@@ -65,11 +69,13 @@
     <Compile Include="Log.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="ParserBank.cs" />
+    <Compile Include="ParserComplaint.cs" />
     <Compile Include="ParserUnFair.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TypeArguments.cs" />
     <Compile Include="TypeFileBank.cs" />
+    <Compile Include="TypeFileComplaint.cs" />
     <Compile Include="TypeFileRnp.cs" />
     <Compile Include="Unfair.cs" />
     <Compile Include="Unfair44.cs" />
