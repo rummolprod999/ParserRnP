@@ -35,6 +35,17 @@ namespace ParserRnP
         public override void Parsing()
         {
             string xml = GetXml(file.ToString());
+            string id_complaint = "";
+            string[] f_n = file.Name.Split('_');
+            if (f_n.Length > 1)
+            {
+                id_complaint = f_n[1];
+            }
+            else
+            {
+                Log.Logger("Not id_complaint", file_path);
+            }
+            Console.WriteLine(id_complaint);
             JObject root = (JObject) t.SelectToken("export");
             JProperty firstOrDefault = root.Properties().FirstOrDefault(p => p.Name.Contains("complaint"));
             if (firstOrDefault != null)
@@ -42,6 +53,10 @@ namespace ParserRnP
                 JToken c = firstOrDefault.Value;
                 string complaintNumber = ((string) c.SelectToken("commonInfo.complaintNumber") ?? "").Trim();
                 Console.WriteLine(complaintNumber);
+            }
+            else
+            {
+                Log.Logger("Не могу найти тег complaint", file_path);
             }
         }
     }
