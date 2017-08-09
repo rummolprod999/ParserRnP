@@ -45,14 +45,16 @@ namespace ParserRnP
             {
                 Log.Logger("Not id_complaint", file_path);
             }
-            Console.WriteLine(id_complaint);
+            //Console.WriteLine(id_complaint);
             JObject root = (JObject) t.SelectToken("export");
             JProperty firstOrDefault = root.Properties().FirstOrDefault(p => p.Name.Contains("complaint"));
             if (firstOrDefault != null)
             {
                 JToken c = firstOrDefault.Value;
                 string complaintNumber = ((string) c.SelectToken("commonInfo.complaintNumber") ?? "").Trim();
-                Console.WriteLine(complaintNumber);
+                string versionNumber = ((string) c.SelectToken("commonInfo.versionNumber") ?? "").Trim();
+                //Console.WriteLine(complaintNumber);
+                
             }
             else
             {
