@@ -45,9 +45,33 @@ namespace ParserRnP
             var els_obj = j.SelectToken(s);
             if (els_obj != null && els_obj.Type != JTokenType.Null)
             {
+                Console.WriteLine(els_obj.Type);
                 switch (els_obj.Type)
                 {
                     case JTokenType.Object:
+                        els.Add(els_obj);
+                        break;
+                    case JTokenType.Array:
+                        els.AddRange(els_obj);
+                        break;
+                }
+            }
+
+            return els;
+        }
+        
+        public List<JToken> GetElementsLots(JToken j, string s)
+        {
+            List<JToken> els = new List<JToken>();
+            var els_obj = j.SelectToken(s);
+            if (els_obj != null && els_obj.Type != JTokenType.Null)
+            {
+                switch (els_obj.Type)
+                {
+                    case JTokenType.Object:
+                        els.Add(els_obj);
+                        break;
+                    case JTokenType.String:
                         els.Add(els_obj);
                         break;
                     case JTokenType.Array:

@@ -190,19 +190,95 @@ namespace ParserRnP
                         string regNum_customer =
                             ((string) c.SelectToken("indicted.customer.regNum") ?? "")
                             .Trim();
+                        if (String.IsNullOrEmpty(regNum_customer))
+                        {
+                            regNum_customer =
+                                ((string) c.SelectToken("indicted.customerNew.regNum") ?? "")
+                                .Trim();
+                        }
                         string fullName_customer =
                             ((string) c.SelectToken("indicted.customer.fullName") ?? "")
                             .Trim();
+                        if (String.IsNullOrEmpty(fullName_customer))
+                        {
+                            fullName_customer = ((string) c.SelectToken("indicted.customerNew.fullName") ?? "")
+                                .Trim();
+                        }
                         string INN_customer =
                             ((string) c.SelectToken("indicted.customer.INN") ?? "").Trim();
+                        if (String.IsNullOrEmpty(INN_customer))
+                        {
+                            INN_customer =
+                                ((string) c.SelectToken("indicted.customerNew.INN") ?? "").Trim();
+                        }
                         string KPP_customer =
                             ((string) c.SelectToken("indicted.customer.KPP") ?? "").Trim();
+                        if (String.IsNullOrEmpty(KPP_customer))
+                        {
+                            KPP_customer =
+                                ((string) c.SelectToken("indicted.customerNew.KPP") ?? "").Trim();
+                        }
                         if (!String.IsNullOrEmpty(regNum_createOrganization))
                         {
                             id_customer = GetIDOrg(regNum_customer, fullName_customer,
-                                INN_customer, KPP_customer, "org_complaint");
+                                INN_customer, KPP_customer, "customer_complaint");
                         }
-                        
+                        string applicant_fullName =
+                            ((string) c.SelectToken("applicantNew.legalEntity.fullName") ?? "").Trim();
+                        if (String.IsNullOrEmpty(applicant_fullName))
+                        {
+                            applicant_fullName =
+                                ((string) c.SelectToken("applicantNew.individualPerson.name") ?? "").Trim();
+                        }
+                        if (String.IsNullOrEmpty(applicant_fullName))
+                        {
+                            applicant_fullName =
+                                ((string) c.SelectToken("applicantNew.individualBusinessman.name") ?? "").Trim();
+                        }
+                        string applicant_INN = ((string) c.SelectToken("applicantNew.legalEntity.INN") ?? "").Trim();
+                        if (String.IsNullOrEmpty(applicant_INN))
+                        {
+                            applicant_INN = ((string) c.SelectToken("applicantNew.individualPerson.INN") ?? "").Trim();
+                        }
+                        if (String.IsNullOrEmpty(applicant_INN))
+                        {
+                            applicant_INN = ((string) c.SelectToken("applicantNew.individualBusinessman.INN") ?? "")
+                                .Trim();
+                        }
+                        string applicant_KPP = ((string) c.SelectToken("applicantNew.legalEntity.KPP") ?? "").Trim();
+                        string purchaseNumber = ((string) c.SelectToken("object.purchase.purchaseNumber") ?? "").Trim();
+                        if (String.IsNullOrEmpty(purchaseNumber))
+                        {
+                            purchaseNumber =
+                                ((string) c.SelectToken("object.purchase.notificationNumber") ?? "").Trim();
+                        }
+                        string lotNumbers = "";
+                        List<JToken> lotnumbersList = GetElementsLots(c, "object.purchase.lots.lotNumber");
+                        lotNumbers = String.Join(",", lotnumbersList);
+                        string lots_info = ((string) c.SelectToken("object.purchase.lots.info") ?? "").Trim();
+                        string purchaseName = ((string) c.SelectToken("object.purchase.purchaseName") ?? "").Trim();
+                        string purchasePlacingDate =
+                        (JsonConvert.SerializeObject(
+                             c.SelectToken("object.purchase.purchaseName.purchasePlacingDate") ?? "") ??
+                         "").Trim('"');
+                        string text_complaint = ((string) c.SelectToken("text") ?? "").Trim();
+                        string printForm = ((string) c.SelectToken("printForm.url") ?? "").Trim();
+                        int id_c = 0;
+                        if (upd == 1)
+                        {
+                            string delete_att = $"DELETE FROM {Program.Prefix}attach_complaint WHERE id_complaint = @id_complaint";
+                            MySqlCommand cmd0 = new MySqlCommand(delete_att, connect);
+                            cmd0.Prepare();
+                            cmd0.Parameters.AddWithValue("@id_complaint", id_comp);
+                            cmd0.ExecuteNonQuery();
+                        }
+                        List<JToken> attach =
+                            GetElements(c, "attachments.attachment");
+                        foreach (var att in attach)
+                        {
+                            
+                        }
+
                     }
                 }
             }
