@@ -266,7 +266,8 @@ namespace ParserRnP
                         int id_c = 0;
                         if (upd == 1)
                         {
-                            string delete_att = $"DELETE FROM {Program.Prefix}attach_complaint WHERE id_complaint = @id_complaint";
+                            string delete_att =
+                                $"DELETE FROM {Program.Prefix}attach_complaint WHERE id_complaint = @id_complaint";
                             MySqlCommand cmd0 = new MySqlCommand(delete_att, connect);
                             cmd0.Prepare();
                             cmd0.Parameters.AddWithValue("@id_complaint", id_comp);
@@ -276,9 +277,7 @@ namespace ParserRnP
                             GetElements(c, "attachments.attachment");
                         foreach (var att in attach)
                         {
-                            
                         }
-
                     }
                 }
             }
