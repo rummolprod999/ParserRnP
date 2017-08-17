@@ -1,0 +1,14 @@
+/home/alex/RiderProjects/ParserRnP/ParserRnP/bin/Release/ParserRnP.exe.config
+/home/alex/RiderProjects/ParserRnP/ParserRnP/bin/Release/ParserRnP.exe
+/home/alex/RiderProjects/ParserRnP/ParserRnP/bin/Release/ParserRnP.pdb
+/home/alex/RiderProjects/ParserRnP/ParserRnP/bin/Release/FluentFTP.dll
+/home/alex/RiderProjects/ParserRnP/ParserRnP/bin/Release/Ftp.dll
+/home/alex/RiderProjects/ParserRnP/ParserRnP/bin/Release/MySql.Data.dll
+/home/alex/RiderProjects/ParserRnP/ParserRnP/bin/Release/Newtonsoft.Json.dll
+/home/alex/RiderProjects/ParserRnP/ParserRnP/bin/Release/FluentFTP.xml
+/home/alex/RiderProjects/ParserRnP/ParserRnP/bin/Release/Ftp.xml
+/home/alex/RiderProjects/ParserRnP/ParserRnP/bin/Release/Newtonsoft.Json.xml
+/home/alex/RiderProjects/ParserRnP/ParserRnP/obj/Release/ParserRnP.csprojResolveAssemblyReference.cache
+/home/alex/RiderProjects/ParserRnP/ParserRnP/obj/Release/ParserRnP.csproj.CoreCompileInputs.cache
+/home/alex/RiderProjects/ParserRnP/ParserRnP/obj/Release/ParserRnP.exe
+/home/alex/RiderProjects/ParserRnP/ParserRnP/obj/Release/ParserRnP.pdb
