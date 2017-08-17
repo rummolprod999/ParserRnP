@@ -272,6 +272,35 @@ namespace ParserRnP
                             cmd0.Prepare();
                             cmd0.Parameters.AddWithValue("@id_complaint", id_comp);
                             cmd0.ExecuteNonQuery();
+                            string update_c = $"UPDATE {Program.Prefix}complaint SET id_complaint = @id_complaint, complaintNumber = @complaintNumber, versionNumber = @versionNumber, xml = @xml, planDecisionDate = @planDecisionDate, id_registrationKO = @id_registrationKO, id_considerationKO = @id_considerationKO, regDate = @regDate, notice_number = @notice_number, notice_acceptDate = @notice_acceptDate, id_createOrganization = @id_createOrganization, createDate = @createDate, id_publishOrganization = @id_publishOrganization, id_customer = @id_customer, applicant_fullName = @applicant_fullName, applicant_INN = @applicant_INN, applicant_KPP = @applicant_KPP, purchaseNumber = @purchaseNumber, lotNumbers = @lotNumbers, lots_info = @lots_info, purchaseName = @purchaseName, purchasePlacingDate = @purchasePlacingDate, text_complaint = @text_complaint, printForm = @printForm WHERE id = @id_comp";
+                            MySqlCommand cmd1 = new MySqlCommand(update_c, connect);
+                            cmd1.Prepare();
+                            cmd1.Parameters.AddWithValue("@id_complaint", id_complaint);
+                            cmd1.Parameters.AddWithValue("@complaintNumber", complaintNumber);
+                            cmd1.Parameters.AddWithValue("@versionNumber", versionNumber);
+                            cmd1.Parameters.AddWithValue("@xml", xml);
+                            cmd1.Parameters.AddWithValue("@planDecisionDate", planDecisionDate);
+                            cmd1.Parameters.AddWithValue("@id_registrationKO", id_registrationKO);
+                            cmd1.Parameters.AddWithValue("@id_considerationKO", id_considerationKO);
+                            cmd1.Parameters.AddWithValue("@regDate", regDate);
+                            cmd1.Parameters.AddWithValue("@notice_number", notice_number);
+                            cmd1.Parameters.AddWithValue("@notice_acceptDate", notice_acceptDate);
+                            cmd1.Parameters.AddWithValue("@id_createOrganization", id_createOrganization);
+                            cmd1.Parameters.AddWithValue("@createDate", createDate);
+                            cmd1.Parameters.AddWithValue("@id_publishOrganization", id_publishOrganization);
+                            cmd1.Parameters.AddWithValue("@id_customer", id_customer);
+                            cmd1.Parameters.AddWithValue("@applicant_fullName", applicant_fullName);
+                            cmd1.Parameters.AddWithValue("@applicant_INN", applicant_INN);
+                            cmd1.Parameters.AddWithValue("@applicant_KPP", applicant_KPP);
+                            cmd1.Parameters.AddWithValue("@purchaseNumber", purchaseNumber);
+                            cmd1.Parameters.AddWithValue("@lotNumbers", lotNumbers);
+                            cmd1.Parameters.AddWithValue("@lots_info", lots_info);
+                            cmd1.Parameters.AddWithValue("@purchaseName", purchaseName);
+                            cmd1.Parameters.AddWithValue("@purchasePlacingDate", purchasePlacingDate);
+                            cmd1.Parameters.AddWithValue("@text_complaint", text_complaint);
+                            cmd1.Parameters.AddWithValue("@printForm", printForm);
+                            cmd1.Parameters.AddWithValue("@id_comp", id_comp);
+                            
                         }
                         List<JToken> attach =
                             GetElements(c, "attachments.attachment");
