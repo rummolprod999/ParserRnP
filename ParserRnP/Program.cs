@@ -33,6 +33,7 @@ namespace ParserRnP
         public static string StrArg;
         public static TypeArguments Periodparsing;
         public static string PathProgram;
+
         public static string TempPath
         {
             get
@@ -43,15 +44,16 @@ namespace ParserRnP
                 else if (Periodparsing == TypeArguments.CurrBank || Periodparsing == TypeArguments.PrevBank ||
                          Periodparsing == TypeArguments.LastBank || Periodparsing == TypeArguments.RootBank)
                     return _tempPathBank;
-                
+
                 else if (Periodparsing == TypeArguments.CurrComplaint || Periodparsing == TypeArguments.PrevComplaint ||
                          Periodparsing == TypeArguments.LastComplaint)
                     return _tempPathComplaint;
-                
+
 
                 return "";
             }
         }
+
         public static string LogPath
         {
             get
@@ -65,18 +67,20 @@ namespace ParserRnP
                 else if (Periodparsing == TypeArguments.CurrComplaint || Periodparsing == TypeArguments.PrevComplaint ||
                          Periodparsing == TypeArguments.LastComplaint)
                     return _logPathComplaint;
-                
+
 
                 return "";
             }
         }
+
         public static int AddRnp = 0;
         public static int AddBankGuarantee = 0;
         public static int UpdateBankGuarantee = 0;
         public static int AddComplaint = 0;
+        public static int UpdateComplaint = 0;
         public static int AddComplaintCancel = 0;
         public static int AddComplaintSuspend = 0;
-        
+
         public static void Main(string[] args)
         {
             if (args.Length == 0)
@@ -193,12 +197,15 @@ namespace ParserRnP
             {
                 Directory.CreateDirectory(LogPath);
             }
-            if (arg == TypeArguments.CurrUn || arg == TypeArguments.LastUn || arg == TypeArguments.PrevUn || arg == TypeArguments.RootUn)
+            if (arg == TypeArguments.CurrUn || arg == TypeArguments.LastUn || arg == TypeArguments.PrevUn ||
+                arg == TypeArguments.RootUn)
                 FileLog = $"{LogPath}{Path.DirectorySeparatorChar}Rnp_{LocalDate:dd_MM_yyyy}.log";
-            else if (arg == TypeArguments.CurrBank || arg == TypeArguments.LastBank || arg == TypeArguments.PrevBank || arg == TypeArguments.RootBank)
+            else if (arg == TypeArguments.CurrBank || arg == TypeArguments.LastBank || arg == TypeArguments.PrevBank ||
+                     arg == TypeArguments.RootBank)
                 FileLog = $"{LogPath}{Path.DirectorySeparatorChar}BankGuarantee_{LocalDate:dd_MM_yyyy}.log";
-            
-            else if (arg == TypeArguments.CurrComplaint || arg == TypeArguments.LastComplaint || arg == TypeArguments.PrevComplaint)
+
+            else if (arg == TypeArguments.CurrComplaint || arg == TypeArguments.LastComplaint ||
+                     arg == TypeArguments.PrevComplaint)
                 FileLog = $"{LogPath}{Path.DirectorySeparatorChar}Complaint_{LocalDate:dd_MM_yyyy}.log";
         }
 
@@ -226,21 +233,21 @@ namespace ParserRnP
             Log.Logger("Добавили Bank44", AddBankGuarantee);
             Log.Logger("Обновили Bank44", UpdateBankGuarantee);
         }
-        
+
         private static void ParserComplint(TypeArguments arg)
         {
             Log.Logger("Время начала парсинга Complaint");
-            /*ParserComplaint c = new ParserComplaint(Periodparsing);
-            c.Parsing();*/
-            ParserComplaint b = new ParserComplaint(Periodparsing);
+            ParserComplaint c = new ParserComplaint(Periodparsing);
+            c.Parsing();
+            /*ParserComplaint b = new ParserComplaint(Periodparsing);
             FileInfo f = new FileInfo("/home/alex/Рабочий стол/parser/complaint_20170019274004049_1743623.xml");
-            b.ParsingXML(f, TypeFileComplaint.Complaint);
-            
+            b.ParsingXML(f, TypeFileComplaint.Complaint);*/
+
             Log.Logger("Время окончания парсинга Complaint");
             Log.Logger("Добавили Complaint", AddComplaint);
+            Log.Logger("Обновили Complaint", UpdateComplaint);
             Log.Logger("Добавили ComplaintCancel", AddComplaintCancel);
             Log.Logger("Добавили ComplaintSuspend", AddComplaintSuspend);
-            
         }
     }
 }

@@ -19,6 +19,7 @@ namespace ParserRnP
     public class Complaint44 : Complaint
     {
         public event Action<int> AddComplaint44;
+        public event Action<int> UpdateComplaint44;
 
         public Complaint44(FileInfo f, JObject json)
             : base(f, json)
@@ -29,6 +30,13 @@ namespace ParserRnP
                     Program.AddComplaint++;
                 else
                     Log.Logger("Не удалось добавить Complaint44", file_path);
+            };
+            UpdateComplaint44 += delegate(int d)
+            {
+                if (d > 0)
+                    Program.UpdateComplaint++;
+                else
+                    Log.Logger("Не удалось обновить Complaint44", file_path);
             };
         }
 
@@ -51,7 +59,18 @@ namespace ParserRnP
             if (firstOrDefault != null)
             {
                 JToken c = firstOrDefault.Value;
+                //Console.WriteLine(c.Type);
+                if (c.Type == JTokenType.Array)
+                {
+                    List<JToken> comp = GetElements(root, "complaint");
+                    if (comp.Count > 0)
+                    {
+                        c = comp[0];
+                    }
+                }
+
                 string complaintNumber = ((string) c.SelectToken("commonInfo.complaintNumber") ?? "").Trim();
+                //Console.WriteLine(complaintNumber);
                 string versionNumber = ((string) c.SelectToken("commonInfo.versionNumber") ?? "").Trim();
                 string planDecisionDate =
                 (JsonConvert.SerializeObject(c.SelectToken("commonInfo.planDecisionDate") ?? "") ??
@@ -235,6 +254,11 @@ namespace ParserRnP
                             applicant_fullName =
                                 ((string) c.SelectToken("applicantNew.individualBusinessman.name") ?? "").Trim();
                         }
+                        if (String.IsNullOrEmpty(applicant_fullName))
+                        {
+                            applicant_fullName =
+                                ((string) c.SelectToken("applicant.organizationName") ?? "").Trim();
+                        }
                         string applicant_INN = ((string) c.SelectToken("applicantNew.legalEntity.INN") ?? "").Trim();
                         if (String.IsNullOrEmpty(applicant_INN))
                         {
@@ -263,7 +287,7 @@ namespace ParserRnP
                          "").Trim('"');
                         string text_complaint = ((string) c.SelectToken("text") ?? "").Trim();
                         string printForm = ((string) c.SelectToken("printForm.url") ?? "").Trim();
-                        int id_c = 0;
+                        //int id_c = 0;
                         if (upd == 1)
                         {
                             string delete_att =
@@ -272,7 +296,8 @@ namespace ParserRnP
                             cmd0.Prepare();
                             cmd0.Parameters.AddWithValue("@id_complaint", id_comp);
                             cmd0.ExecuteNonQuery();
-                            string update_c = $"UPDATE {Program.Prefix}complaint SET id_complaint = @id_complaint, complaintNumber = @complaintNumber, versionNumber = @versionNumber, xml = @xml, planDecisionDate = @planDecisionDate, id_registrationKO = @id_registrationKO, id_considerationKO = @id_considerationKO, regDate = @regDate, notice_number = @notice_number, notice_acceptDate = @notice_acceptDate, id_createOrganization = @id_createOrganization, createDate = @createDate, id_publishOrganization = @id_publishOrganization, id_customer = @id_customer, applicant_fullName = @applicant_fullName, applicant_INN = @applicant_INN, applicant_KPP = @applicant_KPP, purchaseNumber = @purchaseNumber, lotNumbers = @lotNumbers, lots_info = @lots_info, purchaseName = @purchaseName, purchasePlacingDate = @purchasePlacingDate, text_complaint = @text_complaint, printForm = @printForm WHERE id = @id_comp";
+                            string update_c =
+                                $"UPDATE {Program.Prefix}complaint SET id_complaint = @id_complaint, complaintNumber = @complaintNumber, versionNumber = @versionNumber, xml = @xml, planDecisionDate = @planDecisionDate, id_registrationKO = @id_registrationKO, id_considerationKO = @id_considerationKO, regDate = @regDate, notice_number = @notice_number, notice_acceptDate = @notice_acceptDate, id_createOrganization = @id_createOrganization, createDate = @createDate, id_publishOrganization = @id_publishOrganization, id_customer = @id_customer, applicant_fullName = @applicant_fullName, applicant_INN = @applicant_INN, applicant_KPP = @applicant_KPP, purchaseNumber = @purchaseNumber, lotNumbers = @lotNumbers, lots_info = @lots_info, purchaseName = @purchaseName, purchasePlacingDate = @purchasePlacingDate, text_complaint = @text_complaint, printForm = @printForm WHERE id = @id_comp";
                             MySqlCommand cmd1 = new MySqlCommand(update_c, connect);
                             cmd1.Prepare();
                             cmd1.Parameters.AddWithValue("@id_complaint", id_complaint);
@@ -300,12 +325,62 @@ namespace ParserRnP
                             cmd1.Parameters.AddWithValue("@text_complaint", text_complaint);
                             cmd1.Parameters.AddWithValue("@printForm", printForm);
                             cmd1.Parameters.AddWithValue("@id_comp", id_comp);
-                            
+                            int res_upd_comp = cmd1.ExecuteNonQuery();
+                            //id_c = id_comp;
+                            UpdateComplaint44?.Invoke(res_upd_comp);
+                        }
+                        else
+                        {
+                            string insert_c =
+                                $"INSERT INTO {Program.Prefix}complaint SET id_complaint = @id_complaint, complaintNumber = @complaintNumber, versionNumber = @versionNumber, xml = @xml, planDecisionDate = @planDecisionDate, id_registrationKO = @id_registrationKO, id_considerationKO = @id_considerationKO, regDate = @regDate, notice_number = @notice_number, notice_acceptDate = @notice_acceptDate, id_createOrganization = @id_createOrganization, createDate = @createDate, id_publishOrganization = @id_publishOrganization, id_customer = @id_customer, applicant_fullName = @applicant_fullName, applicant_INN = @applicant_INN, applicant_KPP = @applicant_KPP, purchaseNumber = @purchaseNumber, lotNumbers = @lotNumbers, lots_info = @lots_info, purchaseName = @purchaseName, purchasePlacingDate = @purchasePlacingDate, text_complaint = @text_complaint, printForm = @printForm";
+                            MySqlCommand cmd1 = new MySqlCommand(insert_c, connect);
+                            cmd1.Prepare();
+                            cmd1.Parameters.AddWithValue("@id_complaint", id_complaint);
+                            cmd1.Parameters.AddWithValue("@complaintNumber", complaintNumber);
+                            cmd1.Parameters.AddWithValue("@versionNumber", versionNumber);
+                            cmd1.Parameters.AddWithValue("@xml", xml);
+                            cmd1.Parameters.AddWithValue("@planDecisionDate", planDecisionDate);
+                            cmd1.Parameters.AddWithValue("@id_registrationKO", id_registrationKO);
+                            cmd1.Parameters.AddWithValue("@id_considerationKO", id_considerationKO);
+                            cmd1.Parameters.AddWithValue("@regDate", regDate);
+                            cmd1.Parameters.AddWithValue("@notice_number", notice_number);
+                            cmd1.Parameters.AddWithValue("@notice_acceptDate", notice_acceptDate);
+                            cmd1.Parameters.AddWithValue("@id_createOrganization", id_createOrganization);
+                            cmd1.Parameters.AddWithValue("@createDate", createDate);
+                            cmd1.Parameters.AddWithValue("@id_publishOrganization", id_publishOrganization);
+                            cmd1.Parameters.AddWithValue("@id_customer", id_customer);
+                            cmd1.Parameters.AddWithValue("@applicant_fullName", applicant_fullName);
+                            cmd1.Parameters.AddWithValue("@applicant_INN", applicant_INN);
+                            cmd1.Parameters.AddWithValue("@applicant_KPP", applicant_KPP);
+                            cmd1.Parameters.AddWithValue("@purchaseNumber", purchaseNumber);
+                            cmd1.Parameters.AddWithValue("@lotNumbers", lotNumbers);
+                            cmd1.Parameters.AddWithValue("@lots_info", lots_info);
+                            cmd1.Parameters.AddWithValue("@purchaseName", purchaseName);
+                            cmd1.Parameters.AddWithValue("@purchasePlacingDate", purchasePlacingDate);
+                            cmd1.Parameters.AddWithValue("@text_complaint", text_complaint);
+                            cmd1.Parameters.AddWithValue("@printForm", printForm);
+                            int res_insert_comp = cmd1.ExecuteNonQuery();
+                            id_comp = (int) cmd1.LastInsertedId;
+                            AddComplaint44?.Invoke(res_insert_comp);
                         }
                         List<JToken> attach =
                             GetElements(c, "attachments.attachment");
                         foreach (var att in attach)
                         {
+                            string publishedContentId = ((string) att.SelectToken("publishedContentId") ?? "").Trim();
+                            string fileName = ((string) att.SelectToken("fileName") ?? "").Trim();
+                            string docDescription = ((string) att.SelectToken("docDescription") ?? "").Trim();
+                            string url = ((string) att.SelectToken("url") ?? "").Trim();
+                            string insert_att =
+                                $"INSERT INTO {Program.Prefix}attach_complaint SET id_complaint = @id_complaint, publishedContentId = @publishedContentId, fileName = @fileName, docDescription = @docDescription, url = @url";
+                            MySqlCommand cmd1 = new MySqlCommand(insert_att, connect);
+                            cmd1.Prepare();
+                            cmd1.Parameters.AddWithValue("@id_complaint", id_comp);
+                            cmd1.Parameters.AddWithValue("@publishedContentId", publishedContentId);
+                            cmd1.Parameters.AddWithValue("@fileName", fileName);
+                            cmd1.Parameters.AddWithValue("@docDescription", docDescription);
+                            cmd1.Parameters.AddWithValue("@url", url);
+                            cmd1.ExecuteNonQuery();
                         }
                     }
                 }
