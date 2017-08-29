@@ -39,9 +39,19 @@ namespace ParserRnP
             if (firstOrDefault != null)
             {
                 JToken c = firstOrDefault.Value;
-                string complaintNumber = ((string) c.SelectToken("complaintNumber") ?? "").Trim();
-                if (String.IsNullOrEmpty(complaintNumber))
+                if (c.Type == JTokenType.Array)
                 {
+                    List<JToken> comp = GetElements(root, "tenderSuspension");
+                    if (comp.Count > 0)
+                    {
+                        c = comp[0];
+                    }
+                }
+                string complaintNumber = ((string) c.SelectToken("complaintNumber") ?? "").Trim();
+                string purchaseNumber = ((string) c.SelectToken("tendersInfo.purchase.purchaseNumber") ?? "").Trim();
+                if (String.IsNullOrEmpty(purchaseNumber))
+                {
+                    Log.Logger("Нет purchaseNumber у Suspend", file_path);
                     return;
                 }
                 string action = ((string) c.SelectToken("action") ?? "").Trim();
@@ -49,10 +59,10 @@ namespace ParserRnP
                 {
                     connect.Open();
                     string update_comp =
-                        $"UPDATE {Program.Prefix}complaint SET tender_suspend = @tender_suspend WHERE complaintNumber = @complaintNumber";
+                        $"UPDATE {Program.Prefix}complaint SET tender_suspend = @tender_suspend WHERE purchaseNumber = @purchaseNumber";
                     MySqlCommand cmd = new MySqlCommand(update_comp, connect);
                     cmd.Prepare();
-                    cmd.Parameters.AddWithValue("@complaintNumber", complaintNumber);
+                    cmd.Parameters.AddWithValue("@purchaseNumber", purchaseNumber);
                     cmd.Parameters.AddWithValue("@tender_suspend", action);
                     int status = cmd.ExecuteNonQuery();
                     if (status > 0)

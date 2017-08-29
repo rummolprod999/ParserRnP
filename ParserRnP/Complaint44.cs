@@ -72,12 +72,14 @@ namespace ParserRnP
                 string complaintNumber = ((string) c.SelectToken("commonInfo.complaintNumber") ?? "").Trim();
                 //Console.WriteLine(complaintNumber);
                 string versionNumber = ((string) c.SelectToken("commonInfo.versionNumber") ?? "").Trim();
+                string purchaseNumber = ((string) c.SelectToken("object.purchase.purchaseNumber") ?? "").Trim();
                 string planDecisionDate =
                 (JsonConvert.SerializeObject(c.SelectToken("commonInfo.planDecisionDate") ?? "") ??
                  "").Trim('"');
-                if (String.IsNullOrEmpty(planDecisionDate))
+                if (String.IsNullOrEmpty(purchaseNumber))
                 {
-                    Log.Logger("Нет planDecisionDate", file_path);
+                    Log.Logger("Нет purchaseNumber", file_path);
+                    //return;
                 }
                 using (MySqlConnection connect = ConnectToDb.GetDBConnection())
                 {
@@ -116,14 +118,14 @@ namespace ParserRnP
 
                     int upd = 0;
                     int id_comp = 0;
-                    if (!String.IsNullOrEmpty(complaintNumber) && !String.IsNullOrEmpty(planDecisionDate) &&
+                    if (!String.IsNullOrEmpty(purchaseNumber) && !String.IsNullOrEmpty(planDecisionDate) &&
                         !String.IsNullOrEmpty(versionNumber))
                     {
                         string select_comp44 =
-                            $"SELECT id FROM {Program.Prefix}complaint WHERE complaintNumber = @complaintNumber AND versionNumber = @versionNumber AND planDecisionDate = @planDecisionDate";
+                            $"SELECT id FROM {Program.Prefix}complaint WHERE purchaseNumber = @purchaseNumber AND versionNumber = @versionNumber AND planDecisionDate = @planDecisionDate";
                         MySqlCommand cmd = new MySqlCommand(select_comp44, connect);
                         cmd.Prepare();
-                        cmd.Parameters.AddWithValue("@complaintNumber", complaintNumber);
+                        cmd.Parameters.AddWithValue("@purchaseNumber", purchaseNumber);
                         cmd.Parameters.AddWithValue("@versionNumber", versionNumber);
                         cmd.Parameters.AddWithValue("@planDecisionDate", planDecisionDate);
                         MySqlDataReader reader = cmd.ExecuteReader();
@@ -270,7 +272,7 @@ namespace ParserRnP
                                 .Trim();
                         }
                         string applicant_KPP = ((string) c.SelectToken("applicantNew.legalEntity.KPP") ?? "").Trim();
-                        string purchaseNumber = ((string) c.SelectToken("object.purchase.purchaseNumber") ?? "").Trim();
+                        
                         if (String.IsNullOrEmpty(purchaseNumber))
                         {
                             purchaseNumber =

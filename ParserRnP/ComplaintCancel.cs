@@ -40,8 +40,9 @@ namespace ParserRnP
             {
                 
                 string complaintNumber = ((string) cancel[0].SelectToken("complaintNumber") ?? "").Trim();
-                if (String.IsNullOrEmpty(complaintNumber))
+                if (String.IsNullOrEmpty(complaintNumber) || complaintNumber.Length < 2)
                 {
+                    Log.Logger("Нет complaintNumber у Cancel", file_path, complaintNumber);
                     return;
                 }
                 using (MySqlConnection connect = ConnectToDb.GetDBConnection())
