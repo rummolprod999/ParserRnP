@@ -40,23 +40,40 @@ namespace ParserRnP
             {
                 
                 string complaintNumber = ((string) cancel[0].SelectToken("complaintNumber") ?? "").Trim();
-                if (String.IsNullOrEmpty(complaintNumber) || complaintNumber.Length < 2)
+                string regNumber = ((string) cancel[0].SelectToken("regNumber") ?? "").Trim();
+                if ((String.IsNullOrEmpty(complaintNumber) || complaintNumber.Length < 3) && String.IsNullOrEmpty(regNumber))
                 {
-                    Log.Logger("Нет complaintNumber у Cancel", file_path, complaintNumber);
+                    Log.Logger("Нет complaintNumber and regNumber у Cancel", file_path, complaintNumber);
                     return;
                 }
                 using (MySqlConnection connect = ConnectToDb.GetDBConnection())
                 {
                     connect.Open();
-                    string update_comp = $"UPDATE {Program.Prefix}complaint SET cancel = 1 WHERE complaintNumber = @complaintNumber";
-                    MySqlCommand cmd = new MySqlCommand(update_comp, connect);
-                    cmd.Prepare();
-                    cmd.Parameters.AddWithValue("@complaintNumber", complaintNumber);
-                    int status = cmd.ExecuteNonQuery();
-                    if (status > 0)
+                    if (!String.IsNullOrEmpty(complaintNumber) && complaintNumber.Length >= 3)
                     {
-                        AddComplaintCancel?.Invoke(status);
+                        string update_comp = $"UPDATE {Program.Prefix}complaint SET cancel = 1 WHERE complaintNumber = @complaintNumber";
+                        MySqlCommand cmd = new MySqlCommand(update_comp, connect);
+                        cmd.Prepare();
+                        cmd.Parameters.AddWithValue("@complaintNumber", complaintNumber);
+                        int status = cmd.ExecuteNonQuery();
+                        if (status > 0)
+                        {
+                            AddComplaintCancel?.Invoke(status);
+                        }
                     }
+                    else if (!String.IsNullOrEmpty(regNumber))
+                    {
+                        string update_comp = $"UPDATE {Program.Prefix}complaint SET cancel = 1 WHERE regNumber = @regNumber";
+                        MySqlCommand cmd = new MySqlCommand(update_comp, connect);
+                        cmd.Prepare();
+                        cmd.Parameters.AddWithValue("@regNumber", regNumber);
+                        int status = cmd.ExecuteNonQuery();
+                        if (status > 0)
+                        {
+                            AddComplaintCancel?.Invoke(status);
+                        }
+                    }
+                    
                     
                 }
             }

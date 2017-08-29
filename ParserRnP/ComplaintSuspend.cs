@@ -51,6 +51,10 @@ namespace ParserRnP
                 string purchaseNumber = ((string) c.SelectToken("tendersInfo.purchase.purchaseNumber") ?? "").Trim();
                 if (String.IsNullOrEmpty(purchaseNumber))
                 {
+                    purchaseNumber = ((string) c.SelectToken("tendersInfo.order.notificationNumber") ?? "").Trim();
+                }
+                if (String.IsNullOrEmpty(purchaseNumber))
+                {
                     Log.Logger("Нет purchaseNumber у Suspend", file_path);
                     return;
                 }

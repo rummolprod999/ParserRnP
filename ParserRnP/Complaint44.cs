@@ -71,6 +71,7 @@ namespace ParserRnP
 
                 string complaintNumber = ((string) c.SelectToken("commonInfo.complaintNumber") ?? "").Trim();
                 //Console.WriteLine(complaintNumber);
+                string regNumber = ((string) c.SelectToken("commonInfo.regNumber") ?? "").Trim();
                 string versionNumber = ((string) c.SelectToken("commonInfo.versionNumber") ?? "").Trim();
                 string purchaseNumber = ((string) c.SelectToken("object.purchase.purchaseNumber") ?? "").Trim();
                 string planDecisionDate =
@@ -289,6 +290,9 @@ namespace ParserRnP
                              c.SelectToken("object.purchase.purchaseName.purchasePlacingDate") ?? "") ??
                          "").Trim('"');
                         string text_complaint = ((string) c.SelectToken("text") ?? "").Trim();
+                        string returnInfobase = ((string) c.SelectToken("returnInfo.base") ?? "").Trim();
+                        string returnInfo = ((string) c.SelectToken("returnInfo.decision.info") ?? "").Trim();
+                        returnInfo = $"{returnInfobase} {returnInfo}".Trim();
                         string printForm = ((string) c.SelectToken("printForm.url") ?? "").Trim();
                         //int id_c = 0;
                         if (upd == 1)
@@ -300,7 +304,7 @@ namespace ParserRnP
                             cmd0.Parameters.AddWithValue("@id_complaint", id_comp);
                             cmd0.ExecuteNonQuery();
                             string update_c =
-                                $"UPDATE {Program.Prefix}complaint SET id_complaint = @id_complaint, complaintNumber = @complaintNumber, versionNumber = @versionNumber, xml = @xml, planDecisionDate = @planDecisionDate, id_registrationKO = @id_registrationKO, id_considerationKO = @id_considerationKO, regDate = @regDate, notice_number = @notice_number, notice_acceptDate = @notice_acceptDate, id_createOrganization = @id_createOrganization, createDate = @createDate, id_publishOrganization = @id_publishOrganization, id_customer = @id_customer, applicant_fullName = @applicant_fullName, applicant_INN = @applicant_INN, applicant_KPP = @applicant_KPP, purchaseNumber = @purchaseNumber, lotNumbers = @lotNumbers, lots_info = @lots_info, purchaseName = @purchaseName, purchasePlacingDate = @purchasePlacingDate, text_complaint = @text_complaint, printForm = @printForm WHERE id = @id_comp";
+                                $"UPDATE {Program.Prefix}complaint SET id_complaint = @id_complaint, complaintNumber = @complaintNumber, versionNumber = @versionNumber, xml = @xml, planDecisionDate = @planDecisionDate, id_registrationKO = @id_registrationKO, id_considerationKO = @id_considerationKO, regDate = @regDate, notice_number = @notice_number, notice_acceptDate = @notice_acceptDate, id_createOrganization = @id_createOrganization, createDate = @createDate, id_publishOrganization = @id_publishOrganization, id_customer = @id_customer, applicant_fullName = @applicant_fullName, applicant_INN = @applicant_INN, applicant_KPP = @applicant_KPP, purchaseNumber = @purchaseNumber, lotNumbers = @lotNumbers, lots_info = @lots_info, purchaseName = @purchaseName, purchasePlacingDate = @purchasePlacingDate, text_complaint = @text_complaint, printForm = @printForm, returnInfo = @returnInfo, regNumber = @regNumber WHERE id = @id_comp";
                             MySqlCommand cmd1 = new MySqlCommand(update_c, connect);
                             cmd1.Prepare();
                             cmd1.Parameters.AddWithValue("@id_complaint", id_complaint);
@@ -328,6 +332,8 @@ namespace ParserRnP
                             cmd1.Parameters.AddWithValue("@text_complaint", text_complaint);
                             cmd1.Parameters.AddWithValue("@printForm", printForm);
                             cmd1.Parameters.AddWithValue("@id_comp", id_comp);
+                            cmd1.Parameters.AddWithValue("@returnInfo", returnInfo);
+                            cmd1.Parameters.AddWithValue("@regNumber", regNumber);
                             int res_upd_comp = cmd1.ExecuteNonQuery();
                             //id_c = id_comp;
                             UpdateComplaint44?.Invoke(res_upd_comp);
@@ -335,7 +341,7 @@ namespace ParserRnP
                         else
                         {
                             string insert_c =
-                                $"INSERT INTO {Program.Prefix}complaint SET id_complaint = @id_complaint, complaintNumber = @complaintNumber, versionNumber = @versionNumber, xml = @xml, planDecisionDate = @planDecisionDate, id_registrationKO = @id_registrationKO, id_considerationKO = @id_considerationKO, regDate = @regDate, notice_number = @notice_number, notice_acceptDate = @notice_acceptDate, id_createOrganization = @id_createOrganization, createDate = @createDate, id_publishOrganization = @id_publishOrganization, id_customer = @id_customer, applicant_fullName = @applicant_fullName, applicant_INN = @applicant_INN, applicant_KPP = @applicant_KPP, purchaseNumber = @purchaseNumber, lotNumbers = @lotNumbers, lots_info = @lots_info, purchaseName = @purchaseName, purchasePlacingDate = @purchasePlacingDate, text_complaint = @text_complaint, printForm = @printForm";
+                                $"INSERT INTO {Program.Prefix}complaint SET id_complaint = @id_complaint, complaintNumber = @complaintNumber, versionNumber = @versionNumber, xml = @xml, planDecisionDate = @planDecisionDate, id_registrationKO = @id_registrationKO, id_considerationKO = @id_considerationKO, regDate = @regDate, notice_number = @notice_number, notice_acceptDate = @notice_acceptDate, id_createOrganization = @id_createOrganization, createDate = @createDate, id_publishOrganization = @id_publishOrganization, id_customer = @id_customer, applicant_fullName = @applicant_fullName, applicant_INN = @applicant_INN, applicant_KPP = @applicant_KPP, purchaseNumber = @purchaseNumber, lotNumbers = @lotNumbers, lots_info = @lots_info, purchaseName = @purchaseName, purchasePlacingDate = @purchasePlacingDate, text_complaint = @text_complaint, printForm = @printForm, returnInfo = @returnInfo, regNumber = @regNumber";
                             MySqlCommand cmd1 = new MySqlCommand(insert_c, connect);
                             cmd1.Prepare();
                             cmd1.Parameters.AddWithValue("@id_complaint", id_complaint);
@@ -362,6 +368,8 @@ namespace ParserRnP
                             cmd1.Parameters.AddWithValue("@purchasePlacingDate", purchasePlacingDate);
                             cmd1.Parameters.AddWithValue("@text_complaint", text_complaint);
                             cmd1.Parameters.AddWithValue("@printForm", printForm);
+                            cmd1.Parameters.AddWithValue("@returnInfo", returnInfo);
+                            cmd1.Parameters.AddWithValue("@regNumber", regNumber);
                             int res_insert_comp = cmd1.ExecuteNonQuery();
                             id_comp = (int) cmd1.LastInsertedId;
                             AddComplaint44?.Invoke(res_insert_comp);
