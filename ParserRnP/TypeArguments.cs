@@ -12,7 +12,10 @@
         CurrBank,
         LastComplaint,
         PrevComplaint,
-        CurrComplaint
+        CurrComplaint,
+        LastComplaintRes,
+        PrevComplaintRes,
+        CurrComplaintRes
         
     }
 }

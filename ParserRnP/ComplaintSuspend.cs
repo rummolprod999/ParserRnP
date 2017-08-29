@@ -28,13 +28,13 @@ namespace ParserRnP
                 if (d > 0)
                     Program.AddComplaintSuspend++;
                 else
-                    Log.Logger("Не удалось добавить ComplaintSuspend", file_path);
+                    Log.Logger("Не удалось добавить ComplaintSuspend", FilePath);
             };
         }
 
         public override void Parsing()
         {
-            JObject root = (JObject) t.SelectToken("export");
+            JObject root = (JObject) T.SelectToken("export");
             JProperty firstOrDefault = root.Properties().FirstOrDefault(p => p.Name.Contains("tenderSuspension"));
             if (firstOrDefault != null)
             {
@@ -55,16 +55,16 @@ namespace ParserRnP
                 }
                 if (String.IsNullOrEmpty(purchaseNumber))
                 {
-                    Log.Logger("Нет purchaseNumber у Suspend", file_path);
+                    Log.Logger("Нет purchaseNumber у Suspend", FilePath);
                     return;
                 }
                 string action = ((string) c.SelectToken("action") ?? "").Trim();
-                using (MySqlConnection connect = ConnectToDb.GetDBConnection())
+                using (MySqlConnection connect = ConnectToDb.GetDbConnection())
                 {
                     connect.Open();
-                    string update_comp =
+                    string updateComp =
                         $"UPDATE {Program.Prefix}complaint SET tender_suspend = @tender_suspend WHERE purchaseNumber = @purchaseNumber";
-                    MySqlCommand cmd = new MySqlCommand(update_comp, connect);
+                    MySqlCommand cmd = new MySqlCommand(updateComp, connect);
                     cmd.Prepare();
                     cmd.Parameters.AddWithValue("@purchaseNumber", purchaseNumber);
                     cmd.Parameters.AddWithValue("@tender_suspend", action);
@@ -77,7 +77,7 @@ namespace ParserRnP
             }
             else
             {
-                Log.Logger("Не могу найти тег suspend", file_path);
+                Log.Logger("Не могу найти тег suspend", FilePath);
             }
         }
     }

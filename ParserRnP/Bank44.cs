@@ -29,7 +29,7 @@ namespace ParserRnP
                 if (d > 0)
                     Program.AddBankGuarantee++;
                 else
-                    Log.Logger("Не удалось добавить Bank44", file_path);
+                    Log.Logger("Не удалось добавить Bank44", FilePath);
             };
             
             UpdateBank44 += delegate(int d)
@@ -37,23 +37,23 @@ namespace ParserRnP
                 if (d > 0)
                     Program.UpdateBankGuarantee++;
                 else
-                    Log.Logger("Не удалось обновить Bank44", file_path);
+                    Log.Logger("Не удалось обновить Bank44", FilePath);
             };
         }
 
         public override void Parsing()
         {
-            string xml = GetXml(file.ToString());
-            JObject root = (JObject) t.SelectToken("export");
+            string xml = GetXml(File.ToString());
+            JObject root = (JObject) T.SelectToken("export");
             JProperty firstOrDefault = root.Properties().FirstOrDefault(p => p.Name.Contains("bankGuarantee"));
             if (firstOrDefault != null)
             {
                 JToken b = firstOrDefault.Value;
-                string id_guarantee = ((string) b.SelectToken("id") ?? "").Trim();
+                string idGuarantee = ((string) b.SelectToken("id") ?? "").Trim();
                 string regNumber = ((string) b.SelectToken("regNumber") ?? "").Trim();
                 if (String.IsNullOrEmpty(regNumber))
                 {
-                    Log.Logger("Нет regNumber", file_path);
+                    Log.Logger("Нет regNumber", FilePath);
                 }
                 string docNumber = ((string) b.SelectToken("docNumber") ?? "").Trim();
                 string versionNumber = ((string) b.SelectToken("versionNumber") ?? "").Trim();
@@ -61,18 +61,18 @@ namespace ParserRnP
                                          "").Trim('"');
                 if (String.IsNullOrEmpty(docPublishDate))
                 {
-                    Log.Logger("Нет docPublishDate", file_path);
+                    Log.Logger("Нет docPublishDate", FilePath);
                 }
-                using (MySqlConnection connect = ConnectToDb.GetDBConnection())
+                using (MySqlConnection connect = ConnectToDb.GetDbConnection())
                 {
                     connect.Open();
                     int upd = 0;
-                    int id_guar = 0;
+                    int idGuar = 0;
                     if (!String.IsNullOrEmpty(regNumber) && !String.IsNullOrEmpty(docPublishDate))
                     {
-                        string select_bank_g =
+                        string selectBankG =
                             $"SELECT id FROM {Program.Prefix}bank_guarantee WHERE regNumber = @regNumber AND docPublishDate = @docPublishDate";
-                        MySqlCommand cmd = new MySqlCommand(select_bank_g, connect);
+                        MySqlCommand cmd = new MySqlCommand(selectBankG, connect);
                         cmd.Prepare();
                         cmd.Parameters.AddWithValue("@regNumber", regNumber);
                         cmd.Parameters.AddWithValue("@docPublishDate", docPublishDate);
@@ -80,7 +80,7 @@ namespace ParserRnP
                         if (reader.HasRows)
                         {
                             reader.Read();
-                            id_guar = reader.GetInt32("id");
+                            idGuar = reader.GetInt32("id");
                             reader.Close();
                             upd = 1;
                             //Log.Logger("Такой документ уже есть в базе", regNumber);
@@ -88,90 +88,90 @@ namespace ParserRnP
                         }
                         reader.Close();
                     }
-                    int id_bank = 0;
-                    string BankregNum = ((string) b.SelectToken("bank.regNum") ?? "").Trim();
-                    if (!String.IsNullOrEmpty(BankregNum))
+                    int idBank = 0;
+                    string bankregNum = ((string) b.SelectToken("bank.regNum") ?? "").Trim();
+                    if (!String.IsNullOrEmpty(bankregNum))
                     {
-                        string select_bank =
+                        string selectBank =
                             $"SELECT id FROM {Program.Prefix}bank WHERE regNum = @regNum";
-                        MySqlCommand cmd2 = new MySqlCommand(select_bank, connect);
+                        MySqlCommand cmd2 = new MySqlCommand(selectBank, connect);
                         cmd2.Prepare();
-                        cmd2.Parameters.AddWithValue("@regNum", BankregNum);
+                        cmd2.Parameters.AddWithValue("@regNum", bankregNum);
                         MySqlDataReader reader = cmd2.ExecuteReader();
                         if (reader.HasRows)
                         {
                             reader.Read();
-                            id_bank = reader.GetInt32("id");
+                            idBank = reader.GetInt32("id");
                             reader.Close();
                         }
                         else
                         {
                             reader.Close();
-                            string BankfullName = ((string) b.SelectToken("bank.fullName") ?? "").Trim();
-                            string BankshortName = ((string) b.SelectToken("bank.shortName") ?? "").Trim();
-                            string BankfactAddress = ((string) b.SelectToken("bank.factAddress") ?? "").Trim();
-                            string BankINN = ((string) b.SelectToken("bank.INN") ?? "").Trim();
-                            string BankKPP = ((string) b.SelectToken("bank.KPP") ?? "").Trim();
-                            string BanksubjectRFName = ((string) b.SelectToken("bank.subjectRF.name") ?? "").Trim();
-                            string insert_bank =
+                            string bankfullName = ((string) b.SelectToken("bank.fullName") ?? "").Trim();
+                            string bankshortName = ((string) b.SelectToken("bank.shortName") ?? "").Trim();
+                            string bankfactAddress = ((string) b.SelectToken("bank.factAddress") ?? "").Trim();
+                            string bankInn = ((string) b.SelectToken("bank.INN") ?? "").Trim();
+                            string bankKpp = ((string) b.SelectToken("bank.KPP") ?? "").Trim();
+                            string banksubjectRfName = ((string) b.SelectToken("bank.subjectRF.name") ?? "").Trim();
+                            string insertBank =
                                 $"INSERT INTO {Program.Prefix}bank SET regNum = @regNum, fullName = @fullName, shortName = @shortName, factAddress = @factAddress, INN = @INN, KPP = @KPP, subjectRFName = @subjectRFName";
-                            MySqlCommand cmd3 = new MySqlCommand(insert_bank, connect);
+                            MySqlCommand cmd3 = new MySqlCommand(insertBank, connect);
                             cmd3.Prepare();
-                            cmd3.Parameters.AddWithValue("@regNum", BankregNum);
-                            cmd3.Parameters.AddWithValue("@fullName", BankfullName);
-                            cmd3.Parameters.AddWithValue("@shortName", BankshortName);
-                            cmd3.Parameters.AddWithValue("@factAddress", BankfactAddress);
-                            cmd3.Parameters.AddWithValue("@INN", BankINN);
-                            cmd3.Parameters.AddWithValue("@KPP", BankKPP);
-                            cmd3.Parameters.AddWithValue("@subjectRFName", BanksubjectRFName);
+                            cmd3.Parameters.AddWithValue("@regNum", bankregNum);
+                            cmd3.Parameters.AddWithValue("@fullName", bankfullName);
+                            cmd3.Parameters.AddWithValue("@shortName", bankshortName);
+                            cmd3.Parameters.AddWithValue("@factAddress", bankfactAddress);
+                            cmd3.Parameters.AddWithValue("@INN", bankInn);
+                            cmd3.Parameters.AddWithValue("@KPP", bankKpp);
+                            cmd3.Parameters.AddWithValue("@subjectRFName", banksubjectRfName);
                             cmd3.ExecuteNonQuery();
-                            id_bank = (int) cmd3.LastInsertedId;
+                            idBank = (int) cmd3.LastInsertedId;
                         }
                     }
                     else
                     {
-                        Log.Logger("Нет bank_reg_num", file_path);
+                        Log.Logger("Нет bank_reg_num", FilePath);
                     }
 
-                    int id_placer = 0;
-                    string PlacerRegNum = ((string) b.SelectToken("placingOrg.regNum") ?? "").Trim();
-                    if (!String.IsNullOrEmpty(PlacerRegNum))
+                    int idPlacer = 0;
+                    string placerRegNum = ((string) b.SelectToken("placingOrg.regNum") ?? "").Trim();
+                    if (!String.IsNullOrEmpty(placerRegNum))
                     {
-                        string select_placer =
+                        string selectPlacer =
                             $"SELECT id FROM {Program.Prefix}placer_org WHERE regNum = @regNum";
-                        MySqlCommand cmd4 = new MySqlCommand(select_placer, connect);
+                        MySqlCommand cmd4 = new MySqlCommand(selectPlacer, connect);
                         cmd4.Prepare();
-                        cmd4.Parameters.AddWithValue("@regNum", BankregNum);
+                        cmd4.Parameters.AddWithValue("@regNum", bankregNum);
                         MySqlDataReader reader = cmd4.ExecuteReader();
                         if (reader.HasRows)
                         {
                             reader.Read();
-                            id_placer = reader.GetInt32("id");
+                            idPlacer = reader.GetInt32("id");
                             reader.Close();
                         }
                         else
                         {
                             reader.Close();
-                            string PlacerfullName = ((string) b.SelectToken("placingOrg.fullName") ?? "").Trim();
-                            string PlacershortName = ((string) b.SelectToken("placingOrg.shortName") ?? "").Trim();
-                            string PlacerfactAddress = ((string) b.SelectToken("placingOrg.factAddress") ?? "").Trim();
-                            string PlacerINN = ((string) b.SelectToken("placingOrg.INN") ?? "").Trim();
-                            string PlacerKPP = ((string) b.SelectToken("placingOrg.KPP") ?? "").Trim();
-                            string PlacersubjectRFName =
+                            string placerfullName = ((string) b.SelectToken("placingOrg.fullName") ?? "").Trim();
+                            string placershortName = ((string) b.SelectToken("placingOrg.shortName") ?? "").Trim();
+                            string placerfactAddress = ((string) b.SelectToken("placingOrg.factAddress") ?? "").Trim();
+                            string placerInn = ((string) b.SelectToken("placingOrg.INN") ?? "").Trim();
+                            string placerKpp = ((string) b.SelectToken("placingOrg.KPP") ?? "").Trim();
+                            string placersubjectRfName =
                                 ((string) b.SelectToken("placingOrg.subjectRF.name") ?? "").Trim();
-                            string insert_placer =
+                            string insertPlacer =
                                 $"INSERT INTO {Program.Prefix}placer_org SET regNum = @regNum, fullName = @fullName, shortName = @shortName, factAddress = @factAddress, INN = @INN, KPP = @KPP, subjectRFName = @subjectRFName";
-                            MySqlCommand cmd5 = new MySqlCommand(insert_placer, connect);
+                            MySqlCommand cmd5 = new MySqlCommand(insertPlacer, connect);
                             cmd5.Prepare();
-                            cmd5.Parameters.AddWithValue("@regNum", BankregNum);
-                            cmd5.Parameters.AddWithValue("@fullName", PlacerfullName);
-                            cmd5.Parameters.AddWithValue("@shortName", PlacershortName);
-                            cmd5.Parameters.AddWithValue("@factAddress", PlacerfactAddress);
-                            cmd5.Parameters.AddWithValue("@INN", PlacerINN);
-                            cmd5.Parameters.AddWithValue("@KPP", PlacerKPP);
-                            cmd5.Parameters.AddWithValue("@subjectRFName", PlacersubjectRFName);
+                            cmd5.Parameters.AddWithValue("@regNum", bankregNum);
+                            cmd5.Parameters.AddWithValue("@fullName", placerfullName);
+                            cmd5.Parameters.AddWithValue("@shortName", placershortName);
+                            cmd5.Parameters.AddWithValue("@factAddress", placerfactAddress);
+                            cmd5.Parameters.AddWithValue("@INN", placerInn);
+                            cmd5.Parameters.AddWithValue("@KPP", placerKpp);
+                            cmd5.Parameters.AddWithValue("@subjectRFName", placersubjectRfName);
                             cmd5.ExecuteNonQuery();
-                            id_placer = (int) cmd5.LastInsertedId;
+                            idPlacer = (int) cmd5.LastInsertedId;
                         }
                     }
                     else
@@ -179,82 +179,82 @@ namespace ParserRnP
                         //Log.Logger("Нет placer_reg_num", file_path);
                     }
 
-                    int id_supplier = 0;
-                    string inn_sup = ((string) b.SelectToken("supplier.inn") ?? "").Trim();
-                    if (String.IsNullOrEmpty(inn_sup))
+                    int idSupplier = 0;
+                    string innSup = ((string) b.SelectToken("supplier.inn") ?? "").Trim();
+                    if (String.IsNullOrEmpty(innSup))
                     {
-                        inn_sup = ((string) b.SelectToken("supplierInfo.legalEntityRF.INN") ?? "").Trim();
+                        innSup = ((string) b.SelectToken("supplierInfo.legalEntityRF.INN") ?? "").Trim();
                     }
-                    if (!String.IsNullOrEmpty(inn_sup))
+                    if (!String.IsNullOrEmpty(innSup))
                     {
-                        string kpp_sup = ((string) b.SelectToken("supplier.kpp") ?? "").Trim();
-                        if (String.IsNullOrEmpty(kpp_sup))
+                        string kppSup = ((string) b.SelectToken("supplier.kpp") ?? "").Trim();
+                        if (String.IsNullOrEmpty(kppSup))
                         {
-                            kpp_sup = ((string) b.SelectToken("supplierInfo.legalEntityRF.KPP") ?? "").Trim();
+                            kppSup = ((string) b.SelectToken("supplierInfo.legalEntityRF.KPP") ?? "").Trim();
                         }
-                        string select_supplier =
+                        string selectSupplier =
                             $"SELECT id FROM {Program.Prefix}bank_supplier WHERE inn = @inn AND kpp = @kpp";
-                        MySqlCommand cmd6 = new MySqlCommand(select_supplier, connect);
+                        MySqlCommand cmd6 = new MySqlCommand(selectSupplier, connect);
                         cmd6.Prepare();
-                        cmd6.Parameters.AddWithValue("@inn", inn_sup);
-                        cmd6.Parameters.AddWithValue("@kpp", kpp_sup);
+                        cmd6.Parameters.AddWithValue("@inn", innSup);
+                        cmd6.Parameters.AddWithValue("@kpp", kppSup);
                         MySqlDataReader reader = cmd6.ExecuteReader();
                         if (reader.HasRows)
                         {
                             reader.Read();
-                            id_supplier = reader.GetInt32("id");
+                            idSupplier = reader.GetInt32("id");
                             reader.Close();
                         }
                         else
                         {
                             reader.Close();
-                            string participantType_sup =
+                            string participantTypeSup =
                                 ((string) b.SelectToken("supplier.participantType") ?? "").Trim();
-                            string ogrn_sup = ((string) b.SelectToken("supplier.ogrn") ?? "").Trim();
-                            string organizationName_sup =
+                            string ogrnSup = ((string) b.SelectToken("supplier.ogrn") ?? "").Trim();
+                            string organizationNameSup =
                                 ((string) b.SelectToken("supplier.organizationName") ?? "").Trim();
-                            string firmName_sup = ((string) b.SelectToken("supplier.firmName") ?? "").Trim();
-                            string registrationDate_sup =
+                            string firmNameSup = ((string) b.SelectToken("supplier.firmName") ?? "").Trim();
+                            string registrationDateSup =
                                 ((string) b.SelectToken("supplierInfo.legalEntityRF.registrationDate") ?? "").Trim();
-                            string subjectRFName_sup =
+                            string subjectRfNameSup =
                                 ((string) b.SelectToken("supplierInfo.legalEntityRF.subjectRF.name") ?? "").Trim();
-                            string address_sup = ((string) b.SelectToken("supplier.factualAddress") ?? "").Trim();
-                            string insert_supplier =
+                            string addressSup = ((string) b.SelectToken("supplier.factualAddress") ?? "").Trim();
+                            string insertSupplier =
                                 $"INSERT INTO {Program.Prefix}bank_supplier SET participantType = @participantType, inn = @inn, kpp = @kpp, ogrn = @ogrn, organizationName = @organizationName, firmName = @firmName, registrationDate = @registrationDate, subjectRFName = @subjectRFName, address = @address";
-                            MySqlCommand cmd7 = new MySqlCommand(insert_supplier, connect);
+                            MySqlCommand cmd7 = new MySqlCommand(insertSupplier, connect);
                             cmd7.Prepare();
-                            cmd7.Parameters.AddWithValue("@inn", inn_sup);
-                            cmd7.Parameters.AddWithValue("@kpp", kpp_sup);
-                            cmd7.Parameters.AddWithValue("@participantType", participantType_sup);
-                            cmd7.Parameters.AddWithValue("@ogrn", ogrn_sup);
-                            cmd7.Parameters.AddWithValue("@organizationName", organizationName_sup);
-                            cmd7.Parameters.AddWithValue("@firmName", firmName_sup);
-                            cmd7.Parameters.AddWithValue("@registrationDate", registrationDate_sup);
-                            cmd7.Parameters.AddWithValue("@subjectRFName", subjectRFName_sup);
-                            cmd7.Parameters.AddWithValue("@address", address_sup);
+                            cmd7.Parameters.AddWithValue("@inn", innSup);
+                            cmd7.Parameters.AddWithValue("@kpp", kppSup);
+                            cmd7.Parameters.AddWithValue("@participantType", participantTypeSup);
+                            cmd7.Parameters.AddWithValue("@ogrn", ogrnSup);
+                            cmd7.Parameters.AddWithValue("@organizationName", organizationNameSup);
+                            cmd7.Parameters.AddWithValue("@firmName", firmNameSup);
+                            cmd7.Parameters.AddWithValue("@registrationDate", registrationDateSup);
+                            cmd7.Parameters.AddWithValue("@subjectRFName", subjectRfNameSup);
+                            cmd7.Parameters.AddWithValue("@address", addressSup);
                             cmd7.ExecuteNonQuery();
-                            id_supplier = (int) cmd7.LastInsertedId;
+                            idSupplier = (int) cmd7.LastInsertedId;
                         }
                     }
                     else
                     {
-                        Log.Logger("Нет inn_supplier", file_path);
+                        Log.Logger("Нет inn_supplier", FilePath);
                     }
 
-                    int id_customer = 0;
+                    int idCustomer = 0;
                     string customerregNum = ((string) b.SelectToken("guarantee.customer.regNum") ?? "").Trim();
                     if (!String.IsNullOrEmpty(customerregNum))
                     {
-                        string select_customer =
+                        string selectCustomer =
                             $"SELECT id FROM {Program.Prefix}bank_customer WHERE regNum = @regNum";
-                        MySqlCommand cmd8 = new MySqlCommand(select_customer, connect);
+                        MySqlCommand cmd8 = new MySqlCommand(selectCustomer, connect);
                         cmd8.Prepare();
                         cmd8.Parameters.AddWithValue("@regNum", customerregNum);
                         MySqlDataReader reader = cmd8.ExecuteReader();
                         if (reader.HasRows)
                         {
                             reader.Read();
-                            id_customer = reader.GetInt32("id");
+                            idCustomer = reader.GetInt32("id");
                             reader.Close();
                         }
                         else
@@ -262,29 +262,29 @@ namespace ParserRnP
                             reader.Close();
                             string customerfullName =
                                 ((string) b.SelectToken("guarantee.customer.fullName") ?? "").Trim();
-                            string customerINN = ((string) b.SelectToken("guarantee.customer.INN") ?? "").Trim();
-                            string customerKPP = ((string) b.SelectToken("guarantee.customer.KPP") ?? "").Trim();
+                            string customerInn = ((string) b.SelectToken("guarantee.customer.INN") ?? "").Trim();
+                            string customerKpp = ((string) b.SelectToken("guarantee.customer.KPP") ?? "").Trim();
                             string customerfactAddress =
                                 ((string) b.SelectToken("guarantee.customer.factAddress") ?? "").Trim();
                             string customerregistrationDate =
                                 ((string) b.SelectToken("guarantee.customer.registrationDate") ?? "").Trim();
-                            string insert_customer =
+                            string insertCustomer =
                                 $"INSERT INTO {Program.Prefix}bank_customer SET regNum = @regNum, fullName = @fullName, INN = @INN, KPP = @KPP, factAddress = @factAddress, registrationDate = @registrationDate";
-                            MySqlCommand cmd9 = new MySqlCommand(insert_customer, connect);
+                            MySqlCommand cmd9 = new MySqlCommand(insertCustomer, connect);
                             cmd9.Prepare();
                             cmd9.Parameters.AddWithValue("@regNum", customerregNum);
                             cmd9.Parameters.AddWithValue("@fullName", customerfullName);
-                            cmd9.Parameters.AddWithValue("@INN", customerINN);
-                            cmd9.Parameters.AddWithValue("@KPP", customerKPP);
+                            cmd9.Parameters.AddWithValue("@INN", customerInn);
+                            cmd9.Parameters.AddWithValue("@KPP", customerKpp);
                             cmd9.Parameters.AddWithValue("@factAddress", customerfactAddress);
                             cmd9.Parameters.AddWithValue("@registrationDate", customerregistrationDate);
                             cmd9.ExecuteNonQuery();
-                            id_customer = (int) cmd9.LastInsertedId;
+                            idCustomer = (int) cmd9.LastInsertedId;
                         }
                     }
                     else
                     {
-                        Log.Logger("Нет customer_reg_num", file_path);
+                        Log.Logger("Нет customer_reg_num", FilePath);
                     }
 
                     string purchaseNumber =
@@ -315,20 +315,20 @@ namespace ParserRnP
                     (JsonConvert.SerializeObject(b.SelectToken("guarantee.entryForceDate") ?? "") ??
                      "").Trim('"');
                     string href = ((string) b.SelectToken("href") ?? "").Trim();
-                    string print_form = ((string) b.SelectToken("printForm.url") ?? "").Trim();
-                    int id_g = 0;
+                    string printForm = ((string) b.SelectToken("printForm.url") ?? "").Trim();
+                    int idG = 0;
                     if (upd == 1)
                     {
-                        string delete_att = $"DELETE FROM {Program.Prefix}bank_attach WHERE id_guar = @id_guar";
-                        MySqlCommand cmd0 = new MySqlCommand(delete_att, connect);
+                        string deleteAtt = $"DELETE FROM {Program.Prefix}bank_attach WHERE id_guar = @id_guar";
+                        MySqlCommand cmd0 = new MySqlCommand(deleteAtt, connect);
                         cmd0.Prepare();
-                        cmd0.Parameters.AddWithValue("@id_guar", id_guar);
+                        cmd0.Parameters.AddWithValue("@id_guar", idGuar);
                         cmd0.ExecuteNonQuery();
-                        string update_g =
+                        string updateG =
                             $"UPDATE {Program.Prefix}bank_guarantee SET id_guarantee = @id_guarantee, regNumber = @regNumber, docNumber = @docNumber, versionNumber = @versionNumber, docPublishDate = @docPublishDate, purchaseNumber = @purchaseNumber, lotNumber = @lotNumber, guaranteeDate = @guaranteeDate, guaranteeAmount = @guaranteeAmount, currencyCode = @currencyCode, expireDate = @expireDate, entryForceDate = @entryForceDate, href = @href, print_form = @print_form, xml = @xml, id_bank = @id_bank, id_placer = @id_placer, id_customer = @id_customer, id_supplier = @id_supplier WHERE id = @id";
-                        MySqlCommand cmd10 = new MySqlCommand(update_g, connect);
+                        MySqlCommand cmd10 = new MySqlCommand(updateG, connect);
                         cmd10.Prepare();
-                        cmd10.Parameters.AddWithValue("@id_guarantee", id_guarantee);
+                        cmd10.Parameters.AddWithValue("@id_guarantee", idGuarantee);
                         cmd10.Parameters.AddWithValue("@regNumber", regNumber);
                         cmd10.Parameters.AddWithValue("@docNumber", docNumber);
                         cmd10.Parameters.AddWithValue("@versionNumber", versionNumber);
@@ -341,24 +341,24 @@ namespace ParserRnP
                         cmd10.Parameters.AddWithValue("@expireDate", expireDate);
                         cmd10.Parameters.AddWithValue("@entryForceDate", entryForceDate);
                         cmd10.Parameters.AddWithValue("@href", href);
-                        cmd10.Parameters.AddWithValue("@print_form", print_form);
+                        cmd10.Parameters.AddWithValue("@print_form", printForm);
                         cmd10.Parameters.AddWithValue("@xml", xml);
-                        cmd10.Parameters.AddWithValue("@id_bank", id_bank);
-                        cmd10.Parameters.AddWithValue("@id_placer", id_placer);
-                        cmd10.Parameters.AddWithValue("@id_customer", id_customer);
-                        cmd10.Parameters.AddWithValue("@id_supplier", id_supplier);
-                        cmd10.Parameters.AddWithValue("@id", id_guar);
-                        int res_update_g = cmd10.ExecuteNonQuery();
-                        id_g = id_guar;
-                        UpdateBank44?.Invoke(res_update_g);
+                        cmd10.Parameters.AddWithValue("@id_bank", idBank);
+                        cmd10.Parameters.AddWithValue("@id_placer", idPlacer);
+                        cmd10.Parameters.AddWithValue("@id_customer", idCustomer);
+                        cmd10.Parameters.AddWithValue("@id_supplier", idSupplier);
+                        cmd10.Parameters.AddWithValue("@id", idGuar);
+                        int resUpdateG = cmd10.ExecuteNonQuery();
+                        idG = idGuar;
+                        UpdateBank44?.Invoke(resUpdateG);
                     }
                     else
                     {
-                        string insert_g =
+                        string insertG =
                         $"INSERT INTO {Program.Prefix}bank_guarantee SET id_guarantee = @id_guarantee, regNumber = @regNumber, docNumber = @docNumber, versionNumber = @versionNumber, docPublishDate = @docPublishDate, purchaseNumber = @purchaseNumber, lotNumber = @lotNumber, guaranteeDate = @guaranteeDate, guaranteeAmount = @guaranteeAmount, currencyCode = @currencyCode, expireDate = @expireDate, entryForceDate = @entryForceDate, href = @href, print_form = @print_form, xml = @xml, id_bank = @id_bank, id_placer = @id_placer, id_customer = @id_customer, id_supplier = @id_supplier";
-                    MySqlCommand cmd10 = new MySqlCommand(insert_g, connect);
+                    MySqlCommand cmd10 = new MySqlCommand(insertG, connect);
                     cmd10.Prepare();
-                    cmd10.Parameters.AddWithValue("@id_guarantee", id_guarantee);
+                    cmd10.Parameters.AddWithValue("@id_guarantee", idGuarantee);
                     cmd10.Parameters.AddWithValue("@regNumber", regNumber);
                     cmd10.Parameters.AddWithValue("@docNumber", docNumber);
                     cmd10.Parameters.AddWithValue("@versionNumber", versionNumber);
@@ -371,15 +371,15 @@ namespace ParserRnP
                     cmd10.Parameters.AddWithValue("@expireDate", expireDate);
                     cmd10.Parameters.AddWithValue("@entryForceDate", entryForceDate);
                     cmd10.Parameters.AddWithValue("@href", href);
-                    cmd10.Parameters.AddWithValue("@print_form", print_form);
+                    cmd10.Parameters.AddWithValue("@print_form", printForm);
                     cmd10.Parameters.AddWithValue("@xml", xml);
-                    cmd10.Parameters.AddWithValue("@id_bank", id_bank);
-                    cmd10.Parameters.AddWithValue("@id_placer", id_placer);
-                    cmd10.Parameters.AddWithValue("@id_customer", id_customer);
-                    cmd10.Parameters.AddWithValue("@id_supplier", id_supplier);
-                    int res_insert_g = cmd10.ExecuteNonQuery();
-                    id_g = (int) cmd10.LastInsertedId;
-                    AddBank44?.Invoke(res_insert_g);
+                    cmd10.Parameters.AddWithValue("@id_bank", idBank);
+                    cmd10.Parameters.AddWithValue("@id_placer", idPlacer);
+                    cmd10.Parameters.AddWithValue("@id_customer", idCustomer);
+                    cmd10.Parameters.AddWithValue("@id_supplier", idSupplier);
+                    int resInsertG = cmd10.ExecuteNonQuery();
+                    idG = (int) cmd10.LastInsertedId;
+                    AddBank44?.Invoke(resInsertG);
                     }
                     
                     List<JToken> attach =
@@ -389,11 +389,11 @@ namespace ParserRnP
                         string fileName = ((string) att.SelectToken("fileName") ?? "").Trim();
                         string docDescription = ((string) att.SelectToken("docDescription") ?? "").Trim();
                         string url = ((string) att.SelectToken("url") ?? "").Trim();
-                        string insert_attach =
+                        string insertAttach =
                             $"INSERT INTO {Program.Prefix}bank_attach SET id_guar = @id_guar, fileName = @fileName, docDescription = @docDescription, url = @url";
-                        MySqlCommand cmd11 = new MySqlCommand(insert_attach, connect);
+                        MySqlCommand cmd11 = new MySqlCommand(insertAttach, connect);
                         cmd11.Prepare();
-                        cmd11.Parameters.AddWithValue("@id_guar", id_g);
+                        cmd11.Parameters.AddWithValue("@id_guar", idG);
                         cmd11.Parameters.AddWithValue("@fileName", fileName);
                         cmd11.Parameters.AddWithValue("@docDescription", docDescription);
                         cmd11.Parameters.AddWithValue("@url", url);
@@ -406,7 +406,7 @@ namespace ParserRnP
             }
             else
             {
-                Log.Logger("Не могу найти тег bankGuarantee", file_path);
+                Log.Logger("Не могу найти тег bankGuarantee", FilePath);
             }
         }
     }

@@ -2,6 +2,6 @@
 {
     public enum TypeFileRnp
     {
-        unfairSupplier
+        UnfairSupplier
     }
 }

@@ -13,9 +13,11 @@ namespace ParserRnP
         public readonly string LogPathBank;
         public readonly string TempPathComplaint;
         public readonly string LogPathComplaint;
+        public readonly string TempPathComplaintResult;
+        public readonly string LogPathComplaintResult;
         public readonly string Prefix;
-        public readonly string UserDB;
-        public readonly string PassDB;
+        public readonly string UserDb;
+        public readonly string PassDb;
         public readonly string Server;
         public readonly int Port;
         public readonly string Years;
@@ -52,14 +54,22 @@ namespace ParserRnP
                         case "logdir_complaint":
                             LogPathComplaint = $"{Program.PathProgram}{Path.DirectorySeparatorChar}{xnode.InnerText}";
                             break;
+                        case "tempdir_complaint_result":
+                            TempPathComplaintResult =
+                                $"{Program.PathProgram}{Path.DirectorySeparatorChar}{xnode.InnerText}";
+                            break;
+                        case "logdir_complaint_result":
+                            LogPathComplaintResult =
+                                $"{Program.PathProgram}{Path.DirectorySeparatorChar}{xnode.InnerText}";
+                            break;
                         case "prefix":
                             Prefix = xnode.InnerText;
                             break;
                         case "userdb":
-                            UserDB = xnode.InnerText;
+                            UserDb = xnode.InnerText;
                             break;
                         case "passdb":
-                            PassDB = xnode.InnerText;
+                            PassDb = xnode.InnerText;
                             break;
                         case "server":
                             Server = xnode.InnerText;
@@ -74,10 +84,12 @@ namespace ParserRnP
                 }
             }
 
-            if (String.IsNullOrEmpty(LogPathComplaint) || String.IsNullOrEmpty(TempPathComplaint) || String.IsNullOrEmpty(LogPathBank) || String.IsNullOrEmpty(TempPathBank) ||
+            if (String.IsNullOrEmpty(LogPathComplaint) || String.IsNullOrEmpty(TempPathComplaint) ||
+                String.IsNullOrEmpty(LogPathBank) || String.IsNullOrEmpty(TempPathBank) ||
                 String.IsNullOrEmpty(LogPathRnp) || String.IsNullOrEmpty(TempPathRnp) ||
-                String.IsNullOrEmpty(Database) || String.IsNullOrEmpty(UserDB) || String.IsNullOrEmpty(Server) ||
-                String.IsNullOrEmpty(Years))
+                String.IsNullOrEmpty(Database) || String.IsNullOrEmpty(UserDb) || String.IsNullOrEmpty(Server) ||
+                String.IsNullOrEmpty(Years) || String.IsNullOrEmpty(TempPathComplaintResult) ||
+                String.IsNullOrEmpty(LogPathComplaintResult))
             {
                 Console.WriteLine("Некоторые поля в файле настроек пустые");
                 Environment.Exit(0);

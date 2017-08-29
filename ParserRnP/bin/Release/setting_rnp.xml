@@ -7,6 +7,8 @@
 	<logdir_bank>log_bank</logdir_bank>
 	<tempdir_complaint>temp_complaint</tempdir_complaint>
 	<logdir_complaint>log_complaint</logdir_complaint>
+	<tempdir_complaint_result>temp_complaint_result</tempdir_complaint_result>
+	<logdir_complaint_result>log_complaint_result</logdir_complaint_result>
 	<prefix></prefix>
 	<userdb>root</userdb>
 	<passdb>1234</passdb>

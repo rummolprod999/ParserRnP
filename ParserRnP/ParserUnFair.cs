@@ -16,7 +16,7 @@ namespace ParserRnP
     {
         protected DataTable DtRegion;
 
-        private string[] file_unfair = new[]
+        private string[] _fileUnfair = new[]
         {
             "unfairsupplier_"
         };
@@ -28,60 +28,60 @@ namespace ParserRnP
         public override void Parsing()
         {
             List<String> arch = new List<string>();
-            string PathParse = "";
+            string pathParse = "";
 
             switch (Program.Periodparsing)
             {
                 case TypeArguments.LastUn:
-                    PathParse = $"/fcs_fas/unfairSupplier/";
-                    arch = GetListArchLast(PathParse);
+                    pathParse = $"/fcs_fas/unfairSupplier/";
+                    arch = GetListArchLast(pathParse);
                     break;
                 case TypeArguments.RootUn:
-                    PathParse = $"/fcs_fas/";
-                    arch = GetListArchRoot(PathParse);
+                    pathParse = $"/fcs_fas/";
+                    arch = GetListArchRoot(pathParse);
                     break;
                 case TypeArguments.CurrUn:
-                    PathParse = $"/fcs_fas/unfairSupplier/currMonth/";
-                    arch = GetListArchCurr(PathParse);
+                    pathParse = $"/fcs_fas/unfairSupplier/currMonth/";
+                    arch = GetListArchCurr(pathParse);
                     break;
                 case TypeArguments.PrevUn:
-                    PathParse = $"/fcs_fas/unfairSupplier/prevMonth/";
-                    arch = GetListArchPrev(PathParse);
+                    pathParse = $"/fcs_fas/unfairSupplier/prevMonth/";
+                    arch = GetListArchPrev(pathParse);
                     break;
             }
 
             if (arch.Count == 0)
             {
-                Log.Logger("Получен пустой список архивов", PathParse);
+                Log.Logger("Получен пустой список архивов", pathParse);
             }
 
             foreach (var v in arch)
             {
-                GetListFileArch(v, PathParse);
+                GetListFileArch(v, pathParse);
             }
         }
 
-        public override void GetListFileArch(string Arch, string PathParse)
+        public override void GetListFileArch(string arch, string pathParse)
         {
             string filea = "";
-            string path_unzip = "";
-            filea = GetArch44(Arch, PathParse);
+            string pathUnzip = "";
+            filea = GetArch44(arch, pathParse);
             if (!String.IsNullOrEmpty(filea))
             {
-                path_unzip = Unzipped.Unzip(filea);
-                if (path_unzip != "")
+                pathUnzip = Unzipped.Unzip(filea);
+                if (pathUnzip != "")
                 {
-                    if (Directory.Exists(path_unzip))
+                    if (Directory.Exists(pathUnzip))
                     {
-                        DirectoryInfo dirInfo = new DirectoryInfo(path_unzip);
+                        DirectoryInfo dirInfo = new DirectoryInfo(pathUnzip);
                         FileInfo[] filelist = dirInfo.GetFiles();
-                        List<FileInfo> array_xml_unfair = filelist
-                            .Where(a => file_unfair.Any(
+                        List<FileInfo> arrayXmlUnfair = filelist
+                            .Where(a => _fileUnfair.Any(
                                 t => a.Name.ToLower().IndexOf(t, StringComparison.Ordinal) != -1))
                             .ToList();
-                        foreach (var f in array_xml_unfair)
+                        foreach (var f in arrayXmlUnfair)
                         {
-                            Bolter(f, TypeFileRnp.unfairSupplier);
+                            Bolter(f, TypeFileRnp.UnfairSupplier);
                         }
                         dirInfo.Delete(true);
                     }
@@ -98,7 +98,7 @@ namespace ParserRnP
 
             try
             {
-                ParsingXML(f, typefile);
+                ParsingXml(f, typefile);
             }
             catch (Exception e)
             {
@@ -106,7 +106,7 @@ namespace ParserRnP
             }
         }
 
-        public void ParsingXML(FileInfo f, TypeFileRnp typefile)
+        public void ParsingXml(FileInfo f, TypeFileRnp typefile)
         {
             using (StreamReader sr = new StreamReader(f.ToString(), Encoding.Default))
             {
@@ -118,7 +118,7 @@ namespace ParserRnP
                 JObject json = JObject.Parse(jsons);
                 switch (typefile)
                 {
-                    case TypeFileRnp.unfairSupplier:
+                    case TypeFileRnp.UnfairSupplier:
                         Unfair44 a = new Unfair44(f, json);
                         a.Parsing();
                         break;
@@ -126,7 +126,7 @@ namespace ParserRnP
             }
         }
 
-        private List<string> GetListFtp44(string PathParse)
+        private List<string> GetListFtp44(string pathParse)
         {
             List<string> archtemp = new List<string>();
             int count = 1;
@@ -135,7 +135,7 @@ namespace ParserRnP
                 try
                 {
                     WorkWithFtp ftp = ClientFtp44_old();
-                    ftp.ChangeWorkingDirectory(PathParse);
+                    ftp.ChangeWorkingDirectory(pathParse);
                     archtemp = ftp.ListDirectory();
                     if (count > 1)
                     {
@@ -147,7 +147,7 @@ namespace ParserRnP
                 {
                     if (count > 3)
                     {
-                        Log.Logger($"Не смогли найти директорию после попытки {count}", PathParse, e);
+                        Log.Logger($"Не смогли найти директорию после попытки {count}", pathParse, e);
                         break;
                     }
                     count++;
@@ -157,49 +157,49 @@ namespace ParserRnP
             return archtemp;
         }
 
-        public override List<String> GetListArchLast(string PathParse)
+        public override List<String> GetListArchLast(string pathParse)
         {
             List<string> archtemp = new List<string>();
             /*FtpClient ftp = ClientFtp44();*/
-            archtemp = GetListFtp44(PathParse);
-            return archtemp.Where(a => file_unfair.Any(t => a.ToLower().IndexOf(t, StringComparison.Ordinal) != -1))
+            archtemp = GetListFtp44(pathParse);
+            return archtemp.Where(a => _fileUnfair.Any(t => a.ToLower().IndexOf(t, StringComparison.Ordinal) != -1))
                 .ToList();
         }
 
-        public List<String> GetListArchRoot(string PathParse)
+        public List<String> GetListArchRoot(string pathParse)
         {
             List<string> archtemp = new List<string>();
             /*FtpClient ftp = ClientFtp44();*/
-            archtemp = GetListFtp44(PathParse);
-            return archtemp.Where(a => file_unfair.Any(t => a.ToLower().IndexOf(t, StringComparison.Ordinal) != -1))
+            archtemp = GetListFtp44(pathParse);
+            return archtemp.Where(a => _fileUnfair.Any(t => a.ToLower().IndexOf(t, StringComparison.Ordinal) != -1))
                 .ToList();
         }
 
-        public override List<String> GetListArchCurr(string PathParse)
+        public override List<String> GetListArchCurr(string pathParse)
         {
             List<String> arch = new List<string>();
             List<string> archtemp = new List<string>();
             /*FtpClient ftp = ClientFtp44();*/
-            archtemp = GetListFtp44(PathParse);
+            archtemp = GetListFtp44(pathParse);
             foreach (var a in archtemp.Where(a =>
-                file_unfair.Any(t => a.ToLower().IndexOf(t, StringComparison.Ordinal) != -1)))
+                _fileUnfair.Any(t => a.ToLower().IndexOf(t, StringComparison.Ordinal) != -1)))
             {
-                using (MySqlConnection connect = ConnectToDb.GetDBConnection())
+                using (MySqlConnection connect = ConnectToDb.GetDbConnection())
                 {
                     connect.Open();
-                    string select_arch =
+                    string selectArch =
                         $"SELECT id FROM {Program.Prefix}arhiv_unfair_suppliers WHERE arhiv = @archive";
-                    MySqlCommand cmd = new MySqlCommand(select_arch, connect);
+                    MySqlCommand cmd = new MySqlCommand(selectArch, connect);
                     cmd.Prepare();
                     cmd.Parameters.AddWithValue("@archive", a);
                     MySqlDataReader reader = cmd.ExecuteReader();
-                    bool res_read = reader.HasRows;
+                    bool resRead = reader.HasRows;
                     reader.Close();
-                    if (!res_read)
+                    if (!resRead)
                     {
-                        string add_arch =
+                        string addArch =
                             $"INSERT INTO {Program.Prefix}arhiv_unfair_suppliers SET arhiv = @archive";
-                        MySqlCommand cmd1 = new MySqlCommand(add_arch, connect);
+                        MySqlCommand cmd1 = new MySqlCommand(addArch, connect);
                         cmd1.Prepare();
                         cmd1.Parameters.AddWithValue("@archive", a);
                         cmd1.ExecuteNonQuery();
@@ -211,34 +211,34 @@ namespace ParserRnP
             return arch;
         }
 
-        public override List<String> GetListArchPrev(string PathParse)
+        public override List<String> GetListArchPrev(string pathParse)
         {
             List<String> arch = new List<string>();
             List<string> archtemp = new List<string>();
             /*FtpClient ftp = ClientFtp44();*/
-            archtemp = GetListFtp44(PathParse);
+            archtemp = GetListFtp44(pathParse);
             string serachd = $"{Program.LocalDate:yyyyMMdd}";
             foreach (var a in archtemp.Where(a => a.ToLower().IndexOf(serachd, StringComparison.Ordinal) != -1))
             {
-                string prev_a = $"prev_{a}";
-                using (MySqlConnection connect = ConnectToDb.GetDBConnection())
+                string prevA = $"prev_{a}";
+                using (MySqlConnection connect = ConnectToDb.GetDbConnection())
                 {
                     connect.Open();
-                    string select_arch =
+                    string selectArch =
                         $"SELECT id FROM {Program.Prefix}arhiv_unfair_suppliers WHERE arhiv = @archive";
-                    MySqlCommand cmd = new MySqlCommand(select_arch, connect);
+                    MySqlCommand cmd = new MySqlCommand(selectArch, connect);
                     cmd.Prepare();
-                    cmd.Parameters.AddWithValue("@archive", prev_a);
+                    cmd.Parameters.AddWithValue("@archive", prevA);
                     MySqlDataReader reader = cmd.ExecuteReader();
-                    bool res_read = reader.HasRows;
+                    bool resRead = reader.HasRows;
                     reader.Close();
-                    if (!res_read)
+                    if (!resRead)
                     {
-                        string add_arch =
+                        string addArch =
                             $"INSERT INTO {Program.Prefix}arhiv_unfair_suppliers SET arhiv = @archive";
-                        MySqlCommand cmd1 = new MySqlCommand(add_arch, connect);
+                        MySqlCommand cmd1 = new MySqlCommand(addArch, connect);
                         cmd1.Prepare();
-                        cmd1.Parameters.AddWithValue("@archive", prev_a);
+                        cmd1.Parameters.AddWithValue("@archive", prevA);
                         cmd1.ExecuteNonQuery();
                         arch.Add(a);
                     }

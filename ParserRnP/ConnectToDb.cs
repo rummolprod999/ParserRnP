@@ -5,7 +5,7 @@ namespace ParserRnP
 {
     public class ConnectToDb
     {
-        public static MySqlConnection GetDBConnection()
+        public static MySqlConnection GetDbConnection()
         {
             // Connection String.
             String connString =

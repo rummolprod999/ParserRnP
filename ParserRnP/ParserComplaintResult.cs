@@ -12,19 +12,17 @@ using Newtonsoft.Json.Linq;
 
 namespace ParserRnP
 {
-    public class ParserComplaint : Parser
+    public class ParserComplaintResult : Parser
     {
         protected DataTable DtRegion;
-
-        private string[] _fileUcomplaint = new[]
+        private string[] _fileUcomplaintRes = new[]
         {
-            "complaintcancel_", "complaint_", "tendersuspension_"
+            "checkresult_", "checkresultcancel_"
         };
-        private string[] _fileCancel = new[] {"complaintcancel_"};
-        private string[] _fileComplaint = new[] {"complaint_"};
-        private string[] _fileSuspend = new[] {"tendersuspension_"};
-
-        public ParserComplaint(TypeArguments arg) : base(arg)
+        private string[] _fileCancelRes = new[] {"checkresultcancel_"};
+        private string[] _fileComplaintRes = new[] {"checkresult_"};
+        
+        public ParserComplaintResult(TypeArguments arg) : base(arg)
         {
         }
 
@@ -34,20 +32,19 @@ namespace ParserRnP
             string pathParse = "";
             switch (Program.Periodparsing)
             {
-                case TypeArguments.LastComplaint:
-                    pathParse = $"/fcs_fas/complaint/";
+                case TypeArguments.LastComplaintRes:
+                    pathParse = $"/fcs_fas/checkResult/";
                     arch = GetListArchLast(pathParse);
                     break;
-                case TypeArguments.CurrComplaint:
-                    pathParse = $"/fcs_fas/complaint/currMonth/";
+                case TypeArguments.CurrComplaintRes:
+                    pathParse = $"/fcs_fas/checkResult/currMonth/";
                     arch = GetListArchCurr(pathParse);
                     break;
-                case TypeArguments.PrevComplaint:
-                    pathParse = $"/fcs_fas/complaint/prevMonth/";
+                case TypeArguments.PrevComplaintRes:
+                    pathParse = $"/fcs_fas/checkResult/prevMonth/";
                     arch = GetListArchPrev(pathParse);
                     break;
             }
-            
             if (arch.Count == 0)
             {
                 Log.Logger("Получен пустой список архивов", pathParse);
@@ -58,7 +55,7 @@ namespace ParserRnP
                 GetListFileArch(v, pathParse);
             }
         }
-        
+
         public override void GetListFileArch(string arch, string pathParse)
         {
             string filea = "";
@@ -73,31 +70,22 @@ namespace ParserRnP
                     {
                         DirectoryInfo dirInfo = new DirectoryInfo(pathUnzip);
                         FileInfo[] filelist = dirInfo.GetFiles();
-                        List<FileInfo> arrayXmlCancel = filelist
-                            .Where(a => _fileCancel.Any(
+                        List<FileInfo> arrayXmlCancelRes = filelist
+                            .Where(a => _fileCancelRes.Any(
                                 t => a.Name.ToLower().IndexOf(t, StringComparison.Ordinal) != -1))
                             .ToList();
-                        List<FileInfo> arrayXmlComplaint = filelist
-                            .Where(a => _fileComplaint.Any(
+                        List<FileInfo> arrayXmlComplaintRes = filelist
+                            .Where(a => _fileComplaintRes.Any(
                                 t => a.Name.ToLower().IndexOf(t, StringComparison.Ordinal) != -1))
                             .ToList();
-                        List<FileInfo> arrayXmlSuspend = filelist
-                            .Where(a => _fileSuspend.Any(
-                                t => a.Name.ToLower().IndexOf(t, StringComparison.Ordinal) != -1))
-                            .ToList();
-                        foreach (var f in arrayXmlComplaint)
+                        foreach (var f in arrayXmlComplaintRes)
                         {
-                            Bolter(f, TypeFileComplaint.Complaint);
+                            Bolter(f, TypeFileComplaintRes.ComplaintRes);
                         }
                         
-                        foreach (var f in arrayXmlCancel)
+                        foreach (var f in arrayXmlCancelRes)
                         {
-                            Bolter(f, TypeFileComplaint.Cancel);
-                        }
-                        
-                        foreach (var f in arrayXmlSuspend)
-                        {
-                            Bolter(f, TypeFileComplaint.Suspend);
+                            Bolter(f, TypeFileComplaintRes.CancelRes);
                         }
                         dirInfo.Delete(true);
                     }
@@ -105,7 +93,7 @@ namespace ParserRnP
             }
         }
         
-        public override void Bolter(FileInfo f, TypeFileComplaint typefile)
+        public override void Bolter(FileInfo f, TypeFileComplaintRes typefile)
         {
             if (!f.Name.ToLower().EndsWith(".xml", StringComparison.Ordinal))
             {
@@ -121,8 +109,8 @@ namespace ParserRnP
                 Log.Logger("Ошибка при парсинге xml", e, f);
             }
         }
-        
-        public void ParsingXml(FileInfo f, TypeFileComplaint typefile)
+
+        public void ParsingXml(FileInfo f, TypeFileComplaintRes typefile)
         {
             using (StreamReader sr = new StreamReader(f.ToString(), Encoding.Default))
             {
@@ -134,17 +122,13 @@ namespace ParserRnP
                 JObject json = JObject.Parse(jsons);
                 switch (typefile)
                 {
-                    case TypeFileComplaint.Complaint:
-                        Complaint44 a = new Complaint44(f, json);
+                    case TypeFileComplaintRes.ComplaintRes:
+                        ComplaintRes44 a = new ComplaintRes44(f, json);
                         a.Parsing();
                         break;
-                    case TypeFileComplaint.Cancel:
-                        ComplaintCancel b = new ComplaintCancel(f, json);
+                    case TypeFileComplaintRes.CancelRes:
+                        ComplaintCancelRes b = new ComplaintCancelRes(f, json);
                         b.Parsing();
-                        break;
-                    case TypeFileComplaint.Suspend:
-                        ComplaintSuspend c = new ComplaintSuspend(f, json);
-                        c.Parsing();
                         break;
                 }
             }
@@ -155,46 +139,9 @@ namespace ParserRnP
             List<string> archtemp = new List<string>();
             /*FtpClient ftp = ClientFtp44();*/
             archtemp = GetListFtp44(pathParse);
-            return archtemp.Where(a => _fileUcomplaint.Any(t => a.ToLower().IndexOf(t, StringComparison.Ordinal) != -1))
+            return archtemp.Where(a => _fileUcomplaintRes.Any(t => a.ToLower().IndexOf(t, StringComparison.Ordinal) != -1))
                 .ToList();
         }
-        
-        public override List<String> GetListArchCurr(string pathParse)
-        {
-            List<String> arch = new List<string>();
-            List<string> archtemp = new List<string>();
-            /*FtpClient ftp = ClientFtp44();*/
-            archtemp = GetListFtp44(pathParse);
-            foreach (var a in archtemp.Where(a =>
-                _fileUcomplaint.Any(t => a.ToLower().IndexOf(t, StringComparison.Ordinal) != -1)))
-            {
-                using (MySqlConnection connect = ConnectToDb.GetDbConnection())
-                {
-                    connect.Open();
-                    string selectArch =
-                        $"SELECT id FROM {Program.Prefix}arhiv_complaint WHERE arhiv = @archive";
-                    MySqlCommand cmd = new MySqlCommand(selectArch, connect);
-                    cmd.Prepare();
-                    cmd.Parameters.AddWithValue("@archive", a);
-                    MySqlDataReader reader = cmd.ExecuteReader();
-                    bool resRead = reader.HasRows;
-                    reader.Close();
-                    if (!resRead)
-                    {
-                        string addArch =
-                            $"INSERT INTO {Program.Prefix}arhiv_complaint SET arhiv = @archive";
-                        MySqlCommand cmd1 = new MySqlCommand(addArch, connect);
-                        cmd1.Prepare();
-                        cmd1.Parameters.AddWithValue("@archive", a);
-                        cmd1.ExecuteNonQuery();
-                        arch.Add(a);
-                    }
-                }
-            }
-
-            return arch;
-        }
-        
         public override List<String> GetListArchPrev(string pathParse)
         {
             List<String> arch = new List<string>();
@@ -209,7 +156,7 @@ namespace ParserRnP
                 {
                     connect.Open();
                     string selectArch =
-                        $"SELECT id FROM {Program.Prefix}arhiv_complaint WHERE arhiv = @archive";
+                        $"SELECT id FROM {Program.Prefix}arhiv_complaint_result WHERE arhiv = @archive";
                     MySqlCommand cmd = new MySqlCommand(selectArch, connect);
                     cmd.Prepare();
                     cmd.Parameters.AddWithValue("@archive", prevA);
@@ -219,7 +166,7 @@ namespace ParserRnP
                     if (!resRead)
                     {
                         string addArch =
-                            $"INSERT INTO {Program.Prefix}arhiv_complaint SET arhiv = @archive";
+                            $"INSERT INTO {Program.Prefix}arhiv_complaint_result SET arhiv = @archive";
                         MySqlCommand cmd1 = new MySqlCommand(addArch, connect);
                         cmd1.Prepare();
                         cmd1.Parameters.AddWithValue("@archive", prevA);
@@ -231,7 +178,43 @@ namespace ParserRnP
 
             return arch;
         }
+        
+        public override List<String> GetListArchCurr(string pathParse)
+        {
+            List<String> arch = new List<string>();
+            List<string> archtemp = new List<string>();
+            /*FtpClient ftp = ClientFtp44();*/
+            archtemp = GetListFtp44(pathParse);
+            foreach (var a in archtemp.Where(a =>
+                _fileUcomplaintRes.Any(t => a.ToLower().IndexOf(t, StringComparison.Ordinal) != -1)))
+            {
+                using (MySqlConnection connect = ConnectToDb.GetDbConnection())
+                {
+                    connect.Open();
+                    string selectArch =
+                        $"SELECT id FROM {Program.Prefix}arhiv_complaint_result WHERE arhiv = @archive";
+                    MySqlCommand cmd = new MySqlCommand(selectArch, connect);
+                    cmd.Prepare();
+                    cmd.Parameters.AddWithValue("@archive", a);
+                    MySqlDataReader reader = cmd.ExecuteReader();
+                    bool resRead = reader.HasRows;
+                    reader.Close();
+                    if (!resRead)
+                    {
+                        string addArch =
+                            $"INSERT INTO {Program.Prefix}arhiv_complaint_result SET arhiv = @archive";
+                        MySqlCommand cmd1 = new MySqlCommand(addArch, connect);
+                        cmd1.Prepare();
+                        cmd1.Parameters.AddWithValue("@archive", a);
+                        cmd1.ExecuteNonQuery();
+                        arch.Add(a);
+                    }
+                }
+            }
 
+            return arch;
+        }
+        
         private List<string> GetListFtp44(string pathParse)
         {
             List<string> archtemp = new List<string>();

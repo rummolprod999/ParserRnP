@@ -11,15 +11,15 @@ namespace ParserRnP
 {
     public class Unfair
     {
-        protected readonly JObject t;
-        protected readonly FileInfo file;
-        protected readonly string file_path;
+        protected readonly JObject T;
+        protected readonly FileInfo File;
+        protected readonly string FilePath;
 
         public Unfair(FileInfo f, JObject json)
         {
-            t = json;
-            file = f;
-            file_path = file.ToString();
+            T = json;
+            File = f;
+            FilePath = File.ToString();
         }
 
         public virtual void Parsing()
@@ -42,16 +42,16 @@ namespace ParserRnP
         public List<JToken> GetElements(JToken j, string s)
         {
             List<JToken> els = new List<JToken>();
-            var els_obj = j.SelectToken(s);
-            if (els_obj != null && els_obj.Type != JTokenType.Null)
+            var elsObj = j.SelectToken(s);
+            if (elsObj != null && elsObj.Type != JTokenType.Null)
             {
-                switch (els_obj.Type)
+                switch (elsObj.Type)
                 {
                     case JTokenType.Object:
-                        els.Add(els_obj);
+                        els.Add(elsObj);
                         break;
                     case JTokenType.Array:
-                        els.AddRange(els_obj);
+                        els.AddRange(elsObj);
                         break;
                 }
             }
