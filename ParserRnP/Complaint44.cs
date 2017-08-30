@@ -139,7 +139,8 @@ namespace ParserRnP
                             upd = 1;
                         }
                         reader.Close();
-                        string decisionPlace = ((string) c.SelectToken("commonInfo.decisionPlace") ?? "").Trim();
+                    }
+                    string decisionPlace = ((string) c.SelectToken("commonInfo.decisionPlace") ?? "").Trim();
                         int idRegistrationKo = 0;
                         string regNumRegistrationKo =
                             ((string) c.SelectToken("commonInfo.registrationKO.regNum") ?? "").Trim();
@@ -393,7 +394,7 @@ namespace ParserRnP
                             cmd1.Parameters.AddWithValue("@url", url);
                             cmd1.ExecuteNonQuery();
                         }
-                    }
+                    
                 }
             }
             else
