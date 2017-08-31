@@ -122,6 +122,7 @@ namespace ParserRnP
                     if (!String.IsNullOrEmpty(planDecisionDate) &&
                         !String.IsNullOrEmpty(versionNumber))
                     {
+                        planDecisionDate = planDecisionDate.Substring(0, 19);
                         string selectComp44 =
                             $"SELECT id FROM {Program.Prefix}complaint WHERE purchaseNumber = @purchaseNumber AND versionNumber = @versionNumber AND planDecisionDate = @planDecisionDate AND complaintNumber = @complaintNumber";
                         MySqlCommand cmd = new MySqlCommand(selectComp44, connect);

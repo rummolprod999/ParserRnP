@@ -93,6 +93,7 @@ namespace ParserRnP
         public static int AddComplaintResult = 0;
         public static int UpdateComplaintResult = 0;
         public static int AddComplaintCancelResult = 0;
+        public static int UpdateComplaintCancelResult = 0;
 
         public static void Main(string[] args)
         {
@@ -275,7 +276,7 @@ namespace ParserRnP
             c.Parsing();
             /*ParserComplaint b = new ParserComplaint(Periodparsing);
             FileInfo f = new FileInfo("/home/alex/Рабочий стол/parser/complaint_20170019274004049_1743623.xml");
-            b.ParsingXML(f, TypeFileComplaint.Complaint);*/
+            b.ParsingXml(f, TypeFileComplaint.Complaint);*/
 
             Log.Logger("Время окончания парсинга Complaint");
             Log.Logger("Добавили Complaint", AddComplaint);
@@ -290,11 +291,13 @@ namespace ParserRnP
             /*ParserComplaintResult c = new ParserComplaintResult(Periodparsing);
             c.Parsing();*/
             ParserComplaintResult b = new ParserComplaintResult(Periodparsing);
-            FileInfo f = new FileInfo("/home/alex/Рабочий стол/parser/checkResult_20170019274003864_322623.xml");
-            b.ParsingXml(f, TypeFileComplaintRes.ComplaintRes);
+            FileInfo f = new FileInfo("/home/alex/Рабочий стол/parser/checkResultCancel_201700130633000507_2427.xml");
+            b.ParsingXml(f, TypeFileComplaintRes.CancelRes);
             Log.Logger("Время окончания парсинга ComplaintResult");
-            Log.Logger("Добавили ComplaintResult", AddComplaintCancelResult);
+            Log.Logger("Добавили ComplaintResult", AddComplaintResult);
             Log.Logger("Обновили ComplaintResult", UpdateComplaintResult);
+            Log.Logger("Добавили ComplaintResultCancel", AddComplaintCancelResult);
+            Log.Logger("Обновили ComplaintResulCancel", UpdateComplaintCancelResult);
         }
     }
 }

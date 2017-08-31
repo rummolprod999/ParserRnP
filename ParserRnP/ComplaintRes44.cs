@@ -51,7 +51,7 @@ namespace ParserRnP
                 //Console.WriteLine(c.Type);
                 if (c.Type == JTokenType.Array)
                 {
-                    List<JToken> comp = GetElements(root, "complaint");
+                    List<JToken> comp = GetElements(root, "checkResult");
                     if (comp.Count > 0)
                     {
                         c = comp[0];
@@ -68,6 +68,9 @@ namespace ParserRnP
                 string createDate =
                 (JsonConvert.SerializeObject(c.SelectToken("commonInfo.createDate") ?? "") ??
                  "").Trim('"');
+                /*DateTime date_new = DateTime.Parse(createDate);
+                Console.WriteLine(date_new);*/
+                
                 if (String.IsNullOrEmpty(purchaseNumber) && String.IsNullOrEmpty(complaintNumber))
                 {
                     Log.Logger("Нет purchaseNumber and complaintNumber", FilePath);
@@ -81,6 +84,7 @@ namespace ParserRnP
                     if (!String.IsNullOrEmpty(createDate) &&
                         !String.IsNullOrEmpty(versionNumber))
                     {
+                        createDate = createDate.Substring(0, 19);
                         string selectComp44 =
                             $"SELECT id FROM {Program.Prefix}res_complaint WHERE purchaseNumber = @purchaseNumber AND versionNumber = @versionNumber AND createDate = @createDate AND complaintNumber = @complaintNumber";
                         MySqlCommand cmd = new MySqlCommand(selectComp44, connect);
@@ -148,7 +152,25 @@ namespace ParserRnP
                         cmd1.Parameters.AddWithValue("@complaintResult", complaintResult);
                         cmd1.Parameters.AddWithValue("@complaintResultInfo", complaintResultInfo);
                         int resInsComp = cmd1.ExecuteNonQuery();
+                        idCompRes = (int) cmd1.LastInsertedId;
                         AddComplaintRes44?.Invoke(resInsComp);
+                    }
+                    List<JToken> attach =
+                        GetElements(c, "complaint.decision.attachments.attachment");
+                    foreach (var att in attach)
+                    {
+                        string fileName = ((string) att.SelectToken("fileName") ?? "").Trim();
+                        string docDescription = ((string) att.SelectToken("docDescription") ?? "").Trim();
+                        string url = ((string) att.SelectToken("url") ?? "").Trim();
+                        string insertAtt =
+                            $"INSERT INTO {Program.Prefix}attach_complaint_res SET id_complaint_res = @id_complaint_res, fileName = @fileName, docDescription = @docDescription, url = @url";
+                        MySqlCommand cmd1 = new MySqlCommand(insertAtt, connect);
+                        cmd1.Prepare();
+                        cmd1.Parameters.AddWithValue("@id_complaint_res", idCompRes);
+                        cmd1.Parameters.AddWithValue("@fileName", fileName);
+                        cmd1.Parameters.AddWithValue("@docDescription", docDescription);
+                        cmd1.Parameters.AddWithValue("@url", url);
+                        cmd1.ExecuteNonQuery();
                     }
                 }
             }
