@@ -73,7 +73,7 @@ namespace ParserRnP
                 
                 if (String.IsNullOrEmpty(purchaseNumber) && String.IsNullOrEmpty(complaintNumber))
                 {
-                    Log.Logger("Нет purchaseNumber and complaintNumber", FilePath);
+                    //Log.Logger("Нет purchaseNumber and complaintNumber", FilePath);
                     return;
                 }
                 using (MySqlConnection connect = ConnectToDb.GetDbConnection())
