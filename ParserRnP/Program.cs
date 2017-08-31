@@ -291,8 +291,8 @@ namespace ParserRnP
             ParserComplaintResult c = new ParserComplaintResult(Periodparsing);
             c.Parsing();
             /*ParserComplaintResult b = new ParserComplaintResult(Periodparsing);
-            FileInfo f = new FileInfo("/home/alex/Рабочий стол/parser/checkResultCancel_201700130633000507_2427.xml");
-            b.ParsingXml(f, TypeFileComplaintRes.CancelRes);*/
+            FileInfo f = new FileInfo("/home/alex/Рабочий стол/parser/checkResult_201600116204000002_243146.xml");
+            b.ParsingXml(f, TypeFileComplaintRes.ComplaintRes);*/
             Log.Logger("Время окончания парсинга ComplaintResult");
             Log.Logger("Добавили ComplaintResult", AddComplaintResult);
             Log.Logger("Обновили ComplaintResult", UpdateComplaintResult);
