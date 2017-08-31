@@ -288,11 +288,11 @@ namespace ParserRnP
         private static void ParserComplintResult(TypeArguments arg)
         {
             Log.Logger("Время начала парсинга ComplaintResult");
-            /*ParserComplaintResult c = new ParserComplaintResult(Periodparsing);
-            c.Parsing();*/
-            ParserComplaintResult b = new ParserComplaintResult(Periodparsing);
+            ParserComplaintResult c = new ParserComplaintResult(Periodparsing);
+            c.Parsing();
+            /*ParserComplaintResult b = new ParserComplaintResult(Periodparsing);
             FileInfo f = new FileInfo("/home/alex/Рабочий стол/parser/checkResultCancel_201700130633000507_2427.xml");
-            b.ParsingXml(f, TypeFileComplaintRes.CancelRes);
+            b.ParsingXml(f, TypeFileComplaintRes.CancelRes);*/
             Log.Logger("Время окончания парсинга ComplaintResult");
             Log.Logger("Добавили ComplaintResult", AddComplaintResult);
             Log.Logger("Обновили ComplaintResult", UpdateComplaintResult);
