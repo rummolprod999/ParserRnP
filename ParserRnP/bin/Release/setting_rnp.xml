@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <setting>
-	<database>tender2</database>
+	<database>tender</database>
 	<tempdir_rnp>temp_rnp</tempdir_rnp>
 	<logdir_rnp>log_rnp</logdir_rnp>
 	<tempdir_bank>temp_bank</tempdir_bank>
@@ -10,9 +10,9 @@
 	<tempdir_complaint_result>temp_complaint_result</tempdir_complaint_result>
 	<logdir_complaint_result>log_complaint_result</logdir_complaint_result>
 	<prefix></prefix>
-	<userdb>root</userdb>
-	<passdb>1234</passdb>
+	<userdb>parser</userdb>
+	<passdb>Dft56Point</passdb>
 	<server>localhost</server>
 	<port>3306</port>
-	<years>2016, 2017</years>
+	<years>2016, 2017, 2018, 2019, 2020</years>
 </setting>
