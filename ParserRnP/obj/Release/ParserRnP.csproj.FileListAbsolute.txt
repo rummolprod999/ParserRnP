@@ -8,7 +8,8 @@
 /home/alex/RiderProjects/ParserRnP/ParserRnP/bin/Release/FluentFTP.xml
 /home/alex/RiderProjects/ParserRnP/ParserRnP/bin/Release/Ftp.xml
 /home/alex/RiderProjects/ParserRnP/ParserRnP/bin/Release/Newtonsoft.Json.xml
-/home/alex/RiderProjects/ParserRnP/ParserRnP/obj/Release/ParserRnP.csprojResolveAssemblyReference.cache
 /home/alex/RiderProjects/ParserRnP/ParserRnP/obj/Release/ParserRnP.csproj.CoreCompileInputs.cache
 /home/alex/RiderProjects/ParserRnP/ParserRnP/obj/Release/ParserRnP.exe
 /home/alex/RiderProjects/ParserRnP/ParserRnP/obj/Release/ParserRnP.pdb
+/home/alex/RiderProjects/ParserRnP/ParserRnP/obj/Release/ParserRnP.csproj.AssemblyReference.cache
+/home/alex/RiderProjects/ParserRnP/ParserRnP/obj/Release/ParserRnP.csproj.CopyComplete
