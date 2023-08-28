@@ -9,6 +9,8 @@
 	<logdir_complaint>log_complaint</logdir_complaint>
 	<tempdir_complaint_result>temp_complaint_result</tempdir_complaint_result>
 	<logdir_complaint_result>log_complaint_result</logdir_complaint_result>
+	<tempdir_nsi>temp_nsi</tempdir_nsi>
+	<logdir_nsi>log_nsi</logdir_nsi>
 	<prefix></prefix>
 	<userdb>parser</userdb>
 	<passdb>Dft56Point</passdb>

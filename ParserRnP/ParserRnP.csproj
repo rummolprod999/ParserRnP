@@ -69,10 +69,12 @@
     <Compile Include="IParser.cs" />
     <Compile Include="JsonExtensions.cs" />
     <Compile Include="Log.cs" />
+    <Compile Include="Nsi.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="ParserBank.cs" />
     <Compile Include="ParserComplaint.cs" />
     <Compile Include="ParserComplaintResult.cs" />
+    <Compile Include="ParserNsi.cs" />
     <Compile Include="ParserUnFair.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

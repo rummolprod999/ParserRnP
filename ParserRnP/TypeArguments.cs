@@ -15,7 +15,8 @@
         CurrComplaint,
         LastComplaintRes,
         PrevComplaintRes,
-        CurrComplaintRes
+        CurrComplaintRes,
+        Nsi
         
     }
 }

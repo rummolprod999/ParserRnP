@@ -43,29 +43,29 @@ namespace ParserRnP
 
         public override void Parsing()
         {
-            string xml = GetXml(File.ToString());
-            JObject root = (JObject) T.SelectToken("export");
-            JProperty firstOrDefault = root.Properties().FirstOrDefault(p => p.Name.Contains("checkResultCancel"));
+            var xml = GetXml(File.ToString());
+            var root = (JObject) T.SelectToken("export");
+            var firstOrDefault = root.Properties().FirstOrDefault(p => p.Name.Contains("checkResultCancel"));
             if (firstOrDefault != null)
             {
-                JToken c = firstOrDefault.Value;
+                var c = firstOrDefault.Value;
                 //Console.WriteLine(c.Type);
                 if (c.Type == JTokenType.Array)
                 {
-                    List<JToken> comp = GetElements(root, "checkResultCancel");
+                    var comp = GetElements(root, "checkResultCancel");
                     if (comp.Count > 0)
                     {
                         c = comp[0];
                     }
                 }
-                string checkResultNumber = ((string) c.SelectToken("commonInfo.checkResultNumber") ?? "").Trim();
+                var checkResultNumber = ((string) c.SelectToken("commonInfo.checkResultNumber") ?? "").Trim();
                 //Console.WriteLine(checkResultNumber);
-                string complaintNumber = ((string) c.SelectToken("complaint.complaintNumber") ?? "").Trim();
+                var complaintNumber = ((string) c.SelectToken("complaint.complaintNumber") ?? "").Trim();
                 //Console.WriteLine(complaintNumber);
-                string regNumber = ((string) c.SelectToken("commonInfo.regNumber") ?? "").Trim();
-                string purchaseNumber =
+                var regNumber = ((string) c.SelectToken("commonInfo.regNumber") ?? "").Trim();
+                var purchaseNumber =
                     ((string) c.SelectToken("complaint.checkedObject.purchase.purchaseNumber") ?? "").Trim();
-                string createDate =
+                var createDate =
                 (JsonConvert.SerializeObject(c.SelectToken("commonInfo.createDate") ?? "") ??
                  "").Trim('"');
                 if (String.IsNullOrEmpty(purchaseNumber) && String.IsNullOrEmpty(complaintNumber))
@@ -73,22 +73,22 @@ namespace ParserRnP
                     //Log.Logger("Нет purchaseNumber and complaintNumber", FilePath);
                     return;
                 }
-                using (MySqlConnection connect = ConnectToDb.GetDbConnection())
+                using (var connect = ConnectToDb.GetDbConnection())
                 {
                     connect.Open();
-                    int upd = 0;
-                    int idCompRes = 0;
+                    var upd = 0;
+                    var idCompRes = 0;
                     if (!String.IsNullOrEmpty(createDate))
                     {
                         createDate = createDate.Substring(0, 19);
-                        string selectComp44 =
+                        var selectComp44 =
                             $"SELECT id FROM {Program.Prefix}res_complaint WHERE purchaseNumber = @purchaseNumber AND createDate = @createDate AND complaintNumber = @complaintNumber";
-                        MySqlCommand cmd = new MySqlCommand(selectComp44, connect);
+                        var cmd = new MySqlCommand(selectComp44, connect);
                         cmd.Prepare();
                         cmd.Parameters.AddWithValue("@purchaseNumber", purchaseNumber);
                         cmd.Parameters.AddWithValue("@createDate", createDate);
                         cmd.Parameters.AddWithValue("@complaintNumber", complaintNumber);
-                        MySqlDataReader reader = cmd.ExecuteReader();
+                        var reader = cmd.ExecuteReader();
                         if (reader.HasRows)
                         {
                             reader.Read();
@@ -98,21 +98,21 @@ namespace ParserRnP
                         }
                         reader.Close();
                     }
-                    string decisionText = ((string) c.SelectToken("complaint.decision.decisionText") ?? "").Trim();
-                    string complaintResult = ((string) c.SelectToken("complaint.complaintResult") ?? "").Trim();
-                    string complaintResultInfo = ((string) c.SelectToken("complaint.complaintResultInfo") ?? "").Trim();
-                    string printForm = ((string) c.SelectToken("printForm.url") ?? "").Trim();
+                    var decisionText = ((string) c.SelectToken("complaint.decision.decisionText") ?? "").Trim();
+                    var complaintResult = ((string) c.SelectToken("complaint.complaintResult") ?? "").Trim();
+                    var complaintResultInfo = ((string) c.SelectToken("complaint.complaintResultInfo") ?? "").Trim();
+                    var printForm = ((string) c.SelectToken("printForm.url") ?? "").Trim();
                     if (upd == 1)
                     {
-                        string deleteAtt =
+                        var deleteAtt =
                             $"DELETE FROM {Program.Prefix}attach_complaint_res WHERE id_complaint_res = @id_complaint_res";
-                        MySqlCommand cmd0 = new MySqlCommand(deleteAtt, connect);
+                        var cmd0 = new MySqlCommand(deleteAtt, connect);
                         cmd0.Prepare();
                         cmd0.Parameters.AddWithValue("@id_complaint_res", idCompRes);
                         cmd0.ExecuteNonQuery();
-                        string updateC =
+                        var updateC =
                             $"UPDATE {Program.Prefix}res_complaint SET checkResultNumber = @checkResultNumber, complaintNumber = @complaintNumber, purchaseNumber = @purchaseNumber, regNumber = @regNumber, createDate = @createDate, xml = @xml, printForm = @printForm, decisionText = @decisionText, complaintResult = @complaintResult, complaintResultInfo = @complaintResultInfo, cancel = 1 WHERE id = @id";
-                        MySqlCommand cmd1 = new MySqlCommand(updateC, connect);
+                        var cmd1 = new MySqlCommand(updateC, connect);
                         cmd1.Prepare();
                         cmd1.Parameters.AddWithValue("@checkResultNumber", checkResultNumber);
                         cmd1.Parameters.AddWithValue("@complaintNumber", complaintNumber);
@@ -125,14 +125,14 @@ namespace ParserRnP
                         cmd1.Parameters.AddWithValue("@complaintResult", complaintResult);
                         cmd1.Parameters.AddWithValue("@complaintResultInfo", complaintResultInfo);
                         cmd1.Parameters.AddWithValue("@id", idCompRes);
-                        int resUpdComp = cmd1.ExecuteNonQuery();
+                        var resUpdComp = cmd1.ExecuteNonQuery();
                         UpdateComplaintCancelRes?.Invoke(resUpdComp);
                     }
                     else
                     {
-                        string InsertC =
+                        var InsertC =
                             $"INSERT INTO {Program.Prefix}res_complaint SET checkResultNumber = @checkResultNumber, complaintNumber = @complaintNumber, purchaseNumber = @purchaseNumber, regNumber = @regNumber, createDate = @createDate, xml = @xml, printForm = @printForm, decisionText = @decisionText, complaintResult = @complaintResult, complaintResultInfo = @complaintResultInfo, cancel = 1";
-                        MySqlCommand cmd1 = new MySqlCommand(InsertC, connect);
+                        var cmd1 = new MySqlCommand(InsertC, connect);
                         cmd1.Prepare();
                         cmd1.Parameters.AddWithValue("@checkResultNumber", checkResultNumber);
                         cmd1.Parameters.AddWithValue("@complaintNumber", complaintNumber);
@@ -144,20 +144,20 @@ namespace ParserRnP
                         cmd1.Parameters.AddWithValue("@decisionText", decisionText);
                         cmd1.Parameters.AddWithValue("@complaintResult", complaintResult);
                         cmd1.Parameters.AddWithValue("@complaintResultInfo", complaintResultInfo);
-                        int resInsComp = cmd1.ExecuteNonQuery();
+                        var resInsComp = cmd1.ExecuteNonQuery();
                         idCompRes = (int) cmd1.LastInsertedId;
                         AddComplaintCancelRes?.Invoke(resInsComp);
                     }
-                    List<JToken> attach =
+                    var attach =
                         GetElements(c, "complaint.decision.attachments.attachment");
                     foreach (var att in attach)
                     {
-                        string fileName = ((string) att.SelectToken("fileName") ?? "").Trim();
-                        string docDescription = ((string) att.SelectToken("docDescription") ?? "").Trim();
-                        string url = ((string) att.SelectToken("url") ?? "").Trim();
-                        string insertAtt =
+                        var fileName = ((string) att.SelectToken("fileName") ?? "").Trim();
+                        var docDescription = ((string) att.SelectToken("docDescription") ?? "").Trim();
+                        var url = ((string) att.SelectToken("url") ?? "").Trim();
+                        var insertAtt =
                             $"INSERT INTO {Program.Prefix}attach_complaint_res SET id_complaint_res = @id_complaint_res, fileName = @fileName, docDescription = @docDescription, url = @url";
-                        MySqlCommand cmd1 = new MySqlCommand(insertAtt, connect);
+                        var cmd1 = new MySqlCommand(insertAtt, connect);
                         cmd1.Prepare();
                         cmd1.Parameters.AddWithValue("@id_complaint_res", idCompRes);
                         cmd1.Parameters.AddWithValue("@fileName", fileName);

@@ -24,13 +24,13 @@ namespace ParserRnP
 
         public DataTable GetRegions()
         {
-            string reg = "SELECT * FROM region";
+            var reg = "SELECT * FROM region";
             DataTable dt;
-            using (MySqlConnection connect = ConnectToDb.GetDbConnection())
+            using (var connect = ConnectToDb.GetDbConnection())
             {
                 connect.Open();
-                MySqlDataAdapter adapter = new MySqlDataAdapter(reg, connect);
-                DataSet ds = new DataSet();
+                var adapter = new MySqlDataAdapter(reg, connect);
+                var ds = new DataSet();
                 adapter.Fill(ds);
                 dt = ds.Tables[0];
             }
@@ -39,62 +39,62 @@ namespace ParserRnP
 
         public virtual List<String> GetListArchLast(string pathParse)
         {
-            List<String> arch = new List<string>();
+            var arch = new List<string>();
 
             return arch;
         }
 
         public virtual List<String> GetListArchCurr(string pathParse)
         {
-            List<String> arch = new List<string>();
+            var arch = new List<string>();
 
             return arch;
         }
 
         public virtual List<String> GetListArchPrev(string pathParse)
         {
-            List<String> arch = new List<string>();
+            var arch = new List<string>();
 
             return arch;
         }
 
         public virtual List<String> GetListArchLast(string pathParse, string regionPath, string purchase)
         {
-            List<String> arch = new List<string>();
+            var arch = new List<string>();
 
             return arch;
         }
 
         public virtual List<String> GetListArchDaily(string pathParse, string regionPath, string purchase)
         {
-            List<String> arch = new List<string>();
+            var arch = new List<string>();
 
             return arch;
         }
 
         public WorkWithFtp ClientFtp44_old()
         {
-            WorkWithFtp ftpCl = new WorkWithFtp("ftp://ftp.zakupki.gov.ru", "free", "free");
+            var ftpCl = new WorkWithFtp("ftp://ftp.zakupki.gov.ru", "free", "free");
             return ftpCl;
         }
 
         public FtpClient ClientFtp44()
         {
-            FtpClient client = new FtpClient("ftp.zakupki.gov.ru", "free", "free");
+            var client = new FtpClient("ftp.zakupki.gov.ru", "free", "free");
             client.Connect();
             return client;
         }
 
         public FtpClient ClientFtp223()
         {
-            FtpClient client = new FtpClient("ftp.zakupki.gov.ru", "fz223free", "fz223free");
+            var client = new FtpClient("ftp.zakupki.gov.ru", "fz223free", "fz223free");
             client.Connect();
             return client;
         }
 
         public WorkWithFtp ClientFtp223_old()
         {
-            WorkWithFtp ftpCl = new WorkWithFtp("ftp://ftp.zakupki.gov.ru", "fz223free", "fz223free");
+            var ftpCl = new WorkWithFtp("ftp://ftp.zakupki.gov.ru", "fz223free", "fz223free");
             return ftpCl;
         }
 
@@ -129,16 +129,16 @@ namespace ParserRnP
 
         public string GetArch44(string arch, string pathParse)
         {
-            string file = "";
-            int count = 1;
+            var file = "";
+            var count = 1;
             while (true)
             {
                 try
                 {
                     /*string FileOnServer = $"{PathParse}/{Arch}";*/
-                    string fileOnServer = $"{arch}";
+                    var fileOnServer = $"{arch}";
                     file = $"{Program.TempPath}{Path.DirectorySeparatorChar}{arch}";
-                    FtpClient ftp = ClientFtp44();
+                    var ftp = ClientFtp44();
                     ftp.SetWorkingDirectory(pathParse);
                     ftp.DownloadFile(file, fileOnServer);
                     ftp.Disconnect();

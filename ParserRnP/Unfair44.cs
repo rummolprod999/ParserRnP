@@ -34,43 +34,43 @@ namespace ParserRnP
 
         public override void Parsing()
         {
-            string xml = GetXml(File.ToString());
-            JObject root = (JObject) T.SelectToken("export");
-            JProperty firstOrDefault = root.Properties().FirstOrDefault(p => p.Name.Contains("unfairSupplier"));
+            var xml = GetXml(File.ToString());
+            var root = (JObject) T.SelectToken("export");
+            var firstOrDefault = root.Properties().FirstOrDefault(p => p.Name.Contains("unfairSupplier"));
             if (firstOrDefault != null)
             {
-                JToken r = firstOrDefault.Value;
-                string registryNum = ((string) r.SelectToken("registryNum") ?? "").Trim();
+                var r = firstOrDefault.Value;
+                var registryNum = ((string) r.SelectToken("registryNum") ?? "").Trim();
                 if (String.IsNullOrEmpty(registryNum))
                 {
                     Log.Logger("У unfair нет registryNum", FilePath);
                 }
-                string publishDate = (JsonConvert.SerializeObject(r.SelectToken("publishDate") ?? "") ??
-                                      "").Trim('"');
+                var publishDate = (JsonConvert.SerializeObject(r.SelectToken("publishDate") ?? "") ??
+                                   "").Trim('"');
                 if (String.IsNullOrEmpty(publishDate))
                 {
                     Log.Logger("Нет publishDate", FilePath);
                 }
-                string approveDate = (JsonConvert.SerializeObject(r.SelectToken("approveDate") ?? "") ??
-                                      "").Trim('"');
+                var approveDate = (JsonConvert.SerializeObject(r.SelectToken("approveDate") ?? "") ??
+                                   "").Trim('"');
                 if (String.IsNullOrEmpty(approveDate))
                 {
                     Log.Logger("Нет approveDate", FilePath);
                 }
-                string state = ((string) r.SelectToken("state") ?? "").Trim();
-                using (MySqlConnection connect = ConnectToDb.GetDbConnection())
+                var state = ((string) r.SelectToken("state") ?? "").Trim();
+                using (var connect = ConnectToDb.GetDbConnection())
                 {
                     connect.Open();
                     if (!String.IsNullOrEmpty(registryNum) && !String.IsNullOrEmpty(publishDate))
                     {
-                        string selectUnf =
+                        var selectUnf =
                             $"SELECT id FROM {Program.Prefix}unfair WHERE registryNum = @registryNum AND publishDate = @publishDate AND state = @state";
-                        MySqlCommand cmd = new MySqlCommand(selectUnf, connect);
+                        var cmd = new MySqlCommand(selectUnf, connect);
                         cmd.Prepare();
                         cmd.Parameters.AddWithValue("@registryNum", registryNum);
                         cmd.Parameters.AddWithValue("@publishDate", publishDate);
                         cmd.Parameters.AddWithValue("@state", state);
-                        MySqlDataReader reader = cmd.ExecuteReader();
+                        var reader = cmd.ExecuteReader();
                         if (reader.HasRows)
                         {
                             reader.Close();
@@ -102,17 +102,17 @@ namespace ParserRnP
                         reader2.Close();*/
                     }
 
-                    int idOrg = 0;
-                    string publishOrgregNum = ((string) r.SelectToken("publishOrg.regNum") ?? "").Trim();
-                    string publishOrgfullName = ((string) r.SelectToken("publishOrg.fullName") ?? "").Trim();
+                    var idOrg = 0;
+                    var publishOrgregNum = ((string) r.SelectToken("publishOrg.regNum") ?? "").Trim();
+                    var publishOrgfullName = ((string) r.SelectToken("publishOrg.fullName") ?? "").Trim();
                     if (!String.IsNullOrEmpty(publishOrgregNum))
                     {
-                        string selectPubOrg =
+                        var selectPubOrg =
                             $"SELECT id FROM {Program.Prefix}unfair_publish_org WHERE regNum = @regNum";
-                        MySqlCommand cmd4 = new MySqlCommand(selectPubOrg, connect);
+                        var cmd4 = new MySqlCommand(selectPubOrg, connect);
                         cmd4.Prepare();
                         cmd4.Parameters.AddWithValue("@regNum", publishOrgregNum);
-                        MySqlDataReader reader3 = cmd4.ExecuteReader();
+                        var reader3 = cmd4.ExecuteReader();
                         if (reader3.HasRows)
                         {
                             reader3.Read();
@@ -122,9 +122,9 @@ namespace ParserRnP
                         else
                         {
                             reader3.Close();
-                            string insertPubOrg =
+                            var insertPubOrg =
                                 $"INSERT INTO {Program.Prefix}unfair_publish_org SET regNum = @regNum, fullName = @fullName";
-                            MySqlCommand cmd5 = new MySqlCommand(insertPubOrg, connect);
+                            var cmd5 = new MySqlCommand(insertPubOrg, connect);
                             cmd5.Prepare();
                             cmd5.Parameters.AddWithValue("@regNum", publishOrgregNum);
                             cmd5.Parameters.AddWithValue("@fullName", publishOrgfullName);
@@ -136,21 +136,21 @@ namespace ParserRnP
                     {
                         Log.Logger("Нет organizer_reg_num", FilePath);
                     }
-                    string createReason = ((string) r.SelectToken("createReason") ?? "").Trim();
-                    string approveReason = ((string) r.SelectToken("approveReason") ?? "").Trim();
-                    int idCustomer = 0;
-                    string customerregNum = ((string) r.SelectToken("customer.regNum") ?? "").Trim();
-                    string customerfullName = ((string) r.SelectToken("customer.fullName") ?? "").Trim();
-                    string customerInn = ((string) r.SelectToken("customer.INN") ?? "").Trim();
-                    string customerKpp = ((string) r.SelectToken("customer.KPP") ?? "").Trim();
+                    var createReason = ((string) r.SelectToken("createReason") ?? "").Trim();
+                    var approveReason = ((string) r.SelectToken("approveReason") ?? "").Trim();
+                    var idCustomer = 0;
+                    var customerregNum = ((string) r.SelectToken("customer.regNum") ?? "").Trim();
+                    var customerfullName = ((string) r.SelectToken("customer.fullName") ?? "").Trim();
+                    var customerInn = ((string) r.SelectToken("customer.INN") ?? "").Trim();
+                    var customerKpp = ((string) r.SelectToken("customer.KPP") ?? "").Trim();
                     if (!String.IsNullOrEmpty(customerregNum))
                     {
-                        string selectCustomer =
+                        var selectCustomer =
                             $"SELECT id FROM {Program.Prefix}unfair_customer WHERE regNum = @regNum";
-                        MySqlCommand cmd6 = new MySqlCommand(selectCustomer, connect);
+                        var cmd6 = new MySqlCommand(selectCustomer, connect);
                         cmd6.Prepare();
                         cmd6.Parameters.AddWithValue("@regNum", customerregNum);
-                        MySqlDataReader reader4 = cmd6.ExecuteReader();
+                        var reader4 = cmd6.ExecuteReader();
                         if (reader4.HasRows)
                         {
                             reader4.Read();
@@ -160,9 +160,9 @@ namespace ParserRnP
                         else
                         {
                             reader4.Close();
-                            string insertCustomer =
+                            var insertCustomer =
                                 $"INSERT INTO {Program.Prefix}unfair_customer SET regNum = @regNum, fullName = @fullName, INN = @INN, KPP = @KPP";
-                            MySqlCommand cmd7 = new MySqlCommand(insertCustomer, connect);
+                            var cmd7 = new MySqlCommand(insertCustomer, connect);
                             cmd7.Prepare();
                             cmd7.Parameters.AddWithValue("@regNum", customerregNum);
                             cmd7.Parameters.AddWithValue("@fullName", customerfullName);
@@ -176,30 +176,30 @@ namespace ParserRnP
                     {
                         Log.Logger("Нет customer_reg_num", FilePath);
                     }
-                    int idSupplier = 0;
-                    string innSupplier = ((string) r.SelectToken("unfairSupplier.inn") ?? "").Trim();
-                    string kppSupplier = ((string) r.SelectToken("unfairSupplier.kpp") ?? "").Trim();
-                    string fullNameSupplier = ((string) r.SelectToken("unfairSupplier.fullName") ?? "").Trim();
-                    string placefullName = ((string) r.SelectToken("unfairSupplier.place.kladr.fullName") ?? "")
+                    var idSupplier = 0;
+                    var innSupplier = ((string) r.SelectToken("unfairSupplier.inn") ?? "").Trim();
+                    var kppSupplier = ((string) r.SelectToken("unfairSupplier.kpp") ?? "").Trim();
+                    var fullNameSupplier = ((string) r.SelectToken("unfairSupplier.fullName") ?? "").Trim();
+                    var placefullName = ((string) r.SelectToken("unfairSupplier.place.kladr.fullName") ?? "")
                         .Trim();
-                    string subjectRf = ((string) r.SelectToken("unfairSupplier.place.kladr.subjectRF") ?? "")
+                    var subjectRf = ((string) r.SelectToken("unfairSupplier.place.kladr.subjectRF") ?? "")
                         .Trim();
-                    string area = ((string) r.SelectToken("unfairSupplier.place.kladr.area") ?? "")
+                    var area = ((string) r.SelectToken("unfairSupplier.place.kladr.area") ?? "")
                         .Trim();
-                    string street = ((string) r.SelectToken("unfairSupplier.place.kladr.street") ?? "")
+                    var street = ((string) r.SelectToken("unfairSupplier.place.kladr.street") ?? "")
                         .Trim();
-                    string building = ((string) r.SelectToken("unfairSupplier.place.kladr.building") ?? "")
+                    var building = ((string) r.SelectToken("unfairSupplier.place.kladr.building") ?? "")
                         .Trim();
                     placefullName = $"{subjectRf}, {area}, {street}, {building}, {placefullName}";
                     if (!String.IsNullOrEmpty(innSupplier))
                     {
-                        string selectSupplier =
+                        var selectSupplier =
                             $"SELECT id FROM {Program.Prefix}unfair_suppplier WHERE inn = @inn AND kpp = @kpp";
-                        MySqlCommand cmd8 = new MySqlCommand(selectSupplier, connect);
+                        var cmd8 = new MySqlCommand(selectSupplier, connect);
                         cmd8.Prepare();
                         cmd8.Parameters.AddWithValue("@inn", innSupplier);
                         cmd8.Parameters.AddWithValue("@kpp", kppSupplier);
-                        MySqlDataReader reader5 = cmd8.ExecuteReader();
+                        var reader5 = cmd8.ExecuteReader();
                         if (reader5.HasRows)
                         {
                             reader5.Read();
@@ -209,13 +209,13 @@ namespace ParserRnP
                         else
                         {
                             reader5.Close();
-                            string email = ((string) r.SelectToken("unfairSupplier.place.email") ?? "").Trim();
-                            string foundersNames =
+                            var email = ((string) r.SelectToken("unfairSupplier.place.email") ?? "").Trim();
+                            var foundersNames =
                                 ((string) r.SelectToken("unfairSupplier.founders.names") ?? "").Trim();
-                            string foundersInn = ((string) r.SelectToken("unfairSupplier.founders.inn") ?? "").Trim();
-                            string insertSupplier =
+                            var foundersInn = ((string) r.SelectToken("unfairSupplier.founders.inn") ?? "").Trim();
+                            var insertSupplier =
                                 $"INSERT INTO {Program.Prefix}unfair_suppplier SET inn = @inn, kpp = @kpp, fullName = @fullName, placefullName = @placefullName, email = @email, founders_names = @founders_names, founders_inn = @founders_inn";
-                            MySqlCommand cmd9 = new MySqlCommand(insertSupplier, connect);
+                            var cmd9 = new MySqlCommand(insertSupplier, connect);
                             cmd9.Prepare();
                             cmd9.Parameters.AddWithValue("@inn", innSupplier);
                             cmd9.Parameters.AddWithValue("@kpp", kppSupplier);
@@ -232,25 +232,25 @@ namespace ParserRnP
                     {
                         Log.Logger("Нет inn_supplier", FilePath);
                     }
-                    string purchaseNumber = ((string) r.SelectToken("purchase.purchaseNumber") ?? "").Trim();
-                    string purchaseObjectInfo = ((string) r.SelectToken("purchase.purchaseObjectInfo") ?? "").Trim();
-                    string lotNumber = ((string) r.SelectToken("purchase.lotNumber") ?? "").Trim();
-                    string contractRegNum = ((string) r.SelectToken("contract.regNum") ?? "").Trim();
-                    string contractProductInfo = ((string) r.SelectToken("contract.productInfo") ?? "").Trim();
-                    string contractOkpdCode = ((string) r.SelectToken("contract.OKPD.code") ?? "").Trim();
-                    string contractOkpdName = ((string) r.SelectToken("contract.OKPD.name") ?? "").Trim();
-                    string contractCurrencyCode = ((string) r.SelectToken("contract.currency.code") ?? "").Trim();
-                    string contractPrice = ((string) r.SelectToken("contract.price") ?? "").Trim();
-                    string contractCancelSignDate = ((string) r.SelectToken("contract.cancel.signDate") ?? "").Trim();
-                    string contractCancelPerformanceDate =
+                    var purchaseNumber = ((string) r.SelectToken("purchase.purchaseNumber") ?? "").Trim();
+                    var purchaseObjectInfo = ((string) r.SelectToken("purchase.purchaseObjectInfo") ?? "").Trim();
+                    var lotNumber = ((string) r.SelectToken("purchase.lotNumber") ?? "").Trim();
+                    var contractRegNum = ((string) r.SelectToken("contract.regNum") ?? "").Trim();
+                    var contractProductInfo = ((string) r.SelectToken("contract.productInfo") ?? "").Trim();
+                    var contractOkpdCode = ((string) r.SelectToken("contract.OKPD.code") ?? "").Trim();
+                    var contractOkpdName = ((string) r.SelectToken("contract.OKPD.name") ?? "").Trim();
+                    var contractCurrencyCode = ((string) r.SelectToken("contract.currency.code") ?? "").Trim();
+                    var contractPrice = ((string) r.SelectToken("contract.price") ?? "").Trim();
+                    var contractCancelSignDate = ((string) r.SelectToken("contract.cancel.signDate") ?? "").Trim();
+                    var contractCancelPerformanceDate =
                         ((string) r.SelectToken("contract.cancel.performanceDate") ?? "").Trim();
-                    string contractCancelBaseName =
+                    var contractCancelBaseName =
                         ((string) r.SelectToken("contract.cancel.base.name") ?? "").Trim();
-                    string contractCancelCancelDate =
+                    var contractCancelCancelDate =
                         ((string) r.SelectToken("contract.cancel.cancelDate") ?? "").Trim();
-                    string insertUnfair =
+                    var insertUnfair =
                         $"INSERT INTO {Program.Prefix}unfair SET publishDate = @publishDate, approveDate = @approveDate, registryNum = @registryNum, state = @state, createReason = @createReason, approveReason  = @approveReason, id_customer = @id_customer, id_supplier = @id_supplier, id_org = @id_org, purchaseNumber = @purchaseNumber, purchaseObjectInfo = @purchaseObjectInfo, lotNumber = @lotNumber, contract_regNum = @contract_regNum, contract_productInfo = @contract_productInfo, contract_OKPD_code = @contract_OKPD_code, contract_OKPD_name = @contract_OKPD_name, contract_currency_code = @contract_currency_code, contract_price = @contract_price, contract_cancel_signDate = @contract_cancel_signDate, contract_cancel_performanceDate = @contract_cancel_performanceDate, contract_cancel_base_name = @contract_cancel_base_name, contract_cancel_cancelDate = @contract_cancel_cancelDate, full_name_supplier = @full_name_supplier, placefullName_supplier = @placefullName_supplier";
-                    MySqlCommand cmd10 = new MySqlCommand(insertUnfair, connect);
+                    var cmd10 = new MySqlCommand(insertUnfair, connect);
                     cmd10.Prepare();
                     cmd10.Parameters.AddWithValue("@publishDate", publishDate);
                     cmd10.Parameters.AddWithValue("@approveDate", approveDate);
@@ -276,7 +276,7 @@ namespace ParserRnP
                     cmd10.Parameters.AddWithValue("@contract_cancel_cancelDate", contractCancelCancelDate);
                     cmd10.Parameters.AddWithValue("@full_name_supplier", fullNameSupplier);
                     cmd10.Parameters.AddWithValue("@placefullName_supplier", placefullName);
-                    int resInsertUnf = cmd10.ExecuteNonQuery();
+                    var resInsertUnf = cmd10.ExecuteNonQuery();
                     AddUnfair44?.Invoke(resInsertUnf);
                 }
             }

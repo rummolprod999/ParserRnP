@@ -28,11 +28,11 @@ namespace ParserRnP
 
         public string GetXml(string xml)
         {
-            string[] xmlt = xml.Split('/');
-            int t = xmlt.Length;
+            var xmlt = xml.Split('/');
+            var t = xmlt.Length;
             if (t >= 2)
             {
-                string sxml = xmlt[t - 2] + "/" + xmlt[t - 1];
+                var sxml = xmlt[t - 2] + "/" + xmlt[t - 1];
                 return sxml;
             }
 
@@ -41,7 +41,7 @@ namespace ParserRnP
 
         public List<JToken> GetElements(JToken j, string s)
         {
-            List<JToken> els = new List<JToken>();
+            var els = new List<JToken>();
             var elsObj = j.SelectToken(s);
             if (elsObj != null && elsObj.Type != JTokenType.Null)
             {

@@ -8,11 +8,11 @@ namespace ParserRnP
     {
         public static string Unzip(string filea)
         {
-            FileInfo fileInf = new FileInfo(filea);
+            var fileInf = new FileInfo(filea);
             if (fileInf.Exists)
             {
-                int rPoint = filea.LastIndexOf('.');
-                string lDir = filea.Substring(0, rPoint);
+                var rPoint = filea.LastIndexOf('.');
+                var lDir = filea.Substring(0, rPoint);
                 Directory.CreateDirectory(lDir);
                 try
                 {

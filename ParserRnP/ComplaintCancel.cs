@@ -34,28 +34,28 @@ namespace ParserRnP
 
         public override void Parsing()
         {
-            JObject root = (JObject) T.SelectToken("export");
-            List<JToken> cancel = GetElements(root, "complaintCancel");
+            var root = (JObject) T.SelectToken("export");
+            var cancel = GetElements(root, "complaintCancel");
             if (cancel.Count > 0)
             {
                 
-                string complaintNumber = ((string) cancel[0].SelectToken("complaintNumber") ?? "").Trim();
-                string regNumber = ((string) cancel[0].SelectToken("regNumber") ?? "").Trim();
+                var complaintNumber = ((string) cancel[0].SelectToken("complaintNumber") ?? "").Trim();
+                var regNumber = ((string) cancel[0].SelectToken("regNumber") ?? "").Trim();
                 if ((String.IsNullOrEmpty(complaintNumber) || complaintNumber.Length < 3) && String.IsNullOrEmpty(regNumber))
                 {
                     Log.Logger("Нет complaintNumber and regNumber у Cancel", FilePath, complaintNumber);
                     return;
                 }
-                using (MySqlConnection connect = ConnectToDb.GetDbConnection())
+                using (var connect = ConnectToDb.GetDbConnection())
                 {
                     connect.Open();
                     if (!String.IsNullOrEmpty(complaintNumber) && complaintNumber.Length >= 3)
                     {
-                        string updateComp = $"UPDATE {Program.Prefix}complaint SET cancel = 1 WHERE complaintNumber = @complaintNumber";
-                        MySqlCommand cmd = new MySqlCommand(updateComp, connect);
+                        var updateComp = $"UPDATE {Program.Prefix}complaint SET cancel = 1 WHERE complaintNumber = @complaintNumber";
+                        var cmd = new MySqlCommand(updateComp, connect);
                         cmd.Prepare();
                         cmd.Parameters.AddWithValue("@complaintNumber", complaintNumber);
-                        int status = cmd.ExecuteNonQuery();
+                        var status = cmd.ExecuteNonQuery();
                         if (status > 0)
                         {
                             AddComplaintCancel?.Invoke(status);
@@ -63,11 +63,11 @@ namespace ParserRnP
                     }
                     else if (!String.IsNullOrEmpty(regNumber))
                     {
-                        string updateComp = $"UPDATE {Program.Prefix}complaint SET cancel = 1 WHERE regNumber = @regNumber";
-                        MySqlCommand cmd = new MySqlCommand(updateComp, connect);
+                        var updateComp = $"UPDATE {Program.Prefix}complaint SET cancel = 1 WHERE regNumber = @regNumber";
+                        var cmd = new MySqlCommand(updateComp, connect);
                         cmd.Prepare();
                         cmd.Parameters.AddWithValue("@regNumber", regNumber);
-                        int status = cmd.ExecuteNonQuery();
+                        var status = cmd.ExecuteNonQuery();
                         if (status > 0)
                         {
                             AddComplaintCancel?.Invoke(status);

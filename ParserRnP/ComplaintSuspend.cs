@@ -34,21 +34,21 @@ namespace ParserRnP
 
         public override void Parsing()
         {
-            JObject root = (JObject) T.SelectToken("export");
-            JProperty firstOrDefault = root.Properties().FirstOrDefault(p => p.Name.Contains("tenderSuspension"));
+            var root = (JObject) T.SelectToken("export");
+            var firstOrDefault = root.Properties().FirstOrDefault(p => p.Name.Contains("tenderSuspension"));
             if (firstOrDefault != null)
             {
-                JToken c = firstOrDefault.Value;
+                var c = firstOrDefault.Value;
                 if (c.Type == JTokenType.Array)
                 {
-                    List<JToken> comp = GetElements(root, "tenderSuspension");
+                    var comp = GetElements(root, "tenderSuspension");
                     if (comp.Count > 0)
                     {
                         c = comp[0];
                     }
                 }
-                string complaintNumber = ((string) c.SelectToken("complaintNumber") ?? "").Trim();
-                string purchaseNumber = ((string) c.SelectToken("tendersInfo.purchase.purchaseNumber") ?? "").Trim();
+                var complaintNumber = ((string) c.SelectToken("complaintNumber") ?? "").Trim();
+                var purchaseNumber = ((string) c.SelectToken("tendersInfo.purchase.purchaseNumber") ?? "").Trim();
                 if (String.IsNullOrEmpty(purchaseNumber))
                 {
                     purchaseNumber = ((string) c.SelectToken("tendersInfo.order.notificationNumber") ?? "").Trim();
@@ -58,17 +58,17 @@ namespace ParserRnP
                     Log.Logger("Нет purchaseNumber у Suspend", FilePath);
                     return;
                 }
-                string action = ((string) c.SelectToken("action") ?? "").Trim();
-                using (MySqlConnection connect = ConnectToDb.GetDbConnection())
+                var action = ((string) c.SelectToken("action") ?? "").Trim();
+                using (var connect = ConnectToDb.GetDbConnection())
                 {
                     connect.Open();
-                    string updateComp =
+                    var updateComp =
                         $"UPDATE {Program.Prefix}complaint SET tender_suspend = @tender_suspend WHERE purchaseNumber = @purchaseNumber";
-                    MySqlCommand cmd = new MySqlCommand(updateComp, connect);
+                    var cmd = new MySqlCommand(updateComp, connect);
                     cmd.Prepare();
                     cmd.Parameters.AddWithValue("@purchaseNumber", purchaseNumber);
                     cmd.Parameters.AddWithValue("@tender_suspend", action);
-                    int status = cmd.ExecuteNonQuery();
+                    var status = cmd.ExecuteNonQuery();
                     if (status > 0)
                     {
                         AddComplaintSuspend?.Invoke(status);

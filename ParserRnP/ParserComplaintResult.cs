@@ -28,8 +28,8 @@ namespace ParserRnP
 
         public override void Parsing()
         {
-            List<String> arch = new List<string>();
-            string pathParse = "";
+            var arch = new List<string>();
+            var pathParse = "";
             switch (Program.Periodparsing)
             {
                 case TypeArguments.LastComplaintRes:
@@ -58,8 +58,8 @@ namespace ParserRnP
 
         public override void GetListFileArch(string arch, string pathParse)
         {
-            string filea = "";
-            string pathUnzip = "";
+            var filea = "";
+            var pathUnzip = "";
             filea = GetArch44(arch, pathParse);
             if (!String.IsNullOrEmpty(filea))
             {
@@ -68,13 +68,13 @@ namespace ParserRnP
                 {
                     if (Directory.Exists(pathUnzip))
                     {
-                        DirectoryInfo dirInfo = new DirectoryInfo(pathUnzip);
-                        FileInfo[] filelist = dirInfo.GetFiles();
-                        List<FileInfo> arrayXmlCancelRes = filelist
+                        var dirInfo = new DirectoryInfo(pathUnzip);
+                        var filelist = dirInfo.GetFiles();
+                        var arrayXmlCancelRes = filelist
                             .Where(a => _fileCancelRes.Any(
                                 t => a.Name.ToLower().IndexOf(t, StringComparison.Ordinal) != -1))
                             .ToList();
-                        List<FileInfo> arrayXmlComplaintRes = filelist
+                        var arrayXmlComplaintRes = filelist
                             .Where(a => _fileComplaintRes.Any(
                                 t => a.Name.ToLower().IndexOf(t, StringComparison.Ordinal) != -1))
                             .ToList();
@@ -112,22 +112,22 @@ namespace ParserRnP
 
         public void ParsingXml(FileInfo f, TypeFileComplaintRes typefile)
         {
-            using (StreamReader sr = new StreamReader(f.ToString(), Encoding.Default))
+            using (var sr = new StreamReader(f.ToString(), Encoding.Default))
             {
                 var ftext = sr.ReadToEnd();
                 ftext = ClearText.ClearString(ftext);
-                XmlDocument doc = new XmlDocument();
+                var doc = new XmlDocument();
                 doc.LoadXml(ftext);
-                string jsons = JsonConvert.SerializeXmlNode(doc);
-                JObject json = JObject.Parse(jsons);
+                var jsons = JsonConvert.SerializeXmlNode(doc);
+                var json = JObject.Parse(jsons);
                 switch (typefile)
                 {
                     case TypeFileComplaintRes.ComplaintRes:
-                        ComplaintRes44 a = new ComplaintRes44(f, json);
+                        var a = new ComplaintRes44(f, json);
                         a.Parsing();
                         break;
                     case TypeFileComplaintRes.CancelRes:
-                        ComplaintCancelRes b = new ComplaintCancelRes(f, json);
+                        var b = new ComplaintCancelRes(f, json);
                         b.Parsing();
                         break;
                 }
@@ -136,7 +136,7 @@ namespace ParserRnP
 
         public override List<String> GetListArchLast(string pathParse)
         {
-            List<string> archtemp = new List<string>();
+            var archtemp = new List<string>();
             /*FtpClient ftp = ClientFtp44();*/
             archtemp = GetListFtp44(pathParse);
             return archtemp.Where(a => _fileUcomplaintRes.Any(t => a.ToLower().IndexOf(t, StringComparison.Ordinal) != -1))
@@ -144,30 +144,30 @@ namespace ParserRnP
         }
         public override List<String> GetListArchPrev(string pathParse)
         {
-            List<String> arch = new List<string>();
-            List<string> archtemp = new List<string>();
+            var arch = new List<string>();
+            var archtemp = new List<string>();
             /*FtpClient ftp = ClientFtp44();*/
             archtemp = GetListFtp44(pathParse);
-            string serachd = $"{Program.LocalDate:yyyyMMdd}";
+            var serachd = $"{Program.LocalDate:yyyyMMdd}";
             foreach (var a in archtemp.Where(a => a.ToLower().IndexOf(serachd, StringComparison.Ordinal) != -1))
             {
-                string prevA = $"prev_{a}";
-                using (MySqlConnection connect = ConnectToDb.GetDbConnection())
+                var prevA = $"prev_{a}";
+                using (var connect = ConnectToDb.GetDbConnection())
                 {
                     connect.Open();
-                    string selectArch =
+                    var selectArch =
                         $"SELECT id FROM {Program.Prefix}arhiv_complaint_result WHERE arhiv = @archive";
-                    MySqlCommand cmd = new MySqlCommand(selectArch, connect);
+                    var cmd = new MySqlCommand(selectArch, connect);
                     cmd.Prepare();
                     cmd.Parameters.AddWithValue("@archive", prevA);
-                    MySqlDataReader reader = cmd.ExecuteReader();
-                    bool resRead = reader.HasRows;
+                    var reader = cmd.ExecuteReader();
+                    var resRead = reader.HasRows;
                     reader.Close();
                     if (!resRead)
                     {
-                        string addArch =
+                        var addArch =
                             $"INSERT INTO {Program.Prefix}arhiv_complaint_result SET arhiv = @archive";
-                        MySqlCommand cmd1 = new MySqlCommand(addArch, connect);
+                        var cmd1 = new MySqlCommand(addArch, connect);
                         cmd1.Prepare();
                         cmd1.Parameters.AddWithValue("@archive", prevA);
                         cmd1.ExecuteNonQuery();
@@ -181,29 +181,29 @@ namespace ParserRnP
         
         public override List<String> GetListArchCurr(string pathParse)
         {
-            List<String> arch = new List<string>();
-            List<string> archtemp = new List<string>();
+            var arch = new List<string>();
+            var archtemp = new List<string>();
             /*FtpClient ftp = ClientFtp44();*/
             archtemp = GetListFtp44(pathParse);
             foreach (var a in archtemp.Where(a =>
                 _fileUcomplaintRes.Any(t => a.ToLower().IndexOf(t, StringComparison.Ordinal) != -1)))
             {
-                using (MySqlConnection connect = ConnectToDb.GetDbConnection())
+                using (var connect = ConnectToDb.GetDbConnection())
                 {
                     connect.Open();
-                    string selectArch =
+                    var selectArch =
                         $"SELECT id FROM {Program.Prefix}arhiv_complaint_result WHERE arhiv = @archive";
-                    MySqlCommand cmd = new MySqlCommand(selectArch, connect);
+                    var cmd = new MySqlCommand(selectArch, connect);
                     cmd.Prepare();
                     cmd.Parameters.AddWithValue("@archive", a);
-                    MySqlDataReader reader = cmd.ExecuteReader();
-                    bool resRead = reader.HasRows;
+                    var reader = cmd.ExecuteReader();
+                    var resRead = reader.HasRows;
                     reader.Close();
                     if (!resRead)
                     {
-                        string addArch =
+                        var addArch =
                             $"INSERT INTO {Program.Prefix}arhiv_complaint_result SET arhiv = @archive";
-                        MySqlCommand cmd1 = new MySqlCommand(addArch, connect);
+                        var cmd1 = new MySqlCommand(addArch, connect);
                         cmd1.Prepare();
                         cmd1.Parameters.AddWithValue("@archive", a);
                         cmd1.ExecuteNonQuery();
@@ -217,13 +217,13 @@ namespace ParserRnP
         
         private List<string> GetListFtp44(string pathParse)
         {
-            List<string> archtemp = new List<string>();
-            int count = 1;
+            var archtemp = new List<string>();
+            var count = 1;
             while (true)
             {
                 try
                 {
-                    WorkWithFtp ftp = ClientFtp44_old();
+                    var ftp = ClientFtp44_old();
                     ftp.ChangeWorkingDirectory(pathParse);
                     archtemp = ftp.ListDirectory();
                     if (count > 1)

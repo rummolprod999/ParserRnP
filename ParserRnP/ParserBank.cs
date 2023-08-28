@@ -26,9 +26,9 @@ namespace ParserRnP
 
         public override void Parsing()
         {
-            List<String> arch = new List<string>();
-            List<String> bankList = new List<string>();
-            string pathParse = $"/fcs_banks/";
+            var arch = new List<string>();
+            var bankList = new List<string>();
+            var pathParse = $"/fcs_banks/";
             ;
 
             switch (Program.Periodparsing)
@@ -83,8 +83,8 @@ namespace ParserRnP
 
         public override void GetListFileArch(string arch, string pathParse)
         {
-            string filea = "";
-            string pathUnzip = "";
+            var filea = "";
+            var pathUnzip = "";
             filea = GetArch44(arch, pathParse);
             if (!String.IsNullOrEmpty(filea))
             {
@@ -93,9 +93,9 @@ namespace ParserRnP
                 {
                     if (Directory.Exists(pathUnzip))
                     {
-                        DirectoryInfo dirInfo = new DirectoryInfo(pathUnzip);
-                        FileInfo[] filelist = dirInfo.GetFiles();
-                        List<FileInfo> arrayXmlBank = filelist
+                        var dirInfo = new DirectoryInfo(pathUnzip);
+                        var filelist = dirInfo.GetFiles();
+                        var arrayXmlBank = filelist
                             .Where(a => _fileBank.Any(
                                 t => a.Name.ToLower().IndexOf(t, StringComparison.Ordinal) != -1))
                             .ToList();
@@ -128,18 +128,18 @@ namespace ParserRnP
 
         public void ParsingXml(FileInfo f, TypeFileBank typefile)
         {
-            using (StreamReader sr = new StreamReader(f.ToString(), Encoding.Default))
+            using (var sr = new StreamReader(f.ToString(), Encoding.Default))
             {
                 var ftext = sr.ReadToEnd();
                 ftext = ClearText.ClearString(ftext);
-                XmlDocument doc = new XmlDocument();
+                var doc = new XmlDocument();
                 doc.LoadXml(ftext);
-                string jsons = JsonConvert.SerializeXmlNode(doc);
-                JObject json = JObject.Parse(jsons);
+                var jsons = JsonConvert.SerializeXmlNode(doc);
+                var json = JObject.Parse(jsons);
                 switch (typefile)
                 {
                     case TypeFileBank.Bank:
-                        Bank44 b = new Bank44(f, json);
+                        var b = new Bank44(f, json);
                         b.Parsing();
                         break;
                 }
@@ -148,29 +148,29 @@ namespace ParserRnP
 
         public override List<String> GetListArchCurr(string pathParse)
         {
-            List<String> arch = new List<string>();
-            List<string> archtemp = new List<string>();
+            var arch = new List<string>();
+            var archtemp = new List<string>();
             /*FtpClient ftp = ClientFtp44();*/
             archtemp = GetListFtp44New(pathParse);
             foreach (var a in archtemp.Where(a =>
                 _fileBank.Any(t => a.ToLower().IndexOf(t, StringComparison.Ordinal) != -1)))
             {
-                using (MySqlConnection connect = ConnectToDb.GetDbConnection())
+                using (var connect = ConnectToDb.GetDbConnection())
                 {
                     connect.Open();
-                    string selectArch =
+                    var selectArch =
                         $"SELECT id FROM {Program.Prefix}arhiv_bank WHERE arhiv = @archive";
-                    MySqlCommand cmd = new MySqlCommand(selectArch, connect);
+                    var cmd = new MySqlCommand(selectArch, connect);
                     cmd.Prepare();
                     cmd.Parameters.AddWithValue("@archive", a);
-                    MySqlDataReader reader = cmd.ExecuteReader();
-                    bool resRead = reader.HasRows;
+                    var reader = cmd.ExecuteReader();
+                    var resRead = reader.HasRows;
                     reader.Close();
                     if (!resRead)
                     {
-                        string addArch =
+                        var addArch =
                             $"INSERT INTO {Program.Prefix}arhiv_bank SET arhiv = @archive";
-                        MySqlCommand cmd1 = new MySqlCommand(addArch, connect);
+                        var cmd1 = new MySqlCommand(addArch, connect);
                         cmd1.Prepare();
                         cmd1.Parameters.AddWithValue("@archive", a);
                         cmd1.ExecuteNonQuery();
@@ -184,7 +184,7 @@ namespace ParserRnP
 
         public List<String> GetListArchRoot(string pathParse)
         {
-            List<string> archtemp = new List<string>();
+            var archtemp = new List<string>();
             /*FtpClient ftp = ClientFtp44();*/
             archtemp = GetListFtp44New(pathParse);
             archtemp = archtemp.Where(a => a.EndsWith(".zip"))
@@ -195,7 +195,7 @@ namespace ParserRnP
 
         public override List<String> GetListArchLast(string pathParse)
         {
-            List<string> archtemp = new List<string>();
+            var archtemp = new List<string>();
             /*FtpClient ftp = ClientFtp44();*/
             archtemp = GetListFtp44New(pathParse);
             archtemp = archtemp.Where(a => a.EndsWith(".zip"))
@@ -206,7 +206,7 @@ namespace ParserRnP
 
         public List<String> GetListBank(string pathParse)
         {
-            List<string> listtemp = new List<string>();
+            var listtemp = new List<string>();
             listtemp = GetListFtp44(pathParse);
             listtemp = listtemp.Where(a => !a.EndsWith(".zip"))
                 .ToList();
@@ -215,13 +215,13 @@ namespace ParserRnP
 
         private List<string> GetListFtp44(string pathParse)
         {
-            List<string> archtemp = new List<string>();
-            int count = 1;
+            var archtemp = new List<string>();
+            var count = 1;
             while (true)
             {
                 try
                 {
-                    WorkWithFtp ftp = ClientFtp44_old();
+                    var ftp = ClientFtp44_old();
                     ftp.ChangeWorkingDirectory(pathParse);
                     archtemp = ftp.ListDirectory();
                     if (count > 1)
@@ -246,16 +246,16 @@ namespace ParserRnP
 
         private List<string> GetListFtp44New(string pathParse)
         {
-            List<string> archtemp = new List<string>();
+            var archtemp = new List<string>();
 
-            int count = 1;
+            var count = 1;
             while (true)
             {
                 try
                 {
-                    FtpClient ftp = ClientFtp44();
+                    var ftp = ClientFtp44();
 
-                    FtpListItem[] l = ftp.GetListing(pathParse);
+                    var l = ftp.GetListing(pathParse);
                     if (count > 1)
                     {
                         Log.Logger("Удалось получить список архивов после попытки", count);

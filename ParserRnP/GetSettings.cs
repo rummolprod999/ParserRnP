@@ -9,6 +9,8 @@ namespace ParserRnP
         public readonly string Database;
         public readonly string TempPathRnp;
         public readonly string LogPathRnp;
+        public readonly string TempPathNsi;
+        public readonly string LogPathNsi;
         public readonly string TempPathBank;
         public readonly string LogPathBank;
         public readonly string TempPathComplaint;
@@ -24,9 +26,9 @@ namespace ParserRnP
 
         public GetSettings()
         {
-            XmlDocument xDoc = new XmlDocument();
+            var xDoc = new XmlDocument();
             xDoc.Load(Program.PathProgram + Path.DirectorySeparatorChar + "setting_rnp.xml");
-            XmlElement xRoot = xDoc.DocumentElement;
+            var xRoot = xDoc.DocumentElement;
             if (xRoot != null)
             {
                 foreach (XmlNode xnode in xRoot)
@@ -41,6 +43,12 @@ namespace ParserRnP
                             break;
                         case "logdir_rnp":
                             LogPathRnp = $"{Program.PathProgram}{Path.DirectorySeparatorChar}{xnode.InnerText}";
+                            break;
+                        case "tempdir_nsi":
+                            TempPathNsi = $"{Program.PathProgram}{Path.DirectorySeparatorChar}{xnode.InnerText}";
+                            break;
+                        case "logdir_nsi":
+                            LogPathNsi = $"{Program.PathProgram}{Path.DirectorySeparatorChar}{xnode.InnerText}";
                             break;
                         case "tempdir_bank":
                             TempPathBank = $"{Program.PathProgram}{Path.DirectorySeparatorChar}{xnode.InnerText}";
@@ -89,7 +97,8 @@ namespace ParserRnP
                 String.IsNullOrEmpty(LogPathRnp) || String.IsNullOrEmpty(TempPathRnp) ||
                 String.IsNullOrEmpty(Database) || String.IsNullOrEmpty(UserDb) || String.IsNullOrEmpty(Server) ||
                 String.IsNullOrEmpty(Years) || String.IsNullOrEmpty(TempPathComplaintResult) ||
-                String.IsNullOrEmpty(LogPathComplaintResult))
+                String.IsNullOrEmpty(LogPathComplaintResult) ||
+                String.IsNullOrEmpty(LogPathNsi) || String.IsNullOrEmpty(TempPathNsi) )
             {
                 Console.WriteLine("Некоторые поля в файле настроек пустые");
                 Environment.Exit(0);
