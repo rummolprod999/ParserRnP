@@ -58,7 +58,7 @@ namespace ParserRnP
                 }
                 finally
                 {
-                    GC.Collect();
+                    //GC.Collect();
                     //GC.WaitForPendingFinalizers();
                 }
                 
