@@ -11,6 +11,8 @@
 	<logdir_complaint_result>log_complaint_result</logdir_complaint_result>
 	<tempdir_nsi>temp_nsi</tempdir_nsi>
 	<logdir_nsi>log_nsi</logdir_nsi>
+	<tempdir_farmdrug>temp_farmdrug</tempdir_farmdrug>
+	<logdir_farmdrug>log_farmdrug</logdir_farmdrug>
 	<prefix></prefix>
 	<userdb>parser</userdb>
 	<passdb>Dft56Point</passdb>

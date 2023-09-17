@@ -13,6 +13,8 @@ namespace ParserRnP
         private static string _logPathRnp;
         private static string _tempPathNsi;
         private static string _logPathNsi;
+        private static string _tempPathfarmDrug;
+        private static string _logPathFarmDrug;
         private static string _tempPathBank;
         private static string _logPathBank;
         private static string _tempPathComplaint;
@@ -58,6 +60,8 @@ namespace ParserRnP
                     return _tempPathComplaintResult;
                 else if (Periodparsing == TypeArguments.Nsi)
                     return _tempPathNsi;
+                else if (Periodparsing == TypeArguments.FarmDrug)
+                    return _tempPathfarmDrug;
 
 
                 return "";
@@ -83,6 +87,8 @@ namespace ParserRnP
                     return _logPathComplaintResult;
                 else if (Periodparsing == TypeArguments.Nsi )
                     return _logPathNsi;
+                else if (Periodparsing == TypeArguments.FarmDrug )
+                    return _logPathFarmDrug;
 
 
                 return "";
@@ -91,7 +97,9 @@ namespace ParserRnP
 
         public static int AddRnp = 0;
         public static int AddNsi = 0;
+        public static int AddDrug = 0;
         public static int UpdateNsi = 0;
+        public static int UpdateDrug = 0;
         public static int AddBankGuarantee = 0;
         public static int UpdateBankGuarantee = 0;
         public static int AddComplaint = 0;
@@ -108,7 +116,7 @@ namespace ParserRnP
             if (args.Length == 0)
             {
                 Console.WriteLine(
-                    "Недостаточно аргументов для запуска, используйте lastUn, prevUn, currUn, rootUn, lastBank, prevBank, currBank, rootBank, lastComplaint, prevComplaint, currComplaint, currComplaintRes, lastComplaintRes, prevComplaintRes в качестве аргумента");
+                    "Недостаточно аргументов для запуска, используйте lastUn, prevUn, currUn, rootUn, lastBank, prevBank, currBank, rootBank, lastComplaint, prevComplaint, currComplaint, currComplaintRes, lastComplaintRes, prevComplaintRes, nsi, farmdrug в качестве аргумента");
                 return;
             }
             var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetName()
@@ -192,9 +200,14 @@ namespace ParserRnP
                     Init(Periodparsing);
                     ParserNsi(Periodparsing);
                     break;   
+                case "farmdrug":
+                    Periodparsing = TypeArguments.FarmDrug;
+                    Init(Periodparsing);
+                    ParserFarmDrug(Periodparsing);
+                    break;   
                 default:
                     Console.WriteLine(
-                        "Неправильно указан аргумент, используйте lastUn, prevUn, currUn, rootUn, lastBank, prevBank, currBank, rootBank, lastComplaint, prevComplaint, currComplaint, currComplaintRes, lastComplaintRes, prevComplaintRes, nsi");
+                        "Неправильно указан аргумент, используйте lastUn, prevUn, currUn, rootUn, lastBank, prevBank, currBank, rootBank, lastComplaint, prevComplaint, currComplaint, currComplaintRes, lastComplaintRes, prevComplaintRes, nsi, farmdrug");
                     break;
             }
         }
@@ -205,6 +218,7 @@ namespace ParserRnP
             _database = set.Database;
             _logPathRnp = set.LogPathRnp;
             _logPathNsi = set.LogPathNsi;
+            _logPathFarmDrug = set.LogPathFarmDrug;
             _logPathBank = set.LogPathBank;
             _logPathComplaint = set.LogPathComplaint;
             _logPathComplaintResult = set.LogPathComplaintResult;
@@ -213,6 +227,7 @@ namespace ParserRnP
             _pass = set.PassDb;
             _tempPathRnp = set.TempPathRnp;
             _tempPathNsi = set.TempPathNsi;
+            _tempPathfarmDrug = set.TempPathfarmDrug;
             _tempPathBank = set.TempPathBank;
             _tempPathComplaint = set.TempPathComplaint;
             _tempPathComplaintResult = set.TempPathComplaintResult;
@@ -259,6 +274,8 @@ namespace ParserRnP
                 FileLog = $"{LogPath}{Path.DirectorySeparatorChar}ComplaintResult_{LocalDate:dd_MM_yyyy}.log";
             else if (Periodparsing == TypeArguments.Nsi)
                 FileLog = $"{LogPath}{Path.DirectorySeparatorChar}Nsi_{LocalDate:dd_MM_yyyy}.log";
+            else if (Periodparsing == TypeArguments.FarmDrug)
+                FileLog = $"{LogPath}{Path.DirectorySeparatorChar}FarmDrug_{LocalDate:dd_MM_yyyy}.log";
         }
 
         private static void ParserRnp(TypeArguments arg)
@@ -281,6 +298,16 @@ namespace ParserRnP
             Log.Logger("Время окончания парсинга Nsi");
             Log.Logger("Добавили Nsi", AddNsi);
             Log.Logger("Обновили Nsi", UpdateNsi);
+        }
+        
+        private static void ParserFarmDrug(TypeArguments arg)
+        {
+            Log.Logger("Время начала парсинга FarmDrug");
+            var rnp = new ParserFarmDrug(Periodparsing);
+            rnp.Parsing();
+            Log.Logger("Время окончания парсинга FarmDrug");
+            Log.Logger("Добавили FarmDrug", AddDrug);
+            Log.Logger("Обновили FarmDrug", UpdateDrug);
         }
 
         private static void ParserBank(TypeArguments arg)

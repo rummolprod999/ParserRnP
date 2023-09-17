@@ -65,6 +65,7 @@
     <Compile Include="ComplaintRes44.cs" />
     <Compile Include="ComplaintSuspend.cs" />
     <Compile Include="ConnectToDb.cs" />
+    <Compile Include="FarmDrug.cs" />
     <Compile Include="GetSettings.cs" />
     <Compile Include="IParser.cs" />
     <Compile Include="JsonExtensions.cs" />
@@ -74,6 +75,7 @@
     <Compile Include="ParserBank.cs" />
     <Compile Include="ParserComplaint.cs" />
     <Compile Include="ParserComplaintResult.cs" />
+    <Compile Include="ParserFarmDrug.cs" />
     <Compile Include="ParserNsi.cs" />
     <Compile Include="ParserUnFair.cs" />
     <Compile Include="Program.cs" />
@@ -91,6 +93,9 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="1.json" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -11,6 +11,8 @@ namespace ParserRnP
         public readonly string LogPathRnp;
         public readonly string TempPathNsi;
         public readonly string LogPathNsi;
+        public readonly string TempPathfarmDrug;
+        public readonly string LogPathFarmDrug;
         public readonly string TempPathBank;
         public readonly string LogPathBank;
         public readonly string TempPathComplaint;
@@ -46,6 +48,12 @@ namespace ParserRnP
                             break;
                         case "tempdir_nsi":
                             TempPathNsi = $"{Program.PathProgram}{Path.DirectorySeparatorChar}{xnode.InnerText}";
+                            break;
+                        case "logdir_farmdrug":
+                            LogPathFarmDrug = $"{Program.PathProgram}{Path.DirectorySeparatorChar}{xnode.InnerText}";
+                            break;
+                        case "tempdir_farmdrug":
+                            TempPathfarmDrug = $"{Program.PathProgram}{Path.DirectorySeparatorChar}{xnode.InnerText}";
                             break;
                         case "logdir_nsi":
                             LogPathNsi = $"{Program.PathProgram}{Path.DirectorySeparatorChar}{xnode.InnerText}";
@@ -98,7 +106,8 @@ namespace ParserRnP
                 String.IsNullOrEmpty(Database) || String.IsNullOrEmpty(UserDb) || String.IsNullOrEmpty(Server) ||
                 String.IsNullOrEmpty(Years) || String.IsNullOrEmpty(TempPathComplaintResult) ||
                 String.IsNullOrEmpty(LogPathComplaintResult) ||
-                String.IsNullOrEmpty(LogPathNsi) || String.IsNullOrEmpty(TempPathNsi) )
+                String.IsNullOrEmpty(LogPathNsi) || String.IsNullOrEmpty(TempPathNsi)  ||
+                String.IsNullOrEmpty(LogPathFarmDrug) || String.IsNullOrEmpty(TempPathfarmDrug))
             {
                 Console.WriteLine("Некоторые поля в файле настроек пустые");
                 Environment.Exit(0);
