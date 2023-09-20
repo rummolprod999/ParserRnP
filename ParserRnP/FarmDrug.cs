@@ -31,7 +31,7 @@ namespace ParserRnP
                     Log.Logger("Не удалось добавить FarmDrug", FilePath);
             };
 
-            AddDrug += delegate(int d)
+            UpdateDrug += delegate(int d)
             {
                 if (d > 0)
                     Program.UpdateDrug++;
