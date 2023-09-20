@@ -153,7 +153,7 @@ namespace ParserRnP
                     }*/
                     if (count > 1)
                     {
-                        Log.Logger("Удалось скачать архив после попытки", count, pathParse);
+                        Log.Logger("Удалось скачать архив после попытки", count, arch);
                     }
                     return file;
                 }
