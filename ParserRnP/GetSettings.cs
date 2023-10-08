@@ -38,7 +38,9 @@ namespace ParserRnP
             xDoc.Load(Program.PathProgram + Path.DirectorySeparatorChar + "setting_rnp.xml");
             var xRoot = xDoc.DocumentElement;
             if (xRoot != null)
+            {
                 foreach (XmlNode xnode in xRoot)
+                {
                     switch (xnode.Name)
                     {
                         case "database":
@@ -107,6 +109,8 @@ namespace ParserRnP
                             Years = xnode.InnerText;
                             break;
                     }
+                }
+            }
 
             if (string.IsNullOrEmpty(LogPathComplaint) || string.IsNullOrEmpty(TempPathComplaint) ||
                 string.IsNullOrEmpty(LogPathBank) || string.IsNullOrEmpty(TempPathBank) ||

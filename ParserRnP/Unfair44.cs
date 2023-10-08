@@ -21,9 +21,13 @@ namespace ParserRnP
             AddUnfair44 += delegate(int d)
             {
                 if (d > 0)
+                {
                     Program.AddRnp++;
+                }
                 else
+                {
                     Log.Logger("Не удалось добавить Unfair44", FilePath);
+                }
             };
         }
 
@@ -36,15 +40,24 @@ namespace ParserRnP
             {
                 var r = firstOrDefault.Value;
                 var registryNum = ((string)r.SelectToken("registryNum") ?? "").Trim();
-                if (string.IsNullOrEmpty(registryNum)) Log.Logger("У unfair нет registryNum", FilePath);
+                if (string.IsNullOrEmpty(registryNum))
+                {
+                    Log.Logger("У unfair нет registryNum", FilePath);
+                }
 
                 var publishDate = (JsonConvert.SerializeObject(r.SelectToken("publishDate") ?? "") ??
                                    "").Trim('"');
-                if (string.IsNullOrEmpty(publishDate)) Log.Logger("Нет publishDate", FilePath);
+                if (string.IsNullOrEmpty(publishDate))
+                {
+                    Log.Logger("Нет publishDate", FilePath);
+                }
 
                 var approveDate = (JsonConvert.SerializeObject(r.SelectToken("approveDate") ?? "") ??
                                    "").Trim('"');
-                if (string.IsNullOrEmpty(approveDate)) Log.Logger("Нет approveDate", FilePath);
+                if (string.IsNullOrEmpty(approveDate))
+                {
+                    Log.Logger("Нет approveDate", FilePath);
+                }
 
                 var state = ((string)r.SelectToken("state") ?? "").Trim();
                 using (var connect = ConnectToDb.GetDbConnection())

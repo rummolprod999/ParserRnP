@@ -22,17 +22,25 @@ namespace ParserRnP
             AddBank44 += delegate(int d)
             {
                 if (d > 0)
+                {
                     Program.AddBankGuarantee++;
+                }
                 else
+                {
                     Log.Logger("Не удалось добавить Bank44", FilePath);
+                }
             };
 
             UpdateBank44 += delegate(int d)
             {
                 if (d > 0)
+                {
                     Program.UpdateBankGuarantee++;
+                }
                 else
+                {
                     Log.Logger("Не удалось обновить Bank44", FilePath);
+                }
             };
         }
 
@@ -46,13 +54,19 @@ namespace ParserRnP
                 var b = firstOrDefault.Value;
                 var idGuarantee = ((string)b.SelectToken("id") ?? "").Trim();
                 var regNumber = ((string)b.SelectToken("regNumber") ?? "").Trim();
-                if (string.IsNullOrEmpty(regNumber)) Log.Logger("Нет regNumber", FilePath);
+                if (string.IsNullOrEmpty(regNumber))
+                {
+                    Log.Logger("Нет regNumber", FilePath);
+                }
 
                 var docNumber = ((string)b.SelectToken("docNumber") ?? "").Trim();
                 var versionNumber = ((string)b.SelectToken("versionNumber") ?? "").Trim();
                 var docPublishDate = (JsonConvert.SerializeObject(b.SelectToken("docPublishDate") ?? "") ??
                                       "").Trim('"');
-                if (string.IsNullOrEmpty(docPublishDate)) Log.Logger("Нет docPublishDate", FilePath);
+                if (string.IsNullOrEmpty(docPublishDate))
+                {
+                    Log.Logger("Нет docPublishDate", FilePath);
+                }
 
                 using (var connect = ConnectToDb.GetDbConnection())
                 {
@@ -172,13 +186,17 @@ namespace ParserRnP
                     var idSupplier = 0;
                     var innSup = ((string)b.SelectToken("supplier.inn") ?? "").Trim();
                     if (string.IsNullOrEmpty(innSup))
+                    {
                         innSup = ((string)b.SelectToken("supplierInfo.legalEntityRF.INN") ?? "").Trim();
+                    }
 
                     if (!string.IsNullOrEmpty(innSup))
                     {
                         var kppSup = ((string)b.SelectToken("supplier.kpp") ?? "").Trim();
                         if (string.IsNullOrEmpty(kppSup))
+                        {
                             kppSup = ((string)b.SelectToken("supplierInfo.legalEntityRF.KPP") ?? "").Trim();
+                        }
 
                         var selectSupplier =
                             $"SELECT id FROM {Program.Prefix}bank_supplier WHERE inn = @inn AND kpp = @kpp";
@@ -279,16 +297,20 @@ namespace ParserRnP
                         ((string)b.SelectToken("guarantee.contractExecutionEnsure.purchase.purchaseNumber") ?? "")
                         .Trim();
                     if (string.IsNullOrEmpty(purchaseNumber))
+                    {
                         purchaseNumber =
                             ((string)b.SelectToken("guarantee.purchaseRequestEnsure.purchaseNumber") ?? "")
                             .Trim();
+                    }
 
                     var lotNumber =
                         ((string)b.SelectToken("guarantee.contractExecutionEnsure.purchase.lotNumber") ?? "").Trim();
                     if (string.IsNullOrEmpty(lotNumber))
+                    {
                         lotNumber =
                             ((string)b.SelectToken("guarantee.purchaseRequestEnsure.lotNumber") ?? "")
                             .Trim();
+                    }
 
                     var guaranteeDate =
                         (JsonConvert.SerializeObject(b.SelectToken("guarantee.guaranteeDate") ?? "") ??

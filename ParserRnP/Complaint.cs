@@ -44,6 +44,7 @@ namespace ParserRnP
             var elsObj = j.SelectToken(s);
             if (elsObj != null && elsObj.Type != JTokenType.Null)
                 //Console.WriteLine(els_obj.Type);
+            {
                 switch (elsObj.Type)
                 {
                     case JTokenType.Object:
@@ -53,6 +54,7 @@ namespace ParserRnP
                         els.AddRange(elsObj);
                         break;
                 }
+            }
 
             return els;
         }
@@ -62,6 +64,7 @@ namespace ParserRnP
             var els = new List<JToken>();
             var elsObj = j.SelectToken(s);
             if (elsObj != null && elsObj.Type != JTokenType.Null)
+            {
                 switch (elsObj.Type)
                 {
                     case JTokenType.Object:
@@ -74,6 +77,7 @@ namespace ParserRnP
                         els.AddRange(elsObj);
                         break;
                 }
+            }
 
             return els;
         }

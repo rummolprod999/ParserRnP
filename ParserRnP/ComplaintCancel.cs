@@ -19,9 +19,13 @@ namespace ParserRnP
             AddComplaintCancel += delegate(int d)
             {
                 if (d > 0)
+                {
                     Program.AddComplaintCancel++;
+                }
                 else
+                {
                     Log.Logger("Не удалось добавить ComplaintCancel", FilePath);
+                }
             };
         }
 
@@ -51,7 +55,10 @@ namespace ParserRnP
                         cmd.Prepare();
                         cmd.Parameters.AddWithValue("@complaintNumber", complaintNumber);
                         var status = cmd.ExecuteNonQuery();
-                        if (status > 0) AddComplaintCancel?.Invoke(status);
+                        if (status > 0)
+                        {
+                            AddComplaintCancel?.Invoke(status);
+                        }
                     }
                     else if (!string.IsNullOrEmpty(regNumber))
                     {
@@ -61,7 +68,10 @@ namespace ParserRnP
                         cmd.Prepare();
                         cmd.Parameters.AddWithValue("@regNumber", regNumber);
                         var status = cmd.ExecuteNonQuery();
-                        if (status > 0) AddComplaintCancel?.Invoke(status);
+                        if (status > 0)
+                        {
+                            AddComplaintCancel?.Invoke(status);
+                        }
                     }
                 }
             }

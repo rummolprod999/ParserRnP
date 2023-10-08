@@ -52,24 +52,43 @@ namespace ParserRnP
             {
                 if (Periodparsing == TypeArguments.CurrUn || Periodparsing == TypeArguments.PrevUn ||
                     Periodparsing == TypeArguments.LastUn || Periodparsing == TypeArguments.RootUn)
+                {
                     return _tempPathRnp;
+                }
+
                 if (Periodparsing == TypeArguments.CurrBank || Periodparsing == TypeArguments.PrevBank ||
                     Periodparsing == TypeArguments.LastBank || Periodparsing == TypeArguments.RootBank)
+                {
                     return _tempPathBank;
+                }
 
                 if (Periodparsing == TypeArguments.CurrComplaint || Periodparsing == TypeArguments.PrevComplaint ||
                     Periodparsing == TypeArguments.LastComplaint)
+                {
                     return _tempPathComplaint;
+                }
+
                 if (Periodparsing == TypeArguments.CurrComplaintRes ||
                     Periodparsing == TypeArguments.LastComplaintRes ||
                     Periodparsing == TypeArguments.PrevComplaintRes)
+                {
                     return _tempPathComplaintResult;
+                }
+
                 if (Periodparsing == TypeArguments.Nsi)
+                {
                     return _tempPathNsi;
+                }
+
                 if (Periodparsing == TypeArguments.Ktru)
+                {
                     return _tempPathKtru;
+                }
+
                 if (Periodparsing == TypeArguments.FarmDrug)
+                {
                     return _tempPathfarmDrug;
+                }
 
 
                 return "";
@@ -82,23 +101,43 @@ namespace ParserRnP
             {
                 if (Periodparsing == TypeArguments.CurrUn || Periodparsing == TypeArguments.PrevUn ||
                     Periodparsing == TypeArguments.LastUn || Periodparsing == TypeArguments.RootUn)
+                {
                     return _logPathRnp;
+                }
+
                 if (Periodparsing == TypeArguments.CurrBank || Periodparsing == TypeArguments.PrevBank ||
                     Periodparsing == TypeArguments.LastBank || Periodparsing == TypeArguments.RootBank)
+                {
                     return _logPathBank;
+                }
+
                 if (Periodparsing == TypeArguments.CurrComplaint || Periodparsing == TypeArguments.PrevComplaint ||
                     Periodparsing == TypeArguments.LastComplaint)
+                {
                     return _logPathComplaint;
+                }
+
                 if (Periodparsing == TypeArguments.CurrComplaintRes ||
                     Periodparsing == TypeArguments.LastComplaintRes ||
                     Periodparsing == TypeArguments.PrevComplaintRes)
+                {
                     return _logPathComplaintResult;
+                }
+
                 if (Periodparsing == TypeArguments.Nsi)
+                {
                     return _logPathNsi;
+                }
+
                 if (Periodparsing == TypeArguments.Ktru)
+                {
                     return _logPathKtru;
+                }
+
                 if (Periodparsing == TypeArguments.FarmDrug)
+                {
                     return _logPathFarmDrug;
+                }
 
 
                 return "";
@@ -134,7 +173,11 @@ namespace ParserRnP
 
             var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetName()
                 .CodeBase);
-            if (path != null) PathProgram = path.Substring(5);
+            if (path != null)
+            {
+                PathProgram = path.Substring(5);
+            }
+
             StrArg = args[0];
             switch (args[0])
             {
@@ -255,7 +298,10 @@ namespace ParserRnP
             Port = set.Port;
             var tmp = set.Years;
             var tempYears = tmp.Split(',');
-            foreach (var s in tempYears.Select(v => $"_{v.Trim()}")) Years.Add(s);
+            foreach (var s in tempYears.Select(v => $"_{v.Trim()}"))
+            {
+                Years.Add(s);
+            }
 
             if (string.IsNullOrEmpty(TempPath) || string.IsNullOrEmpty(LogPath))
             {
@@ -274,28 +320,45 @@ namespace ParserRnP
                 Directory.CreateDirectory(TempPath);
             }
 
-            if (!Directory.Exists(LogPath)) Directory.CreateDirectory(LogPath);
+            if (!Directory.Exists(LogPath))
+            {
+                Directory.CreateDirectory(LogPath);
+            }
 
             if (arg == TypeArguments.CurrUn || arg == TypeArguments.LastUn || arg == TypeArguments.PrevUn ||
                 arg == TypeArguments.RootUn)
+            {
                 FileLog = $"{LogPath}{Path.DirectorySeparatorChar}Rnp_{LocalDate:dd_MM_yyyy}.log";
+            }
             else if (arg == TypeArguments.CurrBank || arg == TypeArguments.LastBank || arg == TypeArguments.PrevBank ||
                      arg == TypeArguments.RootBank)
+            {
                 FileLog = $"{LogPath}{Path.DirectorySeparatorChar}BankGuarantee_{LocalDate:dd_MM_yyyy}.log";
+            }
 
             else if (arg == TypeArguments.CurrComplaint || arg == TypeArguments.LastComplaint ||
                      arg == TypeArguments.PrevComplaint)
+            {
                 FileLog = $"{LogPath}{Path.DirectorySeparatorChar}Complaint_{LocalDate:dd_MM_yyyy}.log";
+            }
             else if (Periodparsing == TypeArguments.CurrComplaintRes ||
                      Periodparsing == TypeArguments.LastComplaintRes ||
                      Periodparsing == TypeArguments.PrevComplaintRes)
+            {
                 FileLog = $"{LogPath}{Path.DirectorySeparatorChar}ComplaintResult_{LocalDate:dd_MM_yyyy}.log";
+            }
             else if (Periodparsing == TypeArguments.Nsi)
+            {
                 FileLog = $"{LogPath}{Path.DirectorySeparatorChar}Nsi_{LocalDate:dd_MM_yyyy}.log";
+            }
             else if (Periodparsing == TypeArguments.Ktru)
+            {
                 FileLog = $"{LogPath}{Path.DirectorySeparatorChar}Ktru_{LocalDate:dd_MM_yyyy}.log";
+            }
             else if (Periodparsing == TypeArguments.FarmDrug)
+            {
                 FileLog = $"{LogPath}{Path.DirectorySeparatorChar}FarmDrug_{LocalDate:dd_MM_yyyy}.log";
+            }
         }
 
         private static void ParserRnp(TypeArguments arg)

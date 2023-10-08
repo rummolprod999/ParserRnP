@@ -20,9 +20,13 @@ namespace ParserRnP
             AddComplaintSuspend += delegate(int d)
             {
                 if (d > 0)
+                {
                     Program.AddComplaintSuspend++;
+                }
                 else
+                {
                     Log.Logger("Не удалось добавить ComplaintSuspend", FilePath);
+                }
             };
         }
 
@@ -36,13 +40,18 @@ namespace ParserRnP
                 if (c.Type == JTokenType.Array)
                 {
                     var comp = GetElements(root, "tenderSuspension");
-                    if (comp.Count > 0) c = comp[0];
+                    if (comp.Count > 0)
+                    {
+                        c = comp[0];
+                    }
                 }
 
                 var complaintNumber = ((string)c.SelectToken("complaintNumber") ?? "").Trim();
                 var purchaseNumber = ((string)c.SelectToken("tendersInfo.purchase.purchaseNumber") ?? "").Trim();
                 if (string.IsNullOrEmpty(purchaseNumber))
+                {
                     purchaseNumber = ((string)c.SelectToken("tendersInfo.order.notificationNumber") ?? "").Trim();
+                }
 
                 if (string.IsNullOrEmpty(purchaseNumber))
                 {
@@ -61,7 +70,10 @@ namespace ParserRnP
                     cmd.Parameters.AddWithValue("@purchaseNumber", purchaseNumber);
                     cmd.Parameters.AddWithValue("@tender_suspend", action);
                     var status = cmd.ExecuteNonQuery();
-                    if (status > 0) AddComplaintSuspend?.Invoke(status);
+                    if (status > 0)
+                    {
+                        AddComplaintSuspend?.Invoke(status);
+                    }
                 }
             }
             else

@@ -22,16 +22,24 @@ namespace ParserRnP
             AddComplaint44 += delegate(int d)
             {
                 if (d > 0)
+                {
                     Program.AddComplaint++;
+                }
                 else
+                {
                     Log.Logger("Не удалось добавить Complaint44", FilePath);
+                }
             };
             UpdateComplaint44 += delegate(int d)
             {
                 if (d > 0)
+                {
                     Program.UpdateComplaint++;
+                }
                 else
+                {
                     Log.Logger("Не удалось обновить Complaint44", FilePath);
+                }
             };
         }
 
@@ -41,9 +49,13 @@ namespace ParserRnP
             var idComplaint = "";
             var fN = File.Name.Split('_');
             if (fN.Length > 1)
+            {
                 idComplaint = fN[1];
+            }
             else
+            {
                 Log.Logger("Not id_complaint", FilePath);
+            }
 
             //Console.WriteLine(id_complaint);
             var root = (JObject)T.SelectToken("export");
@@ -55,7 +67,10 @@ namespace ParserRnP
                 if (c.Type == JTokenType.Array)
                 {
                     var comp = GetElements(root, "complaint");
-                    if (comp.Count > 0) c = comp[0];
+                    if (comp.Count > 0)
+                    {
+                        c = comp[0];
+                    }
                 }
 
                 var complaintNumber = ((string)c.SelectToken("commonInfo.complaintNumber") ?? "").Trim();
@@ -145,8 +160,10 @@ namespace ParserRnP
                     var kppRegistrationKo =
                         ((string)c.SelectToken("commonInfo.registrationKO.KPP") ?? "").Trim();
                     if (!string.IsNullOrEmpty(regNumRegistrationKo))
+                    {
                         idRegistrationKo = GetIdOrg(regNumRegistrationKo, fullNameRegistrationKo,
                             innRegistrationKo, kppRegistrationKo);
+                    }
 
                     var idConsiderationKo = 0;
                     var regNumConsiderationKo =
@@ -158,8 +175,10 @@ namespace ParserRnP
                     var kppConsiderationKo =
                         ((string)c.SelectToken("commonInfo.considerationKO.KPP") ?? "").Trim();
                     if (!string.IsNullOrEmpty(regNumConsiderationKo))
+                    {
                         idConsiderationKo = GetIdOrg(regNumConsiderationKo, fullNameConsiderationKo,
                             innConsiderationKo, kppConsiderationKo);
+                    }
 
                     var regDate = (JsonConvert.SerializeObject(c.SelectToken("commonInfo.regDate") ?? "") ??
                                    "").Trim('"');
@@ -178,8 +197,10 @@ namespace ParserRnP
                     var kppCreateOrganization =
                         ((string)c.SelectToken("commonInfo.printFormInfo.createOrganization.KPP") ?? "").Trim();
                     if (!string.IsNullOrEmpty(regNumCreateOrganization))
+                    {
                         idCreateOrganization = GetIdOrg(regNumCreateOrganization, fullNameCreateOrganization,
                             innCreateOrganization, kppCreateOrganization);
+                    }
 
                     var createDate =
                         (JsonConvert.SerializeObject(c.SelectToken("commonInfo.printFormInfo.createDate") ?? "") ??
@@ -196,68 +217,92 @@ namespace ParserRnP
                     var kppPublishOrganization =
                         ((string)c.SelectToken("commonInfo.printFormInfo.publishOrganization.KPP") ?? "").Trim();
                     if (!string.IsNullOrEmpty(regNumCreateOrganization))
+                    {
                         idPublishOrganization = GetIdOrg(regNumPublishOrganization, fullNamePublishOrganization,
                             innPublishOrganization, kppPublishOrganization);
+                    }
 
                     var idCustomer = 0;
                     var regNumCustomer =
                         ((string)c.SelectToken("indicted.customer.regNum") ?? "")
                         .Trim();
                     if (string.IsNullOrEmpty(regNumCustomer))
+                    {
                         regNumCustomer =
                             ((string)c.SelectToken("indicted.customerNew.regNum") ?? "")
                             .Trim();
+                    }
 
                     var fullNameCustomer =
                         ((string)c.SelectToken("indicted.customer.fullName") ?? "")
                         .Trim();
                     if (string.IsNullOrEmpty(fullNameCustomer))
+                    {
                         fullNameCustomer = ((string)c.SelectToken("indicted.customerNew.fullName") ?? "")
                             .Trim();
+                    }
 
                     var innCustomer =
                         ((string)c.SelectToken("indicted.customer.INN") ?? "").Trim();
                     if (string.IsNullOrEmpty(innCustomer))
+                    {
                         innCustomer =
                             ((string)c.SelectToken("indicted.customerNew.INN") ?? "").Trim();
+                    }
 
                     var kppCustomer =
                         ((string)c.SelectToken("indicted.customer.KPP") ?? "").Trim();
                     if (string.IsNullOrEmpty(kppCustomer))
+                    {
                         kppCustomer =
                             ((string)c.SelectToken("indicted.customerNew.KPP") ?? "").Trim();
+                    }
 
                     if (!string.IsNullOrEmpty(regNumCreateOrganization))
+                    {
                         idCustomer = GetIdOrg(regNumCustomer, fullNameCustomer,
                             innCustomer, kppCustomer, "customer_complaint");
+                    }
 
                     var applicantFullName =
                         ((string)c.SelectToken("applicantNew.legalEntity.fullName") ?? "").Trim();
                     if (string.IsNullOrEmpty(applicantFullName))
+                    {
                         applicantFullName =
                             ((string)c.SelectToken("applicantNew.individualPerson.name") ?? "").Trim();
+                    }
 
                     if (string.IsNullOrEmpty(applicantFullName))
+                    {
                         applicantFullName =
                             ((string)c.SelectToken("applicantNew.individualBusinessman.name") ?? "").Trim();
+                    }
 
                     if (string.IsNullOrEmpty(applicantFullName))
+                    {
                         applicantFullName =
                             ((string)c.SelectToken("applicant.organizationName") ?? "").Trim();
+                    }
 
                     var applicantInn = ((string)c.SelectToken("applicantNew.legalEntity.INN") ?? "").Trim();
                     if (string.IsNullOrEmpty(applicantInn))
+                    {
                         applicantInn = ((string)c.SelectToken("applicantNew.individualPerson.INN") ?? "").Trim();
+                    }
 
                     if (string.IsNullOrEmpty(applicantInn))
+                    {
                         applicantInn = ((string)c.SelectToken("applicantNew.individualBusinessman.INN") ?? "")
                             .Trim();
+                    }
 
                     var applicantKpp = ((string)c.SelectToken("applicantNew.legalEntity.KPP") ?? "").Trim();
 
                     if (string.IsNullOrEmpty(purchaseNumber))
+                    {
                         purchaseNumber =
                             ((string)c.SelectToken("object.purchase.notificationNumber") ?? "").Trim();
+                    }
 
                     var lotNumbers = "";
                     var lotnumbersList = GetElementsLots(c, "object.purchase.lots.lotNumber");

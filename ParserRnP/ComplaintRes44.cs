@@ -22,16 +22,24 @@ namespace ParserRnP
             AddComplaintRes44 += delegate(int d)
             {
                 if (d > 0)
+                {
                     Program.AddComplaintResult++;
+                }
                 else
+                {
                     Log.Logger("Не удалось добавить ComplaintRes44", FilePath);
+                }
             };
             UpdateComplaintRes44 += delegate(int d)
             {
                 if (d > 0)
+                {
                     Program.UpdateComplaintResult++;
+                }
                 else
+                {
                     Log.Logger("Не удалось обновить ComplaintRes44", FilePath);
+                }
             };
         }
 
@@ -47,7 +55,10 @@ namespace ParserRnP
                 if (c.Type == JTokenType.Array)
                 {
                     var comp = GetElements(root, "checkResult");
-                    if (comp.Count > 0) c = comp[0];
+                    if (comp.Count > 0)
+                    {
+                        c = comp[0];
+                    }
                 }
 
                 var checkResultNumber = ((string)c.SelectToken("commonInfo.checkResultNumber") ?? "").Trim();
@@ -65,7 +76,9 @@ namespace ParserRnP
 
                 if (string.IsNullOrEmpty(purchaseNumber) && string.IsNullOrEmpty(complaintNumber))
                     //Log.Logger("Нет purchaseNumber and complaintNumber", FilePath);
+                {
                     return;
+                }
 
                 using (var connect = ConnectToDb.GetDbConnection())
                 {

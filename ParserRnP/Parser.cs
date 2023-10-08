@@ -136,6 +136,7 @@ namespace ParserRnP
             var file = "";
             var count = 1;
             while (true)
+            {
                 try
                 {
                     /*string FileOnServer = $"{PathParse}/{Arch}";*/
@@ -154,7 +155,10 @@ namespace ParserRnP
 
                         client.Close();
                     }*/
-                    if (count > 1) Log.Logger("Удалось скачать архив после попытки", count, arch);
+                    if (count > 1)
+                    {
+                        Log.Logger("Удалось скачать архив после попытки", count, arch);
+                    }
 
                     return file;
                 }
@@ -169,6 +173,7 @@ namespace ParserRnP
                     count++;
                     Thread.Sleep(5000);
                 }
+            }
         }
     }
 }

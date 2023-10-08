@@ -30,17 +30,25 @@ namespace ParserRnP
             AddDrug += delegate(int d)
             {
                 if (d > 0)
+                {
                     Program.AddDrug++;
+                }
                 else
+                {
                     Log.Logger("Не удалось добавить FarmDrug", FilePath);
+                }
             };
 
             UpdateDrug += delegate(int d)
             {
                 if (d > 0)
+                {
                     Program.UpdateDrug++;
+                }
                 else
+                {
                     Log.Logger("Не удалось обновить FarmDrug", FilePath);
+                }
             };
         }
 
@@ -50,6 +58,7 @@ namespace ParserRnP
             var root = (JObject)T.SelectToken("export");
             var el = GetElements(root, "nsiFarmDrugsDictionary.nsiFarmDrugDictionary");
             foreach (var m in el)
+            {
                 try
                 {
                     var t = m.SelectToken("MNNInfo");
@@ -59,16 +68,23 @@ namespace ParserRnP
                 {
                     Log.Logger(e);
                 }
+            }
         }
 
         private void parseElement(JToken m)
         {
             var MNNCode = ((string)m.SelectToken("MNNCode") ?? "").Trim();
-            if (string.IsNullOrEmpty(MNNCode)) throw new Exception("MNNCode is empty");
+            if (string.IsNullOrEmpty(MNNCode))
+            {
+                throw new Exception("MNNCode is empty");
+            }
 
             var lastChangeDate = (JsonConvert.SerializeObject(m.SelectToken("lastChangeDate") ?? "") ??
                                   "").Trim('"');
-            if (string.IsNullOrEmpty(lastChangeDate)) throw new Exception("MNNCode is lastChangeDate");
+            if (string.IsNullOrEmpty(lastChangeDate))
+            {
+                throw new Exception("MNNCode is lastChangeDate");
+            }
 
             using (var connect = ConnectToDb.GetDbConnection())
             {
@@ -125,7 +141,10 @@ namespace ParserRnP
                 AddDrug?.Invoke(resInsertTender);
                 AddVerNumber(connect, MNNCode);
                 var positionsTradeName = GetElements(m, "positionsTradeName.positionTradeName");
-                foreach (var pos in positionsTradeName) insertPos(pos, connect, idMnn, m);
+                foreach (var pos in positionsTradeName)
+                {
+                    insertPos(pos, connect, idMnn, m);
+                }
             }
         }
 
@@ -367,6 +386,7 @@ namespace ParserRnP
             var els = new List<JToken>();
             var elsObj = j.SelectToken(s);
             if (elsObj != null && elsObj.Type != JTokenType.Null)
+            {
                 switch (elsObj.Type)
                 {
                     case JTokenType.Object:
@@ -376,6 +396,7 @@ namespace ParserRnP
                         els.AddRange(elsObj);
                         break;
                 }
+            }
 
             return els;
         }

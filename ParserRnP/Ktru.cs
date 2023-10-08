@@ -29,17 +29,25 @@ namespace ParserRnP
             Add += delegate(int d)
             {
                 if (d > 0)
+                {
                     Program.AddKtru++;
+                }
                 else
+                {
                     Log.Logger("Не удалось добавить KTRU", FilePath);
+                }
             };
 
             Update += delegate(int d)
             {
                 if (d > 0)
+                {
                     Program.UpdateKtru++;
+                }
                 else
+                {
                     Log.Logger("Не удалось обновить KTRU", FilePath);
+                }
             };
         }
 
@@ -49,6 +57,7 @@ namespace ParserRnP
             var root = (JObject)T.SelectToken("export");
             var el = GetElements(root, "nsiKTRUs.position");
             foreach (var m in el)
+            {
                 try
                 {
                     var t = m.SelectToken("data");
@@ -58,12 +67,16 @@ namespace ParserRnP
                 {
                     Log.Logger(e);
                 }
+            }
         }
 
         private void parseElement(JToken m)
         {
             var code = ((string)m.SelectToken("code") ?? "").Trim();
-            if (string.IsNullOrEmpty(code)) throw new Exception($"{nameof(code)} is empty");
+            if (string.IsNullOrEmpty(code))
+            {
+                throw new Exception($"{nameof(code)} is empty");
+            }
 
             var version = (int?)m.SelectToken("version") ?? throw new Exception("version is empty");
             using (var connect = ConnectToDb.GetDbConnection())
@@ -89,7 +102,10 @@ namespace ParserRnP
                                    "").Trim('"');
                 var name_ktru = ((string)m.SelectToken("name") ?? "").Trim();
                 var actual = (bool?)m.SelectToken("actual") ?? false;
-                if (FilePath.Contains("nsiKTRUNew_all_actual")) actual = true;
+                if (FilePath.Contains("nsiKTRUNew_all_actual"))
+                {
+                    actual = true;
+                }
 
                 var applicationDateStart = (JsonConvert.SerializeObject(m.SelectToken("applicationDateStart") ?? "") ??
                                             "").Trim('"');
@@ -191,6 +207,7 @@ namespace ParserRnP
                 Add?.Invoke(resInsertTender);
                 var characteristics = GetElements(m, "characteristics.characteristic");
                 foreach (var ch in characteristics)
+                {
                     try
                     {
                         insertChar(ch, connect, idKtru, m);
@@ -200,6 +217,7 @@ namespace ParserRnP
                         Console.WriteLine(e);
                         throw;
                     }
+                }
             }
         }
 
@@ -228,6 +246,7 @@ namespace ParserRnP
             var idCh = (int)cmd10.LastInsertedId;
             var values = GetElements(pos, "values.value");
             foreach (var v in values)
+            {
                 try
                 {
                     var qualityDescription = ((string)v.SelectToken("qualityDescription") ?? "").Trim();
@@ -260,6 +279,7 @@ namespace ParserRnP
                     Console.WriteLine(e);
                     throw;
                 }
+            }
         }
 
         public string GetXml(string xml)
@@ -280,6 +300,7 @@ namespace ParserRnP
             var els = new List<JToken>();
             var elsObj = j.SelectToken(s);
             if (elsObj != null && elsObj.Type != JTokenType.Null)
+            {
                 switch (elsObj.Type)
                 {
                     case JTokenType.Object:
@@ -289,6 +310,7 @@ namespace ParserRnP
                         els.AddRange(elsObj);
                         break;
                 }
+            }
 
             return els;
         }

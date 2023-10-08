@@ -17,7 +17,10 @@ namespace ParserRnP
         {
             var s = "";
             s += DateTime.Now.ToString(CultureInfo.InvariantCulture);
-            for (var i = 0; i < parametrs.Length; i++) s = $"{s} {parametrs[i]}";
+            for (var i = 0; i < parametrs.Length; i++)
+            {
+                s = $"{s} {parametrs[i]}";
+            }
 
             lock (_locker)
             {

@@ -38,6 +38,7 @@ namespace ParserRnP
 
             bankList = GetListBank(fcsNsiNsiktru);
             foreach (var l in bankList)
+            {
                 try
                 {
                     GetListFileArch(l, fcsNsiNsiktru);
@@ -46,6 +47,7 @@ namespace ParserRnP
                 {
                     Log.Logger("Ошибка при парсинге", e, fcsNsiNsiktru);
                 }
+            }
         }
 
         public override void GetListFileArch(string arch, string pathParse)
@@ -57,15 +59,20 @@ namespace ParserRnP
             {
                 pathUnzip = Unzipped.Unzip(filea);
                 if (pathUnzip != "")
+                {
                     if (Directory.Exists(pathUnzip))
                     {
                         var dirInfo = new DirectoryInfo(pathUnzip);
                         var filelist = dirInfo.GetFiles();
 
-                        foreach (var f in filelist) Bolter(f);
+                        foreach (var f in filelist)
+                        {
+                            Bolter(f);
+                        }
 
                         dirInfo.Delete(true);
                     }
+                }
             }
         }
 
@@ -82,12 +89,16 @@ namespace ParserRnP
             var archtemp = new List<string>();
             var count = 1;
             while (true)
+            {
                 try
                 {
                     var ftp = ClientFtp44_old();
                     ftp.ChangeWorkingDirectory(pathParse);
                     archtemp = ftp.ListDirectory();
-                    if (count > 1) Log.Logger("Удалось получить список архивов после попытки", count);
+                    if (count > 1)
+                    {
+                        Log.Logger("Удалось получить список архивов после попытки", count);
+                    }
 
                     break;
                 }
@@ -102,6 +113,7 @@ namespace ParserRnP
                     count++;
                     Thread.Sleep(2000);
                 }
+            }
 
             return archtemp;
         }
@@ -109,7 +121,10 @@ namespace ParserRnP
 
         public void Bolter(FileInfo f)
         {
-            if (!f.Name.ToLower().EndsWith(".xml", StringComparison.Ordinal)) return;
+            if (!f.Name.ToLower().EndsWith(".xml", StringComparison.Ordinal))
+            {
+                return;
+            }
 
             try
             {

@@ -53,9 +53,15 @@ namespace ParserRnP
                     break;
             }
 
-            if (arch.Count == 0) Log.Logger("Получен пустой список архивов", pathParse);
+            if (arch.Count == 0)
+            {
+                Log.Logger("Получен пустой список архивов", pathParse);
+            }
 
-            foreach (var v in arch) GetListFileArch(v, pathParse);
+            foreach (var v in arch)
+            {
+                GetListFileArch(v, pathParse);
+            }
         }
 
         public override void GetListFileArch(string arch, string pathParse)
@@ -67,6 +73,7 @@ namespace ParserRnP
             {
                 pathUnzip = Unzipped.Unzip(filea);
                 if (pathUnzip != "")
+                {
                     if (Directory.Exists(pathUnzip))
                     {
                         var dirInfo = new DirectoryInfo(pathUnzip);
@@ -83,20 +90,33 @@ namespace ParserRnP
                             .Where(a => _fileSuspend.Any(
                                 t => a.Name.ToLower().IndexOf(t, StringComparison.Ordinal) != -1))
                             .ToList();
-                        foreach (var f in arrayXmlComplaint) Bolter(f, TypeFileComplaint.Complaint);
+                        foreach (var f in arrayXmlComplaint)
+                        {
+                            Bolter(f, TypeFileComplaint.Complaint);
+                        }
 
-                        foreach (var f in arrayXmlCancel) Bolter(f, TypeFileComplaint.Cancel);
+                        foreach (var f in arrayXmlCancel)
+                        {
+                            Bolter(f, TypeFileComplaint.Cancel);
+                        }
 
-                        foreach (var f in arrayXmlSuspend) Bolter(f, TypeFileComplaint.Suspend);
+                        foreach (var f in arrayXmlSuspend)
+                        {
+                            Bolter(f, TypeFileComplaint.Suspend);
+                        }
 
                         dirInfo.Delete(true);
                     }
+                }
             }
         }
 
         public override void Bolter(FileInfo f, TypeFileComplaint typefile)
         {
-            if (!f.Name.ToLower().EndsWith(".xml", StringComparison.Ordinal)) return;
+            if (!f.Name.ToLower().EndsWith(".xml", StringComparison.Ordinal))
+            {
+                return;
+            }
 
             try
             {
@@ -153,6 +173,7 @@ namespace ParserRnP
             archtemp = GetListFtp44(pathParse);
             foreach (var a in archtemp.Where(a =>
                          _fileUcomplaint.Any(t => a.ToLower().IndexOf(t, StringComparison.Ordinal) != -1)))
+            {
                 using (var connect = ConnectToDb.GetDbConnection())
                 {
                     connect.Open();
@@ -175,6 +196,7 @@ namespace ParserRnP
                         arch.Add(a);
                     }
                 }
+            }
 
             return arch;
         }
@@ -221,12 +243,16 @@ namespace ParserRnP
             var archtemp = new List<string>();
             var count = 1;
             while (true)
+            {
                 try
                 {
                     var ftp = ClientFtp44_old();
                     ftp.ChangeWorkingDirectory(pathParse);
                     archtemp = ftp.ListDirectory();
-                    if (count > 1) Log.Logger("Удалось получить список архивов после попытки", count);
+                    if (count > 1)
+                    {
+                        Log.Logger("Удалось получить список архивов после попытки", count);
+                    }
 
                     break;
                 }
@@ -241,6 +267,7 @@ namespace ParserRnP
                     count++;
                     Thread.Sleep(2000);
                 }
+            }
 
             return archtemp;
         }

@@ -28,17 +28,25 @@ namespace ParserRnP
             AddNsi += delegate(int d)
             {
                 if (d > 0)
+                {
                     Program.AddNsi++;
+                }
                 else
+                {
                     Log.Logger("Не удалось добавить Nsi", FilePath);
+                }
             };
 
             UpdateNsi += delegate(int d)
             {
                 if (d > 0)
+                {
                     Program.UpdateNsi++;
+                }
                 else
+                {
                     Log.Logger("Не удалось обновить Nsi", FilePath);
+                }
             };
         }
 
@@ -144,6 +152,7 @@ namespace ParserRnP
             var els = new List<JToken>();
             var elsObj = j.SelectToken(s);
             if (elsObj != null && elsObj.Type != JTokenType.Null)
+            {
                 switch (elsObj.Type)
                 {
                     case JTokenType.Object:
@@ -153,6 +162,7 @@ namespace ParserRnP
                         els.AddRange(elsObj);
                         break;
                 }
+            }
 
             return els;
         }

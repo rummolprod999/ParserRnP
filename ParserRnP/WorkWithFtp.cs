@@ -58,7 +58,9 @@ namespace ParserRnP
                         while (readCount > 0)
                         {
                             if (Hash)
+                            {
                                 Console.Write("#");
+                            }
 
                             fs.Write(buffer, 0, readCount);
                             readCount = stream.Read(buffer, 0, _bufferSize);
@@ -102,7 +104,10 @@ namespace ParserRnP
                 {
                     using (var reader = new StreamReader(stream, true))
                     {
-                        while (!reader.EndOfStream) list.Add(reader.ReadLine());
+                        while (!reader.EndOfStream)
+                        {
+                            list.Add(reader.ReadLine());
+                        }
                     }
                 }
             }
@@ -122,7 +127,10 @@ namespace ParserRnP
                 {
                     using (var reader = new StreamReader(stream, true))
                     {
-                        while (!reader.EndOfStream) list.Add(reader.ReadLine());
+                        while (!reader.EndOfStream)
+                        {
+                            list.Add(reader.ReadLine());
+                        }
                     }
                 }
             }
@@ -175,7 +183,9 @@ namespace ParserRnP
                     while ((num = fileStream.Read(buffer, 0, buffer.Length)) > 0)
                     {
                         if (Hash)
+                        {
                             Console.Write("#");
+                        }
 
                         stream.Write(buffer, 0, num);
                     }
@@ -200,7 +210,9 @@ namespace ParserRnP
                     while ((num = fileStream.Read(buffer, 0, buffer.Length)) > 0)
                     {
                         if (Hash)
+                        {
                             Console.Write("#");
+                        }
 
                         stream.Write(buffer, 0, num);
                     }
