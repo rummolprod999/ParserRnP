@@ -1,21 +1,23 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Globalization;
 using System.IO;
 using System.Text;
+
+#endregion
 
 namespace ParserRnP
 {
     public class Log
     {
-        private static object _locker = new object();
+        private static readonly object _locker = new object();
+
         public static void Logger(params object[] parametrs)
         {
             var s = "";
             s += DateTime.Now.ToString(CultureInfo.InvariantCulture);
-            for (var i = 0; i < parametrs.Length; i++)
-            {
-                s = $"{s} {parametrs[i]}";
-            }
+            for (var i = 0; i < parametrs.Length; i++) s = $"{s} {parametrs[i]}";
 
             lock (_locker)
             {

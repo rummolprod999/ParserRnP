@@ -1,3 +1,5 @@
+#region
+
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -5,6 +7,8 @@ using System.IO;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+
+#endregion
 
 namespace ParserRnP
 {
@@ -46,7 +50,6 @@ namespace ParserRnP
             var root = (JObject)T.SelectToken("export");
             var el = GetElements(root, "nsiFarmDrugsDictionary.nsiFarmDrugDictionary");
             foreach (var m in el)
-            {
                 try
                 {
                     var t = m.SelectToken("MNNInfo");
@@ -56,35 +59,22 @@ namespace ParserRnP
                 {
                     Log.Logger(e);
                 }
-                finally
-                {
-                    //GC.Collect();
-                    //GC.WaitForPendingFinalizers();
-                }
-                
-            }
         }
 
         private void parseElement(JToken m)
         {
             var MNNCode = ((string)m.SelectToken("MNNCode") ?? "").Trim();
-            if (string.IsNullOrEmpty(MNNCode))
-            {
-                throw new Exception("MNNCode is empty");
-            }
+            if (string.IsNullOrEmpty(MNNCode)) throw new Exception("MNNCode is empty");
 
             var lastChangeDate = (JsonConvert.SerializeObject(m.SelectToken("lastChangeDate") ?? "") ??
                                   "").Trim('"');
-            if (string.IsNullOrEmpty(lastChangeDate))
-            {
-                throw new Exception("MNNCode is lastChangeDate");
-            }
+            if (string.IsNullOrEmpty(lastChangeDate)) throw new Exception("MNNCode is lastChangeDate");
 
             using (var connect = ConnectToDb.GetDbConnection())
             {
                 connect.Open();
                 var selectTender =
-                    $"SELECT id FROM nsi_drug_FarmDictionaryMNN WHERE MNNCode = @MNNCode and  lastChangeDate = @lastChangeDate";
+                    "SELECT id FROM nsi_drug_FarmDictionaryMNN WHERE MNNCode = @MNNCode and  lastChangeDate = @lastChangeDate";
                 var cmd = new MySqlCommand(selectTender, connect);
                 cmd.Prepare();
                 cmd.Parameters.AddWithValue("@MNNCode", MNNCode);
@@ -113,7 +103,7 @@ namespace ParserRnP
                 var MNNHash = ((string)m.SelectToken("MNNHash") ?? "").Trim();
                 var MNNName = ((string)m.SelectToken("MNNName") ?? "").Trim();
                 var insert =
-                    $"INSERT INTO nsi_drug_FarmDictionaryMNN (id, isZNVLP, isNarcotiс, createDate, startDate, endDate, changeDate, actual, lastChangeDate, MNNCode, MNNDrugCode, MNNExternalCode, MNNHash, MNNName, version) VALUES (null,@isznvlp,@isnarcotiс,@createdate,@startdate,@enddate,@changedate,@actual,@lastchangedate,@mnncode,@mnndrugcode,@mnnexternalcode,@mnnhash,@mnnname,@version)";
+                    "INSERT INTO nsi_drug_FarmDictionaryMNN (id, isZNVLP, isNarcotiс, createDate, startDate, endDate, changeDate, actual, lastChangeDate, MNNCode, MNNDrugCode, MNNExternalCode, MNNHash, MNNName, version) VALUES (null,@isznvlp,@isnarcotiс,@createdate,@startdate,@enddate,@changedate,@actual,@lastchangedate,@mnncode,@mnndrugcode,@mnnexternalcode,@mnnhash,@mnnname,@version)";
                 var cmd9 = new MySqlCommand(insert, connect);
                 cmd9.Prepare();
                 cmd9.Parameters.AddWithValue("@isznvlp", isZNVLP);
@@ -135,10 +125,7 @@ namespace ParserRnP
                 AddDrug?.Invoke(resInsertTender);
                 AddVerNumber(connect, MNNCode);
                 var positionsTradeName = GetElements(m, "positionsTradeName.positionTradeName");
-                foreach (var pos in positionsTradeName)
-                {
-                    insertPos(pos, connect, idMnn, m);
-                }
+                foreach (var pos in positionsTradeName) insertPos(pos, connect, idMnn, m);
             }
         }
 
@@ -172,7 +159,7 @@ namespace ParserRnP
             var tradeCode = ((string)pos.SelectToken("tradeInfo.tradeCode") ?? "").Trim();
             var tradeName = ((string)pos.SelectToken("tradeInfo.tradeName") ?? "").Trim();
             var insertN =
-                $"INSERT INTO nsi_drug_positionTradeName (id, id_FarmDictionaryMNN, positionTradeNameCode, positionTradeNameExternalCode, positionTradeNameHash, drugCode, MNNNormName, dosageNormName, medicamentalFormNormName, isDosed, isconv, id_OKEI_dos_pack, completeness, id_cert_manuf_origin, certificateNumber, certificateDate, certificateUpdateDate, barcode, barcodeNew, tradeCode, tradeName) VALUES (null,@idFarmdictionarymnn,@positiontradenamecode,@positiontradenameexternalcode,@positiontradenamehash,@drugcode,@mnnnormname,@dosagenormname,@medicamentalformnormname,@isdosed,@isconv,@idOkeiDosPack,@completeness,@idCertManufOrigin,@certificatenumber,@certificatedate,@certificateupdatedate,@barcode,@barcodenew,@tradecode,@tradename)";
+                "INSERT INTO nsi_drug_positionTradeName (id, id_FarmDictionaryMNN, positionTradeNameCode, positionTradeNameExternalCode, positionTradeNameHash, drugCode, MNNNormName, dosageNormName, medicamentalFormNormName, isDosed, isconv, id_OKEI_dos_pack, completeness, id_cert_manuf_origin, certificateNumber, certificateDate, certificateUpdateDate, barcode, barcodeNew, tradeCode, tradeName) VALUES (null,@idFarmdictionarymnn,@positiontradenamecode,@positiontradenameexternalcode,@positiontradenamehash,@drugcode,@mnnnormname,@dosagenormname,@medicamentalformnormname,@isdosed,@isconv,@idOkeiDosPack,@completeness,@idCertManufOrigin,@certificatenumber,@certificatedate,@certificateupdatedate,@barcode,@barcodenew,@tradecode,@tradename)";
             var cmd10 = new MySqlCommand(insertN, connect);
             cmd10.Prepare();
             cmd10.Parameters.AddWithValue("@idFarmdictionarymnn", idMnn);
@@ -234,7 +221,7 @@ namespace ParserRnP
             if (dosageOKEIcode != "" && dosageOKEIname != "")
             {
                 var country =
-                    $"SELECT id FROM nsi_drug_OKEI_dos_pack WHERE dosageOKEIcode = @dosageOKEIcode AND dosageOKEIname = @dosageOKEIname AND dosageGRLSValue = @dosageGRLSValue AND dosageValue = @dosageValue AND OKEIcode = @OKEIcode AND OKEIname = @OKEIname AND packaging1Quantity = @packaging1Quantity AND packaging2Quantity = @packaging2Quantity AND primaryPackagingCode = @primaryPackagingCode AND primaryPackagingName = @primaryPackagingName AND consumerPackagingCode = @consumerPackagingCode AND consumerPackagingName = @consumerPackagingName";
+                    "SELECT id FROM nsi_drug_OKEI_dos_pack WHERE dosageOKEIcode = @dosageOKEIcode AND dosageOKEIname = @dosageOKEIname AND dosageGRLSValue = @dosageGRLSValue AND dosageValue = @dosageValue AND OKEIcode = @OKEIcode AND OKEIname = @OKEIname AND packaging1Quantity = @packaging1Quantity AND packaging2Quantity = @packaging2Quantity AND primaryPackagingCode = @primaryPackagingCode AND primaryPackagingName = @primaryPackagingName AND consumerPackagingCode = @consumerPackagingCode AND consumerPackagingName = @consumerPackagingName";
                 var cmd4 = new MySqlCommand(country, connect);
                 cmd4.Prepare();
                 cmd4.Parameters.AddWithValue("@dosageOKEIcode", dosageOKEIcode);
@@ -261,7 +248,7 @@ namespace ParserRnP
                     reader2.Close();
                     var actual = (bool?)pos.SelectToken("actual") ?? false;
                     var addc =
-                        $"INSERT INTO nsi_drug_OKEI_dos_pack (id, actual, dosageOKEIcode, dosageOKEIname, dosageGRLSValue, dosageValue, OKEIcode, OKEIname, packaging1Quantity, packaging2Quantity, primaryPackagingCode, primaryPackagingName, consumerPackagingCode, consumerPackagingName) VALUES (null,@actual,@dosageokeicode,@dosageokeiname,@dosagegrlsvalue,@dosagevalue,@okeicode,@okeiname,@packaging1quantity,@packaging2quantity,@primarypackagingcode,@primarypackagingname,@consumerpackagingcode,@consumerpackagingname)";
+                        "INSERT INTO nsi_drug_OKEI_dos_pack (id, actual, dosageOKEIcode, dosageOKEIname, dosageGRLSValue, dosageValue, OKEIcode, OKEIname, packaging1Quantity, packaging2Quantity, primaryPackagingCode, primaryPackagingName, consumerPackagingCode, consumerPackagingName) VALUES (null,@actual,@dosageokeicode,@dosageokeiname,@dosagegrlsvalue,@dosagevalue,@okeicode,@okeiname,@packaging1quantity,@packaging2quantity,@primarypackagingcode,@primarypackagingname,@consumerpackagingcode,@consumerpackagingname)";
                     var cmd5 = new MySqlCommand(addc, connect);
                     cmd5.Prepare();
                     cmd5.Parameters.AddWithValue("@actual", actual);
@@ -293,7 +280,7 @@ namespace ParserRnP
             if (countryCode != "" && countryFullName != "")
             {
                 var country =
-                    $"SELECT id FROM nsi_drug_cert_manuf_origin WHERE countryCode = @countryCode AND countryFullName = @countryFullName";
+                    "SELECT id FROM nsi_drug_cert_manuf_origin WHERE countryCode = @countryCode AND countryFullName = @countryFullName";
                 var cmd4 = new MySqlCommand(country, connect);
                 cmd4.Prepare();
                 cmd4.Parameters.AddWithValue("@countryCode", countryCode);
@@ -315,7 +302,7 @@ namespace ParserRnP
                     var actual = (bool?)pos.SelectToken("actual") ?? false;
                     var type = ((string)pos.SelectToken("type") ?? "").Trim();
                     var addc =
-                        $"INSERT INTO nsi_drug_cert_manuf_origin (id, countryCode, countryFullName, certificateKeeperName, manufacturerAdress, manufacturerName, actual, type) VALUES (null,@countrycode,@countryfullname,@certificatekeepername,@manufactureradress,@manufacturername,@actual,@type)";
+                        "INSERT INTO nsi_drug_cert_manuf_origin (id, countryCode, countryFullName, certificateKeeperName, manufacturerAdress, manufacturerName, actual, type) VALUES (null,@countrycode,@countryfullname,@certificatekeepername,@manufactureradress,@manufacturername,@actual,@type)";
                     var cmd5 = new MySqlCommand(addc, connect);
                     cmd5.Prepare();
                     cmd5.Parameters.AddWithValue("@countrycode", countryCode);
@@ -337,7 +324,7 @@ namespace ParserRnP
         {
             var verNum = 1;
             var selectTenders =
-                $"SELECT id FROM nsi_drug_FarmDictionaryMNN WHERE MNNCode = @MNNCode ORDER BY UNIX_TIMESTAMP(lastChangeDate) ASC";
+                "SELECT id FROM nsi_drug_FarmDictionaryMNN WHERE MNNCode = @MNNCode ORDER BY UNIX_TIMESTAMP(lastChangeDate) ASC";
             var cmd1 = new MySqlCommand(selectTenders, connect);
             cmd1.Prepare();
             cmd1.Parameters.AddWithValue("@MNNCode", nnmCode);
@@ -347,7 +334,7 @@ namespace ParserRnP
             if (dt1.Rows.Count > 0)
             {
                 var updateTender =
-                    $"UPDATE nsi_drug_FarmDictionaryMNN SET version = @version WHERE id = @id";
+                    "UPDATE nsi_drug_FarmDictionaryMNN SET version = @version WHERE id = @id";
                 foreach (DataRow ten in dt1.Rows)
                 {
                     var id = (int)ten["id"];
@@ -380,7 +367,6 @@ namespace ParserRnP
             var els = new List<JToken>();
             var elsObj = j.SelectToken(s);
             if (elsObj != null && elsObj.Type != JTokenType.Null)
-            {
                 switch (elsObj.Type)
                 {
                     case JTokenType.Object:
@@ -390,7 +376,6 @@ namespace ParserRnP
                         els.AddRange(elsObj);
                         break;
                 }
-            }
 
             return els;
         }

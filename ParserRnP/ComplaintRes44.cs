@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Data;
+﻿#region
+
+using System;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Text.RegularExpressions;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Xml;
-using System.Xml.Linq;
-using System.Xml.XPath;
+
+#endregion
 
 namespace ParserRnP
 {
@@ -43,7 +38,7 @@ namespace ParserRnP
         public override void Parsing()
         {
             var xml = GetXml(File.ToString());
-            var root = (JObject) T.SelectToken("export");
+            var root = (JObject)T.SelectToken("export");
             var firstOrDefault = root.Properties().FirstOrDefault(p => p.Name.Contains("checkResult"));
             if (firstOrDefault != null)
             {
@@ -52,37 +47,33 @@ namespace ParserRnP
                 if (c.Type == JTokenType.Array)
                 {
                     var comp = GetElements(root, "checkResult");
-                    if (comp.Count > 0)
-                    {
-                        c = comp[0];
-                    }
+                    if (comp.Count > 0) c = comp[0];
                 }
 
-                var checkResultNumber = ((string) c.SelectToken("commonInfo.checkResultNumber") ?? "").Trim();
+                var checkResultNumber = ((string)c.SelectToken("commonInfo.checkResultNumber") ?? "").Trim();
                 //Console.WriteLine(checkResultNumber);
-                var complaintNumber = ((string) c.SelectToken("complaint.complaintNumber") ?? "").Trim();
-                var regNumber = ((string) c.SelectToken("commonInfo.regNumber") ?? "").Trim();
-                var versionNumber = ((string) c.SelectToken("commonInfo.versionNumber") ?? "").Trim();
+                var complaintNumber = ((string)c.SelectToken("complaint.complaintNumber") ?? "").Trim();
+                var regNumber = ((string)c.SelectToken("commonInfo.regNumber") ?? "").Trim();
+                var versionNumber = ((string)c.SelectToken("commonInfo.versionNumber") ?? "").Trim();
                 var purchaseNumber =
-                    ((string) c.SelectToken("complaint.checkedObject.purchase.purchaseNumber") ?? "").Trim();
+                    ((string)c.SelectToken("complaint.checkedObject.purchase.purchaseNumber") ?? "").Trim();
                 var createDate =
-                (JsonConvert.SerializeObject(c.SelectToken("commonInfo.createDate") ?? "") ??
-                 "").Trim('"');
+                    (JsonConvert.SerializeObject(c.SelectToken("commonInfo.createDate") ?? "") ??
+                     "").Trim('"');
                 /*DateTime date_new = DateTime.Parse(createDate);
                 Console.WriteLine(date_new);*/
-                
-                if (String.IsNullOrEmpty(purchaseNumber) && String.IsNullOrEmpty(complaintNumber))
-                {
+
+                if (string.IsNullOrEmpty(purchaseNumber) && string.IsNullOrEmpty(complaintNumber))
                     //Log.Logger("Нет purchaseNumber and complaintNumber", FilePath);
                     return;
-                }
+
                 using (var connect = ConnectToDb.GetDbConnection())
                 {
                     connect.Open();
                     var upd = 0;
                     var idCompRes = 0;
-                    if (!String.IsNullOrEmpty(createDate) &&
-                        !String.IsNullOrEmpty(versionNumber))
+                    if (!string.IsNullOrEmpty(createDate) &&
+                        !string.IsNullOrEmpty(versionNumber))
                     {
                         createDate = createDate.Substring(0, 19);
                         var selectComp44 =
@@ -101,12 +92,14 @@ namespace ParserRnP
                             reader.Close();
                             upd = 1;
                         }
+
                         reader.Close();
                     }
-                    var decisionText = ((string) c.SelectToken("complaint.decision.decisionText") ?? "").Trim();
-                    var complaintResult = ((string) c.SelectToken("complaint.complaintResult") ?? "").Trim();
-                    var complaintResultInfo = ((string) c.SelectToken("complaint.complaintResultInfo") ?? "").Trim();
-                    var printForm = ((string) c.SelectToken("printForm.url") ?? "").Trim();
+
+                    var decisionText = ((string)c.SelectToken("complaint.decision.decisionText") ?? "").Trim();
+                    var complaintResult = ((string)c.SelectToken("complaint.complaintResult") ?? "").Trim();
+                    var complaintResultInfo = ((string)c.SelectToken("complaint.complaintResultInfo") ?? "").Trim();
+                    var printForm = ((string)c.SelectToken("printForm.url") ?? "").Trim();
                     if (upd == 1)
                     {
                         var deleteAtt =
@@ -152,16 +145,17 @@ namespace ParserRnP
                         cmd1.Parameters.AddWithValue("@complaintResult", complaintResult);
                         cmd1.Parameters.AddWithValue("@complaintResultInfo", complaintResultInfo);
                         var resInsComp = cmd1.ExecuteNonQuery();
-                        idCompRes = (int) cmd1.LastInsertedId;
+                        idCompRes = (int)cmd1.LastInsertedId;
                         AddComplaintRes44?.Invoke(resInsComp);
                     }
+
                     var attach =
                         GetElements(c, "complaint.decision.attachments.attachment");
                     foreach (var att in attach)
                     {
-                        var fileName = ((string) att.SelectToken("fileName") ?? "").Trim();
-                        var docDescription = ((string) att.SelectToken("docDescription") ?? "").Trim();
-                        var url = ((string) att.SelectToken("url") ?? "").Trim();
+                        var fileName = ((string)att.SelectToken("fileName") ?? "").Trim();
+                        var docDescription = ((string)att.SelectToken("docDescription") ?? "").Trim();
+                        var url = ((string)att.SelectToken("url") ?? "").Trim();
                         var insertAtt =
                             $"INSERT INTO {Program.Prefix}attach_complaint_res SET id_complaint_res = @id_complaint_res, fileName = @fileName, docDescription = @docDescription, url = @url";
                         var cmd1 = new MySqlCommand(insertAtt, connect);

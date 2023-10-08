@@ -1,11 +1,14 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Threading;
 using FluentFTP;
-using Limilabs.FTP.Client;
 using MySql.Data.MySqlClient;
+
+#endregion
 
 namespace ParserRnP
 {
@@ -15,7 +18,7 @@ namespace ParserRnP
 
         public Parser(TypeArguments a)
         {
-            this.Arg = a;
+            Arg = a;
         }
 
         public virtual void Parsing()
@@ -34,38 +37,39 @@ namespace ParserRnP
                 adapter.Fill(ds);
                 dt = ds.Tables[0];
             }
+
             return dt;
         }
 
-        public virtual List<String> GetListArchLast(string pathParse)
+        public virtual List<string> GetListArchLast(string pathParse)
         {
             var arch = new List<string>();
 
             return arch;
         }
 
-        public virtual List<String> GetListArchCurr(string pathParse)
+        public virtual List<string> GetListArchCurr(string pathParse)
         {
             var arch = new List<string>();
 
             return arch;
         }
 
-        public virtual List<String> GetListArchPrev(string pathParse)
+        public virtual List<string> GetListArchPrev(string pathParse)
         {
             var arch = new List<string>();
 
             return arch;
         }
 
-        public virtual List<String> GetListArchLast(string pathParse, string regionPath, string purchase)
+        public virtual List<string> GetListArchLast(string pathParse, string regionPath, string purchase)
         {
             var arch = new List<string>();
 
             return arch;
         }
 
-        public virtual List<String> GetListArchDaily(string pathParse, string regionPath, string purchase)
+        public virtual List<string> GetListArchDaily(string pathParse, string regionPath, string purchase)
         {
             var arch = new List<string>();
 
@@ -132,7 +136,6 @@ namespace ParserRnP
             var file = "";
             var count = 1;
             while (true)
-            {
                 try
                 {
                     /*string FileOnServer = $"{PathParse}/{Arch}";*/
@@ -151,10 +154,8 @@ namespace ParserRnP
 
                         client.Close();
                     }*/
-                    if (count > 1)
-                    {
-                        Log.Logger("Удалось скачать архив после попытки", count, arch);
-                    }
+                    if (count > 1) Log.Logger("Удалось скачать архив после попытки", count, arch);
+
                     return file;
                 }
                 catch (Exception e)
@@ -168,7 +169,6 @@ namespace ParserRnP
                     count++;
                     Thread.Sleep(5000);
                 }
-            }
         }
     }
 }

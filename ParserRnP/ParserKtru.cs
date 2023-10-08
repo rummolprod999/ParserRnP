@@ -14,29 +14,38 @@ using Newtonsoft.Json.Linq;
 
 namespace ParserRnP
 {
-    public class ParserFarmDrug : Parser
+    public class ParserKtru : Parser
     {
         private readonly string[] _file =
         {
-            "nsiFarmDrugsDictionary".ToLower()
+            "nsiKTRU".ToLower()
         };
 
-        public ParserFarmDrug(TypeArguments a) : base(a)
+        public ParserKtru(TypeArguments a) : base(a)
         {
         }
 
         public override void Parsing()
         {
+            ktru("/fcs_nsi/nsiKTRU/");
+            ktru("/fcs_nsi/nsiKTRUNew/");
+        }
+
+        private void ktru(string fcsNsiNsiktru)
+        {
             var arch = new List<string>();
             var bankList = new List<string>();
-            var pathParse = "/fcs_nsi/nsiFarmDrugDictionary/";
 
-            bankList = GetListBank(pathParse);
+            bankList = GetListBank(fcsNsiNsiktru);
             foreach (var l in bankList)
-            {
-                pathParse = "/fcs_nsi/nsiFarmDrugDictionary/";
-                GetListFileArch(l, pathParse);
-            }
+                try
+                {
+                    GetListFileArch(l, fcsNsiNsiktru);
+                }
+                catch (Exception e)
+                {
+                    Log.Logger("Ошибка при парсинге", e, fcsNsiNsiktru);
+                }
         }
 
         public override void GetListFileArch(string arch, string pathParse)
@@ -122,7 +131,7 @@ namespace ParserRnP
                 doc.LoadXml(ftext);
                 var jsons = JsonConvert.SerializeXmlNode(doc);
                 var json = JObject.Parse(jsons);
-                var b = new FarmDrug(f, json);
+                var b = new Ktru(f, json);
                 b.Parsing();
             }
         }

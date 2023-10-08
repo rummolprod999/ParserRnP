@@ -18,6 +18,6 @@
         CurrComplaintRes,
         Nsi,
         FarmDrug,
-        
+        Ktru
     }
 }

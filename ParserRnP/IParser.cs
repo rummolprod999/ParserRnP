@@ -1,5 +1,8 @@
-﻿using System.Data;
-using FluentFTP;
+﻿#region
+
+using System.Data;
+
+#endregion
 
 namespace ParserRnP
 {

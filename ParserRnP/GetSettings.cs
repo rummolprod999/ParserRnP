@@ -1,6 +1,10 @@
-﻿using System;
-using System.Xml;
+﻿#region
+
+using System;
 using System.IO;
+using System.Xml;
+
+#endregion
 
 namespace ParserRnP
 {
@@ -11,6 +15,8 @@ namespace ParserRnP
         public readonly string LogPathRnp;
         public readonly string TempPathNsi;
         public readonly string LogPathNsi;
+        public readonly string TempPathKtru;
+        public readonly string LogPathKtru;
         public readonly string TempPathfarmDrug;
         public readonly string LogPathFarmDrug;
         public readonly string TempPathBank;
@@ -32,9 +38,7 @@ namespace ParserRnP
             xDoc.Load(Program.PathProgram + Path.DirectorySeparatorChar + "setting_rnp.xml");
             var xRoot = xDoc.DocumentElement;
             if (xRoot != null)
-            {
                 foreach (XmlNode xnode in xRoot)
-                {
                     switch (xnode.Name)
                     {
                         case "database":
@@ -49,6 +53,9 @@ namespace ParserRnP
                         case "tempdir_nsi":
                             TempPathNsi = $"{Program.PathProgram}{Path.DirectorySeparatorChar}{xnode.InnerText}";
                             break;
+                        case "tempdir_ktru":
+                            TempPathKtru = $"{Program.PathProgram}{Path.DirectorySeparatorChar}{xnode.InnerText}";
+                            break;
                         case "logdir_farmdrug":
                             LogPathFarmDrug = $"{Program.PathProgram}{Path.DirectorySeparatorChar}{xnode.InnerText}";
                             break;
@@ -57,6 +64,9 @@ namespace ParserRnP
                             break;
                         case "logdir_nsi":
                             LogPathNsi = $"{Program.PathProgram}{Path.DirectorySeparatorChar}{xnode.InnerText}";
+                            break;
+                        case "logdir_ktru":
+                            LogPathKtru = $"{Program.PathProgram}{Path.DirectorySeparatorChar}{xnode.InnerText}";
                             break;
                         case "tempdir_bank":
                             TempPathBank = $"{Program.PathProgram}{Path.DirectorySeparatorChar}{xnode.InnerText}";
@@ -91,23 +101,22 @@ namespace ParserRnP
                             Server = xnode.InnerText;
                             break;
                         case "port":
-                            Port = Int32.TryParse(xnode.InnerText, out Port) ? Int32.Parse(xnode.InnerText) : 3306;
+                            Port = int.TryParse(xnode.InnerText, out Port) ? int.Parse(xnode.InnerText) : 3306;
                             break;
                         case "years":
                             Years = xnode.InnerText;
                             break;
                     }
-                }
-            }
 
-            if (String.IsNullOrEmpty(LogPathComplaint) || String.IsNullOrEmpty(TempPathComplaint) ||
-                String.IsNullOrEmpty(LogPathBank) || String.IsNullOrEmpty(TempPathBank) ||
-                String.IsNullOrEmpty(LogPathRnp) || String.IsNullOrEmpty(TempPathRnp) ||
-                String.IsNullOrEmpty(Database) || String.IsNullOrEmpty(UserDb) || String.IsNullOrEmpty(Server) ||
-                String.IsNullOrEmpty(Years) || String.IsNullOrEmpty(TempPathComplaintResult) ||
-                String.IsNullOrEmpty(LogPathComplaintResult) ||
-                String.IsNullOrEmpty(LogPathNsi) || String.IsNullOrEmpty(TempPathNsi)  ||
-                String.IsNullOrEmpty(LogPathFarmDrug) || String.IsNullOrEmpty(TempPathfarmDrug))
+            if (string.IsNullOrEmpty(LogPathComplaint) || string.IsNullOrEmpty(TempPathComplaint) ||
+                string.IsNullOrEmpty(LogPathBank) || string.IsNullOrEmpty(TempPathBank) ||
+                string.IsNullOrEmpty(LogPathRnp) || string.IsNullOrEmpty(TempPathRnp) ||
+                string.IsNullOrEmpty(Database) || string.IsNullOrEmpty(UserDb) || string.IsNullOrEmpty(Server) ||
+                string.IsNullOrEmpty(Years) || string.IsNullOrEmpty(TempPathComplaintResult) ||
+                string.IsNullOrEmpty(LogPathComplaintResult) ||
+                string.IsNullOrEmpty(LogPathNsi) || string.IsNullOrEmpty(TempPathNsi) ||
+                string.IsNullOrEmpty(LogPathFarmDrug) || string.IsNullOrEmpty(TempPathfarmDrug) ||
+                string.IsNullOrEmpty(LogPathKtru) || string.IsNullOrEmpty(TempPathKtru))
             {
                 Console.WriteLine("Некоторые поля в файле настроек пустые");
                 Environment.Exit(0);

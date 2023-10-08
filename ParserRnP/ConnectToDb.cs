@@ -1,5 +1,8 @@
-﻿using System;
+﻿#region
+
 using MySql.Data.MySqlClient;
+
+#endregion
 
 namespace ParserRnP
 {

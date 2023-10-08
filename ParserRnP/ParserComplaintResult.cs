@@ -1,4 +1,6 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -10,18 +12,22 @@ using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
+#endregion
+
 namespace ParserRnP
 {
     public class ParserComplaintResult : Parser
     {
         protected DataTable DtRegion;
-        private string[] _fileUcomplaintRes = new[]
+
+        private readonly string[] _fileUcomplaintRes =
         {
             "checkresult_", "checkresultcancel_"
         };
-        private string[] _fileCancelRes = new[] {"checkresultcancel_"};
-        private string[] _fileComplaintRes = new[] {"checkresult_"};
-        
+
+        private readonly string[] _fileCancelRes = { "checkresultcancel_" };
+        private readonly string[] _fileComplaintRes = { "checkresult_" };
+
         public ParserComplaintResult(TypeArguments arg) : base(arg)
         {
         }
@@ -33,27 +39,22 @@ namespace ParserRnP
             switch (Program.Periodparsing)
             {
                 case TypeArguments.LastComplaintRes:
-                    pathParse = $"/fcs_fas/checkResult/";
+                    pathParse = "/fcs_fas/checkResult/";
                     arch = GetListArchLast(pathParse);
                     break;
                 case TypeArguments.CurrComplaintRes:
-                    pathParse = $"/fcs_fas/checkResult/currMonth/";
+                    pathParse = "/fcs_fas/checkResult/currMonth/";
                     arch = GetListArchCurr(pathParse);
                     break;
                 case TypeArguments.PrevComplaintRes:
-                    pathParse = $"/fcs_fas/checkResult/prevMonth/";
+                    pathParse = "/fcs_fas/checkResult/prevMonth/";
                     arch = GetListArchPrev(pathParse);
                     break;
             }
-            if (arch.Count == 0)
-            {
-                Log.Logger("Получен пустой список архивов", pathParse);
-            }
 
-            foreach (var v in arch)
-            {
-                GetListFileArch(v, pathParse);
-            }
+            if (arch.Count == 0) Log.Logger("Получен пустой список архивов", pathParse);
+
+            foreach (var v in arch) GetListFileArch(v, pathParse);
         }
 
         public override void GetListFileArch(string arch, string pathParse)
@@ -61,11 +62,10 @@ namespace ParserRnP
             var filea = "";
             var pathUnzip = "";
             filea = GetArch44(arch, pathParse);
-            if (!String.IsNullOrEmpty(filea))
+            if (!string.IsNullOrEmpty(filea))
             {
                 pathUnzip = Unzipped.Unzip(filea);
                 if (pathUnzip != "")
-                {
                     if (Directory.Exists(pathUnzip))
                     {
                         var dirInfo = new DirectoryInfo(pathUnzip);
@@ -78,27 +78,18 @@ namespace ParserRnP
                             .Where(a => _fileComplaintRes.Any(
                                 t => a.Name.ToLower().IndexOf(t, StringComparison.Ordinal) != -1))
                             .ToList();
-                        foreach (var f in arrayXmlComplaintRes)
-                        {
-                            Bolter(f, TypeFileComplaintRes.ComplaintRes);
-                        }
-                        
-                        foreach (var f in arrayXmlCancelRes)
-                        {
-                            Bolter(f, TypeFileComplaintRes.CancelRes);
-                        }
+                        foreach (var f in arrayXmlComplaintRes) Bolter(f, TypeFileComplaintRes.ComplaintRes);
+
+                        foreach (var f in arrayXmlCancelRes) Bolter(f, TypeFileComplaintRes.CancelRes);
+
                         dirInfo.Delete(true);
                     }
-                }
             }
         }
-        
+
         public override void Bolter(FileInfo f, TypeFileComplaintRes typefile)
         {
-            if (!f.Name.ToLower().EndsWith(".xml", StringComparison.Ordinal))
-            {
-                return;
-            }
+            if (!f.Name.ToLower().EndsWith(".xml", StringComparison.Ordinal)) return;
 
             try
             {
@@ -134,15 +125,17 @@ namespace ParserRnP
             }
         }
 
-        public override List<String> GetListArchLast(string pathParse)
+        public override List<string> GetListArchLast(string pathParse)
         {
             var archtemp = new List<string>();
             /*FtpClient ftp = ClientFtp44();*/
             archtemp = GetListFtp44(pathParse);
-            return archtemp.Where(a => _fileUcomplaintRes.Any(t => a.ToLower().IndexOf(t, StringComparison.Ordinal) != -1))
+            return archtemp.Where(a =>
+                    _fileUcomplaintRes.Any(t => a.ToLower().IndexOf(t, StringComparison.Ordinal) != -1))
                 .ToList();
         }
-        public override List<String> GetListArchPrev(string pathParse)
+
+        public override List<string> GetListArchPrev(string pathParse)
         {
             var arch = new List<string>();
             var archtemp = new List<string>();
@@ -178,16 +171,15 @@ namespace ParserRnP
 
             return arch;
         }
-        
-        public override List<String> GetListArchCurr(string pathParse)
+
+        public override List<string> GetListArchCurr(string pathParse)
         {
             var arch = new List<string>();
             var archtemp = new List<string>();
             /*FtpClient ftp = ClientFtp44();*/
             archtemp = GetListFtp44(pathParse);
             foreach (var a in archtemp.Where(a =>
-                _fileUcomplaintRes.Any(t => a.ToLower().IndexOf(t, StringComparison.Ordinal) != -1)))
-            {
+                         _fileUcomplaintRes.Any(t => a.ToLower().IndexOf(t, StringComparison.Ordinal) != -1)))
                 using (var connect = ConnectToDb.GetDbConnection())
                 {
                     connect.Open();
@@ -210,26 +202,22 @@ namespace ParserRnP
                         arch.Add(a);
                     }
                 }
-            }
 
             return arch;
         }
-        
+
         private List<string> GetListFtp44(string pathParse)
         {
             var archtemp = new List<string>();
             var count = 1;
             while (true)
-            {
                 try
                 {
                     var ftp = ClientFtp44_old();
                     ftp.ChangeWorkingDirectory(pathParse);
                     archtemp = ftp.ListDirectory();
-                    if (count > 1)
-                    {
-                        Log.Logger("Удалось получить список архивов после попытки", count);
-                    }
+                    if (count > 1) Log.Logger("Удалось получить список архивов после попытки", count);
+
                     break;
                 }
                 catch (Exception e)
@@ -239,10 +227,11 @@ namespace ParserRnP
                         Log.Logger($"Не смогли найти директорию после попытки {count}", pathParse, e);
                         break;
                     }
+
                     count++;
                     Thread.Sleep(2000);
                 }
-            }
+
             return archtemp;
         }
     }

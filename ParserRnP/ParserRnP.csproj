@@ -1,108 +1,110 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{8EAA02F7-7730-4F87-838B-BB84C9D49FD7}</ProjectGuid>
-    <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <OutputType>Exe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ParserRnP</RootNamespace>
-    <AssemblyName>ParserRnP</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="FluentFTP, Version=18.0.2.0, Culture=neutral, PublicKeyToken=f4af092b1d8df44f">
-      <HintPath>..\packages\FluentFTP.18.0.2\lib\net45\FluentFTP.dll</HintPath>
-    </Reference>
-    <Reference Include="Ftp, Version=2.0.17107.1333, Culture=neutral, PublicKeyToken=6dc438ab78a525b3">
-      <HintPath>..\packages\Ftp.dll.2.0.17107.1333\lib\Net45\Ftp.dll</HintPath>
-    </Reference>
-    <Reference Include="MySql.Data, Version=6.9.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d">
-      <HintPath>..\packages\MySql.Data.6.9.9\lib\net45\MySql.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.IO.Compression" />
-    <Reference Include="System.IO.Compression.FileSystem" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Bank.cs" />
-    <Compile Include="Bank44.cs" />
-    <Compile Include="ClearText.cs" />
-    <Compile Include="Complaint.cs" />
-    <Compile Include="Complaint44.cs" />
-    <Compile Include="ComplaintCancel.cs" />
-    <Compile Include="ComplaintCancelRes.cs" />
-    <Compile Include="ComplaintRes44.cs" />
-    <Compile Include="ComplaintSuspend.cs" />
-    <Compile Include="ConnectToDb.cs" />
-    <Compile Include="FarmDrug.cs" />
-    <Compile Include="GetSettings.cs" />
-    <Compile Include="IParser.cs" />
-    <Compile Include="JsonExtensions.cs" />
-    <Compile Include="Log.cs" />
-    <Compile Include="Nsi.cs" />
-    <Compile Include="Parser.cs" />
-    <Compile Include="ParserBank.cs" />
-    <Compile Include="ParserComplaint.cs" />
-    <Compile Include="ParserComplaintResult.cs" />
-    <Compile Include="ParserFarmDrug.cs" />
-    <Compile Include="ParserNsi.cs" />
-    <Compile Include="ParserUnFair.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TypeArguments.cs" />
-    <Compile Include="TypeFileBank.cs" />
-    <Compile Include="TypeFileComplaint.cs" />
-    <Compile Include="TypeFileComplaintRes.cs" />
-    <Compile Include="TypeFileRnp.cs" />
-    <Compile Include="Unfair.cs" />
-    <Compile Include="Unfair44.cs" />
-    <Compile Include="Unzipped.cs" />
-    <Compile Include="WorkWithFtp.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="1.json" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')"/>
+    <PropertyGroup>
+        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+        <ProjectGuid>{8EAA02F7-7730-4F87-838B-BB84C9D49FD7}</ProjectGuid>
+        <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+        <OutputType>Exe</OutputType>
+        <AppDesignerFolder>Properties</AppDesignerFolder>
+        <RootNamespace>ParserRnP</RootNamespace>
+        <AssemblyName>ParserRnP</AssemblyName>
+        <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+        <FileAlignment>512</FileAlignment>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>bin\Debug\</OutputPath>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugType>pdbonly</DebugType>
+        <Optimize>true</Optimize>
+        <OutputPath>bin\Release\</OutputPath>
+        <DefineConstants>TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <ItemGroup>
+        <Reference Include="FluentFTP, Version=18.0.2.0, Culture=neutral, PublicKeyToken=f4af092b1d8df44f">
+            <HintPath>..\packages\FluentFTP.18.0.2\lib\net45\FluentFTP.dll</HintPath>
+        </Reference>
+        <Reference Include="Ftp, Version=2.0.17107.1333, Culture=neutral, PublicKeyToken=6dc438ab78a525b3">
+            <HintPath>..\packages\Ftp.dll.2.0.17107.1333\lib\Net45\Ftp.dll</HintPath>
+        </Reference>
+        <Reference Include="MySql.Data, Version=6.9.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d">
+            <HintPath>..\packages\MySql.Data.6.9.9\lib\net45\MySql.Data.dll</HintPath>
+        </Reference>
+        <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">
+            <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+        </Reference>
+        <Reference Include="System"/>
+        <Reference Include="System.Core"/>
+        <Reference Include="System.IO.Compression"/>
+        <Reference Include="System.IO.Compression.FileSystem"/>
+        <Reference Include="System.Xml.Linq"/>
+        <Reference Include="System.Data.DataSetExtensions"/>
+        <Reference Include="System.Data"/>
+        <Reference Include="System.Xml"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Bank.cs"/>
+        <Compile Include="Bank44.cs"/>
+        <Compile Include="ClearText.cs"/>
+        <Compile Include="Complaint.cs"/>
+        <Compile Include="Complaint44.cs"/>
+        <Compile Include="ComplaintCancel.cs"/>
+        <Compile Include="ComplaintCancelRes.cs"/>
+        <Compile Include="ComplaintRes44.cs"/>
+        <Compile Include="ComplaintSuspend.cs"/>
+        <Compile Include="ConnectToDb.cs"/>
+        <Compile Include="FarmDrug.cs"/>
+        <Compile Include="GetSettings.cs"/>
+        <Compile Include="IParser.cs"/>
+        <Compile Include="JsonExtensions.cs"/>
+        <Compile Include="Ktru.cs"/>
+        <Compile Include="Log.cs"/>
+        <Compile Include="Nsi.cs"/>
+        <Compile Include="Parser.cs"/>
+        <Compile Include="ParserBank.cs"/>
+        <Compile Include="ParserComplaint.cs"/>
+        <Compile Include="ParserComplaintResult.cs"/>
+        <Compile Include="ParserFarmDrug.cs"/>
+        <Compile Include="ParserKtru.cs"/>
+        <Compile Include="ParserNsi.cs"/>
+        <Compile Include="ParserUnFair.cs"/>
+        <Compile Include="Program.cs"/>
+        <Compile Include="Properties\AssemblyInfo.cs"/>
+        <Compile Include="TypeArguments.cs"/>
+        <Compile Include="TypeFileBank.cs"/>
+        <Compile Include="TypeFileComplaint.cs"/>
+        <Compile Include="TypeFileComplaintRes.cs"/>
+        <Compile Include="TypeFileRnp.cs"/>
+        <Compile Include="Unfair.cs"/>
+        <Compile Include="Unfair44.cs"/>
+        <Compile Include="Unzipped.cs"/>
+        <Compile Include="WorkWithFtp.cs"/>
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="app.config"/>
+        <None Include="packages.config"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Content Include="1.json"/>
+    </ItemGroup>
+    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
+    <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+         Other similar extension points exist, see Microsoft.Common.targets.
+    <Target Name="BeforeBuild">
+    </Target>
+    <Target Name="AfterBuild">
+    </Target>
+    -->
 </Project>

@@ -1,16 +1,20 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+
+#endregion
 
 namespace ParserRnP
 {
     public class WorkWithFtp
     {
-        private string _password;
-        private string _userName;
+        private readonly string _password;
+        private readonly string _userName;
         private string _uri;
-        private int _bufferSize = 1024;
+        private readonly int _bufferSize = 1024;
         public bool Passive = true;
         public bool Binary = true;
         public bool EnableSsl = false;
@@ -18,9 +22,9 @@ namespace ParserRnP
 
         public WorkWithFtp(string uri, string userName, string password)
         {
-            this._uri = uri;
-            this._userName = userName;
-            this._password = password;
+            _uri = uri;
+            _userName = userName;
+            _password = password;
         }
 
         public string ChangeWorkingDirectory(string path)
@@ -43,7 +47,7 @@ namespace ParserRnP
 
             var buffer = new byte[_bufferSize];
 
-            using (var response = (FtpWebResponse) request.GetResponse())
+            using (var response = (FtpWebResponse)request.GetResponse())
             {
                 using (var stream = response.GetResponseStream())
                 {
@@ -70,7 +74,7 @@ namespace ParserRnP
         {
             var request = CreateRequest(Combine(_uri, fileName), WebRequestMethods.Ftp.GetDateTimestamp);
 
-            using (var response = (FtpWebResponse) request.GetResponse())
+            using (var response = (FtpWebResponse)request.GetResponse())
             {
                 return response.LastModified;
             }
@@ -80,7 +84,7 @@ namespace ParserRnP
         {
             var request = CreateRequest(Combine(_uri, fileName), WebRequestMethods.Ftp.GetFileSize);
 
-            using (var response = (FtpWebResponse) request.GetResponse())
+            using (var response = (FtpWebResponse)request.GetResponse())
             {
                 return response.ContentLength;
             }
@@ -92,16 +96,13 @@ namespace ParserRnP
 
             var request = CreateRequest(WebRequestMethods.Ftp.ListDirectory);
 
-            using (var response = (FtpWebResponse) request.GetResponse())
+            using (var response = (FtpWebResponse)request.GetResponse())
             {
                 using (var stream = response.GetResponseStream())
                 {
                     using (var reader = new StreamReader(stream, true))
                     {
-                        while (!reader.EndOfStream)
-                        {
-                            list.Add(reader.ReadLine());
-                        }
+                        while (!reader.EndOfStream) list.Add(reader.ReadLine());
                     }
                 }
             }
@@ -115,16 +116,13 @@ namespace ParserRnP
 
             var request = CreateRequest(WebRequestMethods.Ftp.ListDirectoryDetails);
 
-            using (var response = (FtpWebResponse) request.GetResponse())
+            using (var response = (FtpWebResponse)request.GetResponse())
             {
                 using (var stream = response.GetResponseStream())
                 {
                     using (var reader = new StreamReader(stream, true))
                     {
-                        while (!reader.EndOfStream)
-                        {
-                            list.Add(reader.ReadLine());
-                        }
+                        while (!reader.EndOfStream) list.Add(reader.ReadLine());
                     }
                 }
             }
@@ -168,7 +166,7 @@ namespace ParserRnP
 
             using (var stream = request.GetRequestStream())
             {
-                using (var fileStream = System.IO.File.Open(source, FileMode.Open))
+                using (var fileStream = File.Open(source, FileMode.Open))
                 {
                     int num;
 
@@ -193,7 +191,7 @@ namespace ParserRnP
 
             using (var stream = request.GetRequestStream())
             {
-                using (var fileStream = System.IO.File.Open(source, FileMode.Open))
+                using (var fileStream = File.Open(source, FileMode.Open))
                 {
                     int num;
 
@@ -209,7 +207,7 @@ namespace ParserRnP
                 }
             }
 
-            using (var response = (FtpWebResponse) request.GetResponse())
+            using (var response = (FtpWebResponse)request.GetResponse())
             {
                 return Path.GetFileName(response.ResponseUri.ToString());
             }
@@ -222,7 +220,7 @@ namespace ParserRnP
 
         private FtpWebRequest CreateRequest(string uri, string method)
         {
-            var r = (FtpWebRequest) WebRequest.Create(uri);
+            var r = (FtpWebRequest)WebRequest.Create(uri);
 
             r.Credentials = new NetworkCredential(_userName, _password);
             r.Method = method;
@@ -235,7 +233,7 @@ namespace ParserRnP
 
         private string GetStatusDescription(FtpWebRequest request)
         {
-            using (var response = (FtpWebResponse) request.GetResponse())
+            using (var response = (FtpWebResponse)request.GetResponse())
             {
                 return response.StatusDescription;
             }

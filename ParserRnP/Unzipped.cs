@@ -1,7 +1,12 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+
+#endregion
+
 namespace ParserRnP
 {
     public class Unzipped
@@ -25,7 +30,8 @@ namespace ParserRnP
                     Log.Logger("Не удалось извлечь файл", e, filea);
                     try
                     {
-                        var myProcess = new Process {StartInfo = new ProcessStartInfo("unzip", $"-B {filea} -d {lDir}")};
+                        var myProcess = new Process
+                            { StartInfo = new ProcessStartInfo("unzip", $"-B {filea} -d {lDir}") };
                         myProcess.Start();
                         myProcess.WaitForExit();
                         Log.Logger("Извлекли файл альтернативным методом", filea);

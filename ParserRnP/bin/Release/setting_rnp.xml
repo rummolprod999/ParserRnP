@@ -13,6 +13,8 @@
 	<logdir_nsi>log_nsi</logdir_nsi>
 	<tempdir_farmdrug>temp_farmdrug</tempdir_farmdrug>
 	<logdir_farmdrug>log_farmdrug</logdir_farmdrug>
+	<tempdir_ktru>temp_ktru</tempdir_ktru>
+	<logdir_ktru>log_ktru</logdir_ktru>
 	<prefix></prefix>
 	<userdb>parser</userdb>
 	<passdb>Dft56Point</passdb>

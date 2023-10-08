@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Data;
+﻿#region
+
+using System;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Text.RegularExpressions;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Xml;
-using System.Xml.Linq;
-using System.Xml.XPath;
+
+#endregion
 
 namespace ParserRnP
 {
@@ -35,33 +30,27 @@ namespace ParserRnP
         public override void Parsing()
         {
             var xml = GetXml(File.ToString());
-            var root = (JObject) T.SelectToken("export");
+            var root = (JObject)T.SelectToken("export");
             var firstOrDefault = root.Properties().FirstOrDefault(p => p.Name.Contains("unfairSupplier"));
             if (firstOrDefault != null)
             {
                 var r = firstOrDefault.Value;
-                var registryNum = ((string) r.SelectToken("registryNum") ?? "").Trim();
-                if (String.IsNullOrEmpty(registryNum))
-                {
-                    Log.Logger("У unfair нет registryNum", FilePath);
-                }
+                var registryNum = ((string)r.SelectToken("registryNum") ?? "").Trim();
+                if (string.IsNullOrEmpty(registryNum)) Log.Logger("У unfair нет registryNum", FilePath);
+
                 var publishDate = (JsonConvert.SerializeObject(r.SelectToken("publishDate") ?? "") ??
                                    "").Trim('"');
-                if (String.IsNullOrEmpty(publishDate))
-                {
-                    Log.Logger("Нет publishDate", FilePath);
-                }
+                if (string.IsNullOrEmpty(publishDate)) Log.Logger("Нет publishDate", FilePath);
+
                 var approveDate = (JsonConvert.SerializeObject(r.SelectToken("approveDate") ?? "") ??
                                    "").Trim('"');
-                if (String.IsNullOrEmpty(approveDate))
-                {
-                    Log.Logger("Нет approveDate", FilePath);
-                }
-                var state = ((string) r.SelectToken("state") ?? "").Trim();
+                if (string.IsNullOrEmpty(approveDate)) Log.Logger("Нет approveDate", FilePath);
+
+                var state = ((string)r.SelectToken("state") ?? "").Trim();
                 using (var connect = ConnectToDb.GetDbConnection())
                 {
                     connect.Open();
-                    if (!String.IsNullOrEmpty(registryNum) && !String.IsNullOrEmpty(publishDate))
+                    if (!string.IsNullOrEmpty(registryNum) && !string.IsNullOrEmpty(publishDate))
                     {
                         var selectUnf =
                             $"SELECT id FROM {Program.Prefix}unfair WHERE registryNum = @registryNum AND publishDate = @publishDate AND state = @state";
@@ -77,6 +66,7 @@ namespace ParserRnP
                             Log.Logger("Такой документ уже есть в базе", registryNum);
                             return;
                         }
+
                         reader.Close();
                         /*string select_unf2 =
                             $"SELECT id FROM {Program.Prefix}unfair WHERE registryNum = @registryNum AND publishDate = @publishDate";
@@ -103,9 +93,9 @@ namespace ParserRnP
                     }
 
                     var idOrg = 0;
-                    var publishOrgregNum = ((string) r.SelectToken("publishOrg.regNum") ?? "").Trim();
-                    var publishOrgfullName = ((string) r.SelectToken("publishOrg.fullName") ?? "").Trim();
-                    if (!String.IsNullOrEmpty(publishOrgregNum))
+                    var publishOrgregNum = ((string)r.SelectToken("publishOrg.regNum") ?? "").Trim();
+                    var publishOrgfullName = ((string)r.SelectToken("publishOrg.fullName") ?? "").Trim();
+                    if (!string.IsNullOrEmpty(publishOrgregNum))
                     {
                         var selectPubOrg =
                             $"SELECT id FROM {Program.Prefix}unfair_publish_org WHERE regNum = @regNum";
@@ -129,21 +119,22 @@ namespace ParserRnP
                             cmd5.Parameters.AddWithValue("@regNum", publishOrgregNum);
                             cmd5.Parameters.AddWithValue("@fullName", publishOrgfullName);
                             cmd5.ExecuteNonQuery();
-                            idOrg = (int) cmd5.LastInsertedId;
+                            idOrg = (int)cmd5.LastInsertedId;
                         }
                     }
                     else
                     {
                         Log.Logger("Нет organizer_reg_num", FilePath);
                     }
-                    var createReason = ((string) r.SelectToken("createReason") ?? "").Trim();
-                    var approveReason = ((string) r.SelectToken("approveReason") ?? "").Trim();
+
+                    var createReason = ((string)r.SelectToken("createReason") ?? "").Trim();
+                    var approveReason = ((string)r.SelectToken("approveReason") ?? "").Trim();
                     var idCustomer = 0;
-                    var customerregNum = ((string) r.SelectToken("customer.regNum") ?? "").Trim();
-                    var customerfullName = ((string) r.SelectToken("customer.fullName") ?? "").Trim();
-                    var customerInn = ((string) r.SelectToken("customer.INN") ?? "").Trim();
-                    var customerKpp = ((string) r.SelectToken("customer.KPP") ?? "").Trim();
-                    if (!String.IsNullOrEmpty(customerregNum))
+                    var customerregNum = ((string)r.SelectToken("customer.regNum") ?? "").Trim();
+                    var customerfullName = ((string)r.SelectToken("customer.fullName") ?? "").Trim();
+                    var customerInn = ((string)r.SelectToken("customer.INN") ?? "").Trim();
+                    var customerKpp = ((string)r.SelectToken("customer.KPP") ?? "").Trim();
+                    if (!string.IsNullOrEmpty(customerregNum))
                     {
                         var selectCustomer =
                             $"SELECT id FROM {Program.Prefix}unfair_customer WHERE regNum = @regNum";
@@ -169,29 +160,30 @@ namespace ParserRnP
                             cmd7.Parameters.AddWithValue("@INN", customerInn);
                             cmd7.Parameters.AddWithValue("@KPP", customerKpp);
                             cmd7.ExecuteNonQuery();
-                            idCustomer = (int) cmd7.LastInsertedId;
+                            idCustomer = (int)cmd7.LastInsertedId;
                         }
                     }
                     else
                     {
                         Log.Logger("Нет customer_reg_num", FilePath);
                     }
+
                     var idSupplier = 0;
-                    var innSupplier = ((string) r.SelectToken("unfairSupplier.inn") ?? "").Trim();
-                    var kppSupplier = ((string) r.SelectToken("unfairSupplier.kpp") ?? "").Trim();
-                    var fullNameSupplier = ((string) r.SelectToken("unfairSupplier.fullName") ?? "").Trim();
-                    var placefullName = ((string) r.SelectToken("unfairSupplier.place.kladr.fullName") ?? "")
+                    var innSupplier = ((string)r.SelectToken("unfairSupplier.inn") ?? "").Trim();
+                    var kppSupplier = ((string)r.SelectToken("unfairSupplier.kpp") ?? "").Trim();
+                    var fullNameSupplier = ((string)r.SelectToken("unfairSupplier.fullName") ?? "").Trim();
+                    var placefullName = ((string)r.SelectToken("unfairSupplier.place.kladr.fullName") ?? "")
                         .Trim();
-                    var subjectRf = ((string) r.SelectToken("unfairSupplier.place.kladr.subjectRF") ?? "")
+                    var subjectRf = ((string)r.SelectToken("unfairSupplier.place.kladr.subjectRF") ?? "")
                         .Trim();
-                    var area = ((string) r.SelectToken("unfairSupplier.place.kladr.area") ?? "")
+                    var area = ((string)r.SelectToken("unfairSupplier.place.kladr.area") ?? "")
                         .Trim();
-                    var street = ((string) r.SelectToken("unfairSupplier.place.kladr.street") ?? "")
+                    var street = ((string)r.SelectToken("unfairSupplier.place.kladr.street") ?? "")
                         .Trim();
-                    var building = ((string) r.SelectToken("unfairSupplier.place.kladr.building") ?? "")
+                    var building = ((string)r.SelectToken("unfairSupplier.place.kladr.building") ?? "")
                         .Trim();
                     placefullName = $"{subjectRf}, {area}, {street}, {building}, {placefullName}";
-                    if (!String.IsNullOrEmpty(innSupplier))
+                    if (!string.IsNullOrEmpty(innSupplier))
                     {
                         var selectSupplier =
                             $"SELECT id FROM {Program.Prefix}unfair_suppplier WHERE inn = @inn AND kpp = @kpp";
@@ -209,10 +201,10 @@ namespace ParserRnP
                         else
                         {
                             reader5.Close();
-                            var email = ((string) r.SelectToken("unfairSupplier.place.email") ?? "").Trim();
+                            var email = ((string)r.SelectToken("unfairSupplier.place.email") ?? "").Trim();
                             var foundersNames =
-                                ((string) r.SelectToken("unfairSupplier.founders.names") ?? "").Trim();
-                            var foundersInn = ((string) r.SelectToken("unfairSupplier.founders.inn") ?? "").Trim();
+                                ((string)r.SelectToken("unfairSupplier.founders.names") ?? "").Trim();
+                            var foundersInn = ((string)r.SelectToken("unfairSupplier.founders.inn") ?? "").Trim();
                             var insertSupplier =
                                 $"INSERT INTO {Program.Prefix}unfair_suppplier SET inn = @inn, kpp = @kpp, fullName = @fullName, placefullName = @placefullName, email = @email, founders_names = @founders_names, founders_inn = @founders_inn";
                             var cmd9 = new MySqlCommand(insertSupplier, connect);
@@ -225,29 +217,30 @@ namespace ParserRnP
                             cmd9.Parameters.AddWithValue("@founders_names", foundersNames);
                             cmd9.Parameters.AddWithValue("@founders_inn", foundersInn);
                             cmd9.ExecuteNonQuery();
-                            idSupplier = (int) cmd9.LastInsertedId;
+                            idSupplier = (int)cmd9.LastInsertedId;
                         }
                     }
                     else
                     {
                         Log.Logger("Нет inn_supplier", FilePath);
                     }
-                    var purchaseNumber = ((string) r.SelectToken("purchase.purchaseNumber") ?? "").Trim();
-                    var purchaseObjectInfo = ((string) r.SelectToken("purchase.purchaseObjectInfo") ?? "").Trim();
-                    var lotNumber = ((string) r.SelectToken("purchase.lotNumber") ?? "").Trim();
-                    var contractRegNum = ((string) r.SelectToken("contract.regNum") ?? "").Trim();
-                    var contractProductInfo = ((string) r.SelectToken("contract.productInfo") ?? "").Trim();
-                    var contractOkpdCode = ((string) r.SelectToken("contract.OKPD.code") ?? "").Trim();
-                    var contractOkpdName = ((string) r.SelectToken("contract.OKPD.name") ?? "").Trim();
-                    var contractCurrencyCode = ((string) r.SelectToken("contract.currency.code") ?? "").Trim();
-                    var contractPrice = ((string) r.SelectToken("contract.price") ?? "").Trim();
-                    var contractCancelSignDate = ((string) r.SelectToken("contract.cancel.signDate") ?? "").Trim();
+
+                    var purchaseNumber = ((string)r.SelectToken("purchase.purchaseNumber") ?? "").Trim();
+                    var purchaseObjectInfo = ((string)r.SelectToken("purchase.purchaseObjectInfo") ?? "").Trim();
+                    var lotNumber = ((string)r.SelectToken("purchase.lotNumber") ?? "").Trim();
+                    var contractRegNum = ((string)r.SelectToken("contract.regNum") ?? "").Trim();
+                    var contractProductInfo = ((string)r.SelectToken("contract.productInfo") ?? "").Trim();
+                    var contractOkpdCode = ((string)r.SelectToken("contract.OKPD.code") ?? "").Trim();
+                    var contractOkpdName = ((string)r.SelectToken("contract.OKPD.name") ?? "").Trim();
+                    var contractCurrencyCode = ((string)r.SelectToken("contract.currency.code") ?? "").Trim();
+                    var contractPrice = ((string)r.SelectToken("contract.price") ?? "").Trim();
+                    var contractCancelSignDate = ((string)r.SelectToken("contract.cancel.signDate") ?? "").Trim();
                     var contractCancelPerformanceDate =
-                        ((string) r.SelectToken("contract.cancel.performanceDate") ?? "").Trim();
+                        ((string)r.SelectToken("contract.cancel.performanceDate") ?? "").Trim();
                     var contractCancelBaseName =
-                        ((string) r.SelectToken("contract.cancel.base.name") ?? "").Trim();
+                        ((string)r.SelectToken("contract.cancel.base.name") ?? "").Trim();
                     var contractCancelCancelDate =
-                        ((string) r.SelectToken("contract.cancel.cancelDate") ?? "").Trim();
+                        ((string)r.SelectToken("contract.cancel.cancelDate") ?? "").Trim();
                     var insertUnfair =
                         $"INSERT INTO {Program.Prefix}unfair SET publishDate = @publishDate, approveDate = @approveDate, registryNum = @registryNum, state = @state, createReason = @createReason, approveReason  = @approveReason, id_customer = @id_customer, id_supplier = @id_supplier, id_org = @id_org, purchaseNumber = @purchaseNumber, purchaseObjectInfo = @purchaseObjectInfo, lotNumber = @lotNumber, contract_regNum = @contract_regNum, contract_productInfo = @contract_productInfo, contract_OKPD_code = @contract_OKPD_code, contract_OKPD_name = @contract_OKPD_name, contract_currency_code = @contract_currency_code, contract_price = @contract_price, contract_cancel_signDate = @contract_cancel_signDate, contract_cancel_performanceDate = @contract_cancel_performanceDate, contract_cancel_base_name = @contract_cancel_base_name, contract_cancel_cancelDate = @contract_cancel_cancelDate, full_name_supplier = @full_name_supplier, placefullName_supplier = @placefullName_supplier";
                     var cmd10 = new MySqlCommand(insertUnfair, connect);

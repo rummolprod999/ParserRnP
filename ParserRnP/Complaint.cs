@@ -1,11 +1,10 @@
-﻿using System;
+﻿#region
+
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
-using MySql.Data.MySqlClient;
 using Newtonsoft.Json.Linq;
+
+#endregion
 
 namespace ParserRnP
 {
@@ -14,7 +13,7 @@ namespace ParserRnP
         protected readonly JObject T;
         protected readonly FileInfo File;
         protected readonly string FilePath;
-        
+
         public Complaint(FileInfo f, JObject json)
         {
             T = json;
@@ -44,7 +43,6 @@ namespace ParserRnP
             var els = new List<JToken>();
             var elsObj = j.SelectToken(s);
             if (elsObj != null && elsObj.Type != JTokenType.Null)
-            {
                 //Console.WriteLine(els_obj.Type);
                 switch (elsObj.Type)
                 {
@@ -55,17 +53,15 @@ namespace ParserRnP
                         els.AddRange(elsObj);
                         break;
                 }
-            }
 
             return els;
         }
-        
+
         public List<JToken> GetElementsLots(JToken j, string s)
         {
             var els = new List<JToken>();
             var elsObj = j.SelectToken(s);
             if (elsObj != null && elsObj.Type != JTokenType.Null)
-            {
                 switch (elsObj.Type)
                 {
                     case JTokenType.Object:
@@ -78,7 +74,6 @@ namespace ParserRnP
                         els.AddRange(elsObj);
                         break;
                 }
-            }
 
             return els;
         }
