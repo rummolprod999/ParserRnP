@@ -15,6 +15,8 @@
 	<logdir_farmdrug>log_farmdrug</logdir_farmdrug>
 	<tempdir_ktru>temp_ktru</tempdir_ktru>
 	<logdir_ktru>log_ktru</logdir_ktru>
+	<tempdir_cpd>temp_cpd</tempdir_cpd>
+	<logdir_cpd>log_cpd</logdir_cpd>
 	<prefix></prefix>
 	<userdb>parser</userdb>
 	<passdb>Dft56Point</passdb>

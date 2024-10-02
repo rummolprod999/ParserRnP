@@ -65,6 +65,7 @@
         <Compile Include="ComplaintRes44.cs"/>
         <Compile Include="ComplaintSuspend.cs"/>
         <Compile Include="ConnectToDb.cs"/>
+        <Compile Include="CPD.cs" />
         <Compile Include="FarmDrug.cs"/>
         <Compile Include="GetSettings.cs"/>
         <Compile Include="IParser.cs"/>
@@ -76,6 +77,7 @@
         <Compile Include="ParserBank.cs"/>
         <Compile Include="ParserComplaint.cs"/>
         <Compile Include="ParserComplaintResult.cs"/>
+        <Compile Include="ParserCPD.cs" />
         <Compile Include="ParserFarmDrug.cs"/>
         <Compile Include="ParserKtru.cs"/>
         <Compile Include="ParserNsi.cs"/>
