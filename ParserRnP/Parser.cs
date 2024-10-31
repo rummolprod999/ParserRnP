@@ -78,27 +78,27 @@ namespace ParserRnP
 
         public WorkWithFtp ClientFtp44_old()
         {
-            var ftpCl = new WorkWithFtp("ftp://ftp.zakupki.gov.ru", "free", "otkluchenie_FTP_s_01_01_2025_podrobnee_v_ATFF");
+            var ftpCl = new WorkWithFtp("ftp://ftp.zakupki.gov.ru", "free", "VNIMANIE!_otkluchenie_FTP_s_01_01_2025_podrobnee_v_ATFF");
             return ftpCl;
         }
 
         public FtpClient ClientFtp44()
         {
-            var client = new FtpClient("ftp.zakupki.gov.ru", "free", "otkluchenie_FTP_s_01_01_2025_podrobnee_v_ATFF");
+            var client = new FtpClient("ftp.zakupki.gov.ru", "free", "VNIMANIE!_otkluchenie_FTP_s_01_01_2025_podrobnee_v_ATFF");
             client.Connect();
             return client;
         }
 
         public FtpClient ClientFtp223()
         {
-            var client = new FtpClient("ftp.zakupki.gov.ru", "fz223free", "fz223free");
+            var client = new FtpClient("ftp.zakupki.gov.ru", "fz223free", "VNIMANIE!_otkluchenie_FTP_s_01_01_2025_podrobnee_v_ATFF");
             client.Connect();
             return client;
         }
 
         public WorkWithFtp ClientFtp223_old()
         {
-            var ftpCl = new WorkWithFtp("ftp://ftp.zakupki.gov.ru", "fz223free", "fz223free");
+            var ftpCl = new WorkWithFtp("ftp://ftp.zakupki.gov.ru", "fz223free", "VNIMANIE!_otkluchenie_FTP_s_01_01_2025_podrobnee_v_ATFF");
             return ftpCl;
         }
 
