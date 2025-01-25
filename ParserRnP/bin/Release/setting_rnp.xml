@@ -23,4 +23,7 @@
 	<server>localhost</server>
 	<port>3306</port>
 	<years>2016, 2017, 2018, 2019, 2020</years>
+	<token>099630cb-15e4-432c-9838-f70d00277961</token>
+	<days>2</days>
+	<kind>all</kind>
 </setting>

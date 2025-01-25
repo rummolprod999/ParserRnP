@@ -26,6 +26,9 @@ namespace ParserRnP
         private static string _logPathComplaint;
         private static string _tempPathComplaintResult;
         private static string _logPathComplaintResult;
+        public static int _days;
+        public static string _token;
+        public static string _kind;
         public static string Database { get; private set; }
 
         public static string Prefix { get; private set; }
@@ -296,6 +299,9 @@ namespace ParserRnP
             _tempPathComplaintResult = set.TempPathComplaintResult;
             Server = set.Server;
             Port = set.Port;
+            _token = set.Token;
+            _days = set.Days;
+            _kind = set.Kind;
             var tmp = set.Years;
             var tempYears = tmp.Split(',');
             foreach (var s in tempYears.Select(v => $"_{v.Trim()}"))

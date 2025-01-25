@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Net;
 using System.Threading;
 using FluentFTP;
 using MySql.Data.MySqlClient;
@@ -173,6 +174,50 @@ namespace ParserRnP
                     count++;
                     Thread.Sleep(5000);
                 }
+            }
+        }
+        
+        public string downloadArchive(string url)
+        {
+            var count = 5;
+            var sleep = 5000;
+            var dest = $"{Program.TempPath}{Path.DirectorySeparatorChar}array.zip";
+            while (true)
+            {
+                try
+                {
+                    using (var client = new TimedWebClient())
+                    {
+                        client.Headers.Add("individualPerson_token", Program._token);
+                        client.DownloadFile(url, dest);
+                    }
+
+                    break;
+                }
+                catch (Exception e)
+                {
+                    if (count <= 0)
+                    {
+                        Log.Logger($"Не удалось скачать {url}");
+                        break;
+                    }
+
+                    count--;
+                    Thread.Sleep(sleep);
+                    sleep *= 2;
+                }
+            }
+
+            return dest;
+        }
+        
+        public class TimedWebClient : WebClient
+        {
+            protected override WebRequest GetWebRequest(Uri address)
+            {
+                var wr = base.GetWebRequest(address);
+                wr.Timeout = 300000;
+                return wr;
             }
         }
     }

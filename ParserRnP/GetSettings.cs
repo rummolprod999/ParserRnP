@@ -31,6 +31,9 @@ namespace ParserRnP
         public readonly string Server;
         public readonly int Port;
         public readonly string Years;
+        public readonly int Days;
+        public readonly string Token;
+        public readonly string Kind;
 
         public GetSettings()
         {
@@ -107,6 +110,15 @@ namespace ParserRnP
                             break;
                         case "years":
                             Years = xnode.InnerText;
+                            break;
+                        case "token":
+                            Token = xnode.InnerText;
+                            break;
+                        case "kind":
+                            Kind = xnode.InnerText;
+                            break;
+                        case "days":
+                            Days = int.TryParse(xnode.InnerText, out Days) ? int.Parse(xnode.InnerText) : 3;
                             break;
                     }
                 }

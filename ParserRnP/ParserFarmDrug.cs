@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Xml;
@@ -16,34 +16,33 @@ namespace ParserRnP
 {
     public class ParserFarmDrug : Parser
     {
-        private readonly string[] _file =
-        {
-            "nsiFarmDrugsDictionary".ToLower()
-        };
-
         public ParserFarmDrug(TypeArguments a) : base(a)
         {
         }
 
         public override void Parsing()
         {
-            var arch = new List<string>();
             var bankList = new List<string>();
-            var pathParse = "/fcs_nsi/nsiFarmDrugDictionary/";
 
-            bankList = GetListBank(pathParse);
+            bankList = GetListBank();
             foreach (var l in bankList)
             {
-                pathParse = "/fcs_nsi/nsiFarmDrugDictionary/";
-                GetListFileArch(l, pathParse);
+                try
+                {
+                    GetListFileArch(l);
+                }
+                catch (Exception e)
+                {
+                    Log.Logger("Ошибка при парсинге", e);
+                }
             }
         }
 
-        public override void GetListFileArch(string arch, string pathParse)
+        public void GetListFileArch(string url)
         {
             var filea = "";
             var pathUnzip = "";
-            filea = GetArch44(arch, pathParse);
+            filea = downloadArchive(url);
             if (!string.IsNullOrEmpty(filea))
             {
                 pathUnzip = Unzipped.Unzip(filea);
@@ -65,46 +64,67 @@ namespace ParserRnP
             }
         }
 
-        public List<string> GetListBank(string pathParse)
+        public List<string> GetListBank()
         {
-            var listtemp = new List<string>();
-            listtemp = GetListFtp44(pathParse);
-            return listtemp.Where(a => _file.Any(t => a.ToLower().IndexOf(t, StringComparison.Ordinal) != -1))
-                .ToList();
+            var arch = new List<string>();
+            var resp = soap44();
+            var xDoc = new XmlDocument();
+            try
+            {
+                xDoc.LoadXml(resp);
+            }
+            catch (Exception e)
+            {
+                Log.Logger(e, resp);
+                throw;
+            }
+
+            var nodeList = xDoc.SelectNodes("//dataInfo/nsiArchiveInfo/archiveUrl");
+            foreach (XmlNode node in nodeList)
+            {
+                var nodeValue = node.InnerText;
+                arch.Add(nodeValue);
+            }
+
+            return arch;
         }
 
-        private List<string> GetListFtp44(string pathParse)
+        public static string soap44()
         {
-            var archtemp = new List<string>();
-            var count = 1;
+            var count = 5;
+            var sleep = 2000;
             while (true)
             {
                 try
                 {
-                    var ftp = ClientFtp44_old();
-                    ftp.ChangeWorkingDirectory(pathParse);
-                    archtemp = ftp.ListDirectory();
-                    if (count > 1)
+                    var guid = Guid.NewGuid();
+                    var currDate = DateTime.Now.ToString("s");
+                    var request =
+                        $"<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ws=\"http://zakupki.gov.ru/fz44/get-docs-ip/ws\">\n<soapenv:Header>\n<individualPerson_token>{Program._token}</individualPerson_token>\n</soapenv:Header>\n<soapenv:Body>\n<ws:getNsiRequest>\n<index>\n<id>{guid}</id>\n<createDateTime>{currDate}</createDateTime>\n<mode>PROD</mode>\n</index>\n<selectionParams>\n<nsiCode44>nsiFarmDrugDictionary</nsiCode44>\n<nsiKind>{Program._kind}</nsiKind>\n</selectionParams>\n</ws:getNsiRequest>\n</soapenv:Body>\n</soapenv:Envelope>";
+                    var url = "https://int44.zakupki.gov.ru/eis-integration/services/getDocsIP";
+                    var response = "";
+                    using (WebClient wc = new TimedWebClient())
                     {
-                        Log.Logger("Удалось получить список архивов после попытки", count);
+                        wc.Headers[HttpRequestHeader.ContentType] = "text/xml; charset=utf-8";
+                        response = wc.UploadString(url,
+                            request);
                     }
 
-                    break;
+                    //Console.WriteLine(response);
+                    return response;
                 }
                 catch (Exception e)
                 {
-                    if (count > 3)
+                    if (count <= 0)
                     {
-                        Log.Logger($"Не смогли найти директорию после попытки {count}", pathParse, e);
-                        break;
+                        throw;
                     }
 
-                    count++;
-                    Thread.Sleep(2000);
+                    count--;
+                    Thread.Sleep(sleep);
+                    sleep *= 2;
                 }
             }
-
-            return archtemp;
         }
 
 
