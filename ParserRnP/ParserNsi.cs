@@ -30,7 +30,6 @@ namespace ParserRnP
             var arch = new List<string>();
             var bankList = new List<string>();
             var pathParse = "/fcs_nsi/nsiOKEI/";
-            ;
 
             bankList = GetListBank(pathParse);
             foreach (var l in bankList)

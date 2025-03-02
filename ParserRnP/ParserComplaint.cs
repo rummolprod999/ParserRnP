@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Xml;
@@ -25,6 +26,13 @@ namespace ParserRnP
             "complaintcancel_", "complaint_", "tendersuspension_"
         };
 
+        private readonly string[] types =
+        {
+            "complaint",
+            "complaintCancel",
+            "tenderSuspension"
+        };
+
         private readonly string[] _fileCancel = { "complaintcancel_" };
         private readonly string[] _fileComplaint = { "complaint_" };
         private readonly string[] _fileSuspend = { "tendersuspension_" };
@@ -35,40 +43,57 @@ namespace ParserRnP
 
         public override void Parsing()
         {
-            var arch = new List<string>();
-            var pathParse = "";
-            switch (Program.Periodparsing)
+            DtRegion = GetRegions();
+            for (var i = Program._days; i >= 0; i--)
             {
-                case TypeArguments.LastComplaint:
-                    pathParse = "/fcs_fas/complaint/";
-                    arch = GetListArchLast(pathParse);
-                    break;
-                case TypeArguments.CurrComplaint:
-                    pathParse = "/fcs_fas/complaint/currMonth/";
-                    arch = GetListArchCurr(pathParse);
-                    break;
-                case TypeArguments.PrevComplaint:
-                    pathParse = "/fcs_fas/complaint/prevMonth/";
-                    arch = GetListArchPrev(pathParse);
-                    break;
-            }
+                foreach (DataRow row in DtRegion.Rows)
+                {
+                    foreach (var type in types)
+                    {
+                        try
+                        {
+                            var arch = new List<string>();
+                            var regionKladr = (string)row["conf"];
+                            switch (Program.Periodparsing)
+                            {
+                                case TypeArguments.CurrComplaint:
+                                    arch = GetListArchCurr(regionKladr, type, i);
+                                    break;
+                            }
 
-            if (arch.Count == 0)
-            {
-                Log.Logger("Получен пустой список архивов", pathParse);
-            }
+                            if (arch.Count == 0)
+                            {
+                                Log.Logger($"Получен пустой список архивов регион {regionKladr} тип {type}");
+                                continue;
+                            }
 
-            foreach (var v in arch)
-            {
-                GetListFileArch(v, pathParse);
+                            foreach (var v in arch)
+                            {
+                                try
+                                {
+                                    GetListFileArch(v, (string)row["conf"], (int)row["id"], type);
+                                }
+                                catch (Exception e)
+                                {
+                                    Console.WriteLine(e);
+                                    Log.Logger(v, e);
+                                }
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Logger("Ошибка ", e);
+                        }
+                    }
+                }
             }
         }
 
-        public override void GetListFileArch(string arch, string pathParse)
+        public void GetListFileArch(string arch, string region, int regionId, string type)
         {
             var filea = "";
             var pathUnzip = "";
-            filea = GetArch44(arch, pathParse);
+            filea = downloadArchive(arch);
             if (!string.IsNullOrEmpty(filea))
             {
                 pathUnzip = Unzipped.Unzip(filea);
@@ -109,6 +134,40 @@ namespace ParserRnP
                     }
                 }
             }
+        }
+
+        protected string downloadArchive(string url)
+        {
+            var count = 5;
+            var sleep = 2000;
+            var dest = $"{Program.TempPath}{Path.DirectorySeparatorChar}array.zip";
+            while (true)
+            {
+                try
+                {
+                    using (var client = new TimedWebClient())
+                    {
+                        client.Headers.Add("individualPerson_token", Program._token);
+                        client.DownloadFile(url, dest);
+                    }
+
+                    break;
+                }
+                catch (Exception e)
+                {
+                    if (count <= 0)
+                    {
+                        Log.Logger($"Не удалось скачать {url}");
+                        break;
+                    }
+
+                    count--;
+                    Thread.Sleep(sleep);
+                    sleep *= 2;
+                }
+            }
+
+            return dest;
         }
 
         public override void Bolter(FileInfo f, TypeFileComplaint typefile)
@@ -165,78 +224,61 @@ namespace ParserRnP
                 .ToList();
         }
 
-        public override List<string> GetListArchCurr(string pathParse)
+        public List<string> GetListArchCurr(string regionKladr, string type, int i)
         {
             var arch = new List<string>();
-            var archtemp = new List<string>();
-            /*FtpClient ftp = ClientFtp44();*/
-            archtemp = GetListFtp44(pathParse);
-            foreach (var a in archtemp.Where(a =>
-                         _fileUcomplaint.Any(t => a.ToLower().IndexOf(t, StringComparison.Ordinal) != -1)))
+            var resp = soap44(regionKladr, type, i);
+            var xDoc = new XmlDocument();
+            xDoc.LoadXml(resp);
+            var nodeList = xDoc.SelectNodes("//dataInfo/archiveUrl");
+            foreach (XmlNode node in nodeList)
             {
-                using (var connect = ConnectToDb.GetDbConnection())
-                {
-                    connect.Open();
-                    var selectArch =
-                        $"SELECT id FROM {Program.Prefix}arhiv_complaint WHERE arhiv = @archive";
-                    var cmd = new MySqlCommand(selectArch, connect);
-                    cmd.Prepare();
-                    cmd.Parameters.AddWithValue("@archive", a);
-                    var reader = cmd.ExecuteReader();
-                    var resRead = reader.HasRows;
-                    reader.Close();
-                    if (!resRead)
-                    {
-                        var addArch =
-                            $"INSERT INTO {Program.Prefix}arhiv_complaint SET arhiv = @archive";
-                        var cmd1 = new MySqlCommand(addArch, connect);
-                        cmd1.Prepare();
-                        cmd1.Parameters.AddWithValue("@archive", a);
-                        cmd1.ExecuteNonQuery();
-                        arch.Add(a);
-                    }
-                }
+                var nodeValue = node.InnerText;
+                arch.Add(nodeValue);
             }
 
             return arch;
         }
 
-        public override List<string> GetListArchPrev(string pathParse)
+        public static string soap44(string regionKladr, string type, int i)
         {
-            var arch = new List<string>();
-            var archtemp = new List<string>();
-            /*FtpClient ftp = ClientFtp44();*/
-            archtemp = GetListFtp44(pathParse);
-            var serachd = $"{Program.LocalDate:yyyyMMdd}";
-            foreach (var a in archtemp.Where(a => a.ToLower().IndexOf(serachd, StringComparison.Ordinal) != -1))
+            var count = 5;
+            var sleep = 2000;
+            while (true)
             {
-                var prevA = $"prev_{a}";
-                using (var connect = ConnectToDb.GetDbConnection())
+                try
                 {
-                    connect.Open();
-                    var selectArch =
-                        $"SELECT id FROM {Program.Prefix}arhiv_complaint WHERE arhiv = @archive";
-                    var cmd = new MySqlCommand(selectArch, connect);
-                    cmd.Prepare();
-                    cmd.Parameters.AddWithValue("@archive", prevA);
-                    var reader = cmd.ExecuteReader();
-                    var resRead = reader.HasRows;
-                    reader.Close();
-                    if (!resRead)
+                    var guid = Guid.NewGuid();
+                    var currDate = DateTime.Now.ToString("s");
+                    var prevday = DateTime.Now.AddDays(-1 * i).ToString("yyyy-MM-dd");
+                    var request =
+                        $"<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ws=\"http://zakupki.gov.ru/fz44/get-docs-ip/ws\">\n<soapenv:Header>\n<individualPerson_token>{Program._token}</individualPerson_token>\n</soapenv:Header>\n<soapenv:Body>\n<ws:getDocsByOrgRegionRequest>\n<index>\n<id>{guid}</id>\n<createDateTime>{currDate}</createDateTime>\n<mode>PROD</mode>\n</index>\n<selectionParams>\n<orgRegion>{regionKladr}</orgRegion>\n<subsystemType>RJ</subsystemType>\n<documentType44>{type}</documentType44>\n<periodInfo>\n<exactDate>{prevday}</exactDate>\n</periodInfo>  </selectionParams>\n</ws:getDocsByOrgRegionRequest>\n</soapenv:Body>\n</soapenv:Envelope>";
+                    var url = "https://int44.zakupki.gov.ru/eis-integration/services/getDocsIP";
+                    var response = "";
+                    using (WebClient wc = new TimedWebClient())
                     {
-                        var addArch =
-                            $"INSERT INTO {Program.Prefix}arhiv_complaint SET arhiv = @archive";
-                        var cmd1 = new MySqlCommand(addArch, connect);
-                        cmd1.Prepare();
-                        cmd1.Parameters.AddWithValue("@archive", prevA);
-                        cmd1.ExecuteNonQuery();
-                        arch.Add(a);
+                        wc.Headers[HttpRequestHeader.ContentType] = "text/xml; charset=utf-8";
+                        response = wc.UploadString(url,
+                            request);
                     }
+
+                    //Console.WriteLine(response);
+                    return response;
+                }
+                catch (Exception e)
+                {
+                    if (count <= 0)
+                    {
+                        throw;
+                    }
+
+                    count--;
+                    Thread.Sleep(sleep);
+                    sleep *= 2;
                 }
             }
-
-            return arch;
         }
+
 
         private List<string> GetListFtp44(string pathParse)
         {
